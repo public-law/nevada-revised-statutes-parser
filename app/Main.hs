@@ -3,22 +3,23 @@ import           Text.XML.HXT.Core
 
 
 data Title = Title {
-  header :: Char,
-  body   :: [Char]
+  header :: Int,
+  body   :: [Int]
 } deriving (Show)
+
 
 main = do
   html <- readFile "nrs.html"
-  print (foldl addRawData [] ['A', 'a', 'b', 'c', 'd', 'B', '1', '2', '3'])
+  print (foldl addItem [] [0, 1, 2, 3, 4, 5, 0, 9, 9, 9])
 
 
-addRawData :: [Title] -> Char -> [Title]
-addRawData titles aLine =
-  if isHeader aLine
-    then Title {header=aLine, body=[]} : titles
-    else Title {header=(header . head) titles, body=(body . head) titles ++ [aLine] } : tail titles
+addItem :: [Title] -> Int -> [Title]
+addItem things item =
+  if isHeader item
+    then Title {header=item, body=[]} : things
+    else Title {header=(header . head) things, body=(body . head) things ++ [item] } : tail things
 
 
-isHeader :: Char -> Bool
-isHeader ch =
-  ch == 'A' || ch == 'B'
+isHeader :: Int -> Bool
+isHeader n =
+  n == 0

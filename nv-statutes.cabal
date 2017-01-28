@@ -23,22 +23,28 @@ executable nv-statutes-exe
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
   build-depends:       base
                      , nv-statutes
+                     , aeson
+                     , aeson-pretty
+                     , base-unicode-symbols
                      , HandsomeSoup
                      , hxt
-  default-language:    Haskell2010
 
 test-suite nv-statutes-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
-  build-depends:       base
-                     , nv-statutes
-                     , HandsomeSoup
-                     , hxt
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
+  build-depends:       base
+                     , nv-statutes
+                     , aeson
+                     , aeson-pretty
+                     , base-unicode-symbols
+                     , HandsomeSoup
+                     , hxt
 
 source-repository head
   type:     git
