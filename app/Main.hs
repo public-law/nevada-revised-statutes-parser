@@ -9,6 +9,9 @@ import           Text.HandsomeSoup
 import           Text.XML.HXT.Core
 
 
+class Treeable a where
+  isHeader :: a -> Bool
+
 data Title =
   Title {
     header :: Int,
@@ -33,6 +36,5 @@ addItem things item =
     else Title {header=(header . head) things, body=(body . head) things ++ [item] } : tail things
 
 
-isHeader :: Int -> Bool
-isHeader n =
-  n == 0
+instance Treeable Integer where
+  isHeader i  =   i == 0
