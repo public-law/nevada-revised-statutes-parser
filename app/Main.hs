@@ -15,9 +15,12 @@ data Container =
 instance ToJSON Container
 
 
-main = do
-  let containers = shallowTree addNumberToContainers [1, 10, 20, 30, 40, 50, 2, 99, 99, 99]
-  B.putStr (encodePretty containers)
+main =
+  B.putStr $ encodePretty $ shallowContainerTree [1, 10, 20, 30, 2, 99, 99, 99]
+
+
+shallowContainerTree :: [Integer] -> [Container]
+shallowContainerTree = shallowTree addNumberToContainers
 
 
 shallowTree :: ([b] -> a -> [b]) -> [a] -> [b]
