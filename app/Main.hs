@@ -32,6 +32,7 @@ addItem containers item =
     else Container {badge=(badge . head) containers, details=(details . head) containers ++ [item] } : tail containers
 
 
+isHeader :: Integer -> Bool
 isHeader thing =
   thing < 10
 
