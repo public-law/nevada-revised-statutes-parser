@@ -18,18 +18,18 @@ instance ToJSON Container
 
 main =
   [1, 10, 20, 30, 2, 99, 99, 99]
-    & buildShallowContainerTree
+    & buildContainerList
     & encodePretty
     & B.putStr
 
 
-buildShallowContainerTree :: [Integer] -> [Container]
-buildShallowContainerTree numbers =
-  shallowTree addNumberToContainers numbers
+buildContainerList :: [Integer] -> [Container]
+buildContainerList numbers =
+  buildList addNumberToContainers numbers
 
 
-shallowTree :: ([b] -> a -> [b]) -> [a] -> [b]
-shallowTree appendFunction items =
+buildList :: ([b] -> a -> [b]) -> [a] -> [b]
+buildList appendFunction items =
   reverse $ foldl appendFunction [] items
 
 
