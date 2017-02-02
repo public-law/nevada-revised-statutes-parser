@@ -3,6 +3,7 @@
 import           Data.Aeson               (ToJSON)
 import           Data.Aeson.Encode.Pretty (encodePretty)
 import qualified Data.ByteString.Lazy     as B
+import           Data.Function            ((&))
 import           GHC.Generics
 
 
@@ -16,11 +17,14 @@ instance ToJSON Container
 
 
 main =
-  B.putStr $ encodePretty $ shallowContainerTree [1, 10, 20, 30, 2, 99, 99, 99]
+  [1, 10, 20, 30, 2, 99, 99, 99]
+    & buildShallowContainerTree
+    & encodePretty
+    & B.putStr
 
 
-shallowContainerTree :: [Integer] -> [Container]
-shallowContainerTree = shallowTree addNumberToContainers
+buildShallowContainerTree :: [Integer] -> [Container]
+buildShallowContainerTree = shallowTree addNumberToContainers
 
 
 shallowTree :: ([b] -> a -> [b]) -> [a] -> [b]
