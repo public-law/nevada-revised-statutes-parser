@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 import           Data.Aeson               (ToJSON)
-import           Data.Aeson.Encode.Pretty (Config, encodePretty)
+import           Data.Aeson.Encode.Pretty (encodePretty)
 import qualified Data.ByteString.Lazy     as B
 import           GHC.Generics
 
@@ -16,19 +16,20 @@ instance ToJSON Container
 
 
 main = do
-  let containers = shallowTree [1, 10, 20, 30, 40, 50, 2, 99, 99, 99]
+  let containers = shallowTree addNumberToContainers [1, 10, 20, 30, 40, 50, 2, 99, 99, 99]
   B.putStr (encodePretty containers)
 
 
-shallowTree :: [Integer] -> [Container]
-shallowTree items =
-  reverse $ foldl addItem [] items
+shallowTree :: ([b] -> a -> [b]) -> [a] -> [b]
+shallowTree func items =
+  reverse $ foldl func [] items
 
 
-addItem :: [Container] -> Integer -> [Container]
-addItem containers item =
+addNumberToContainers :: [Container] -> Integer -> [Container]
+addNumberToContainers containers item =
   if isHeader item
     then addNew containers item
+    -- TODO: Refactor this; it 'adds' an item to the most recent container:
     else Container {badge=(badge . head) containers, details=(details . head) containers ++ [item] } : tail containers
 
 
