@@ -28,9 +28,9 @@ buildContainerList numbers =
   buildList addNumberToContainers numbers
 
 
-buildList :: ([b] -> a -> [b]) -> [a] -> [b]
-buildList appendFunction items =
-  reverse $ foldl appendFunction [] items
+buildList :: ([container] -> elem -> [container]) -> [elem] -> [container]
+buildList appendFunction elements =
+  reverse $ foldl appendFunction [] elements
 
 
 addNumberToContainers :: [Container] -> Integer -> [Container]
