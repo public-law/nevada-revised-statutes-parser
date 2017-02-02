@@ -24,18 +24,19 @@ main =
 
 
 buildShallowContainerTree :: [Integer] -> [Container]
-buildShallowContainerTree = shallowTree addNumberToContainers
+buildShallowContainerTree numbers =
+  shallowTree addNumberToContainers numbers
 
 
 shallowTree :: ([b] -> a -> [b]) -> [a] -> [b]
-shallowTree func items =
-  reverse $ foldl func [] items
+shallowTree appendFunction items =
+  reverse $ foldl appendFunction [] items
 
 
 addNumberToContainers :: [Container] -> Integer -> [Container]
 addNumberToContainers containers item =
   if isHeader item
-    then addNew containers item
+    then addNew item containers
     -- TODO: Refactor this; it 'adds' an item to the most recent container:
     else Container {badge=(badge . head) containers, details=(details . head) containers ++ [item] } : tail containers
 
@@ -45,6 +46,6 @@ isHeader thing =
   thing < 10
 
 
-addNew :: [Container] -> Integer -> [Container]
-addNew containers name =
+addNew :: Integer -> [Container] -> [Container]
+addNew name containers =
   Container {badge=name, details=[]} : containers
