@@ -1,42 +1,41 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE UnicodeSyntax #-}
 
 import           Data.Aeson               (ToJSON)
-import           Data.Aeson.Encode.Pretty (encodePretty)
+import           Data.Aeson.Encode.Pretty (Config, encodePretty)
 import qualified Data.ByteString.Lazy     as B
 import           GHC.Generics
-import           Text.HandsomeSoup
-import           Text.XML.HXT.Core
 
 
-data Title =
-  Title {
-    header :: Integer,
-    body   :: [Integer]
+data Container =
+  Container {
+    badge   :: Integer,
+    details :: [Integer]
   } deriving (Generic, Show)
 
-instance ToJSON Title
+instance ToJSON Container
 
 
 main = do
-  html <- readFile "nrs.html"
-  let doc = readString [withParseHTML yes, withWarnings no] html
-  items <- runX $ doc >>> css "td"
-  let things = shallowTree [0, 1, 2, 3, 4, 5, 0, 9, 9, 9]
-  B.putStr (encodePretty $ reverse things)
+  let containers = shallowTree [1, 10, 20, 30, 40, 50, 2, 99, 99, 99]
+  B.putStr (encodePretty containers)
 
 
-shallowTree :: [Integer] -> [Title]
+shallowTree :: [Integer] -> [Container]
 shallowTree items =
   reverse $ foldl addItem [] items
 
 
-addItem :: [Title] -> Integer -> [Title]
-addItem things item =
+addItem :: [Container] -> Integer -> [Container]
+addItem containers item =
   if isHeader item
-    then Title {header=item, body=[]} : things
-    else Title {header=(header . head) things, body=(body . head) things ++ [item] } : tail things
+    then addNew containers item
+    else Container {badge=(badge . head) containers, details=(details . head) containers ++ [item] } : tail containers
 
 
-isHeader 0 = True
-isHeader _ = False
+isHeader thing =
+  thing < 10
+
+
+addNew :: [Container] -> Integer -> [Container]
+addNew containers name =
+  Container {badge=name, details=[]} : containers
