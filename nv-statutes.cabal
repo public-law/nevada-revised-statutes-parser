@@ -32,6 +32,7 @@ executable nv-statutes-exe
                      , bytestring
                      , HandsomeSoup
                      , hxt
+                     , split
 
 test-suite nv-statutes-test
   type:                exitcode-stdio-1.0
@@ -47,6 +48,7 @@ test-suite nv-statutes-test
                      , bytestring
                      , HandsomeSoup
                      , hxt
+                     , split
 
 source-repository head
   type:     git
