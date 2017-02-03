@@ -6,6 +6,7 @@ import           Data.Aeson.Encode.Pretty (confCompare, defConfig,
                                            encodePretty', keyOrder)
 import qualified Data.ByteString.Lazy     as B
 import           Data.Function            ((&))
+import           Data.List.Split          (chunksOf, split, whenElt)
 import           GHC.Generics
 
 
@@ -26,30 +27,13 @@ main =
 
 
 buildContainerList :: [Integer] -> [Container]
-buildContainerList = buildList addNumberToContainers
+buildContainerList items =
+  map newContainerFromTuple (chunksOf 2 $ tail $ split (whenElt (< 10)) items)
 
 
-buildList :: ([container] -> elem -> [container]) -> [elem] -> [container]
-buildList appendFunction elements =
-  reverse $ foldl appendFunction [] elements
-
-
-addNumberToContainers :: [Container] -> Integer -> [Container]
-addNumberToContainers containers item =
-  if isHeader item
-    then addNew item containers
-    -- TODO: Refactor this; it 'adds' an item to the most recent container:
-    else Container {header=(header . head) containers, body=(body . head) containers ++ [item] } : tail containers
-
-
-isHeader :: Integer -> Bool
-isHeader thing =
-  thing < 10
-
-
-addNew :: Integer -> [Container] -> [Container]
-addNew name containers =
-  Container {header=name, body=[]} : containers
+newContainerFromTuple :: [[Integer]] -> Container
+newContainerFromTuple tuple =
+  Container {header=head (head tuple), body=head (tail tuple)}
 
 
 toJson =
