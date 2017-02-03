@@ -28,9 +28,14 @@ main =
 
 buildContainerList :: [Integer] -> [Container]
 buildContainerList items =
-  map newContainerFromTuple (chunksOf 2 $ tail $ split (whenElt (< 10)) items)
+  split (whenElt (< 10)) items
+    & tail
+    & chunksOf 2
+    & map newContainerFromTuple
 
 
+-- Input is a tuple with the header and content, like this:
+-- [[0], [10, 20, 30]]
 newContainerFromTuple :: [[Integer]] -> Container
 newContainerFromTuple tuple =
   let name    = head (head tuple)
