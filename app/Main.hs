@@ -33,7 +33,10 @@ buildContainerList items =
 
 newContainerFromTuple :: [[Integer]] -> Container
 newContainerFromTuple tuple =
-  Container {header=head (head tuple), body=head (tail tuple)}
+  let name    = head (head tuple)
+      content = head (tail tuple)
+  in
+    Container {header=name, body=content}
 
 
 toJson =
