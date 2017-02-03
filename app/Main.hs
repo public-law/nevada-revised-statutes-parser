@@ -8,6 +8,8 @@ import qualified Data.ByteString.Lazy     as B
 import           Data.Function            ((&))
 import           Data.List.Split          (chunksOf, split, whenElt)
 import           GHC.Generics
+import           Text.HandsomeSoup
+import           Text.XML.HXT.Core
 
 
 data Container =
@@ -19,7 +21,10 @@ data Container =
 instance ToJSON Container
 
 
-main =
+main = do
+  html <- readFile "nrs.html"
+  let doc = readString [withParseHTML yes, withWarnings no] html
+  items <- runX $ doc >>> css "table.MsoNormalTable tr" >>> (this &&& (getChildren >>> arr length))
   [1, 10, 20, 30, 2, 99, 99, 99]
     & buildContainerList
     & toJson
