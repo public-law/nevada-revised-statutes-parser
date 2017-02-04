@@ -1,6 +1,7 @@
 module MiscSpec where
 
   import           Test.Hspec
+  import   NvStatutes
 
 
   main :: IO()
@@ -9,5 +10,6 @@ module MiscSpec where
   spec :: Spec
   spec =
     describe "titleCount" $
-      it "finds the correct number of titles" $
-        titleCount `shouldBe` 59
+      it "finds the correct number of titles" $ do
+        html <- readFile "nrs.html"
+        titleCount html `shouldBe` 59
