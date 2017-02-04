@@ -1,5 +1,4 @@
-{-# LANGUAGE DeriveGeneric     #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 import           Data.Aeson               (ToJSON)
 import           Data.Aeson.Encode.Pretty (confCompare, defConfig,
@@ -8,8 +7,7 @@ import qualified Data.ByteString.Lazy     as B
 import           Data.Function            ((&))
 import           Data.List.Split          (chunksOf, split, whenElt)
 import           GHC.Generics
-import           Text.HandsomeSoup
-import           Text.XML.HXT.Core
+import           Text.HTML.TagSoup        (parseTags, partitions, (~/=), (~==))
 
 
 data Container =
@@ -18,36 +16,45 @@ data Container =
     body   :: [Integer]
   } deriving (Generic, Show)
 
+data Title =
+  Title {
+    titleName :: String,
+    chapters  :: [Chapter]
+} deriving (Generic, Show)
+
+data Chapter =
+  Chapter {
+    chapterName :: String,
+    number      :: String,
+    url         :: String
+} deriving (Generic, Show)
+
+
 instance ToJSON Container
+instance ToJSON Title
+instance ToJSON Chapter
 
 
 main = do
   html <- readFile "nrs.html"
-  let doc = readString [withParseHTML yes, withWarnings no] html
-  items <- runX $ doc >>> css "table.MsoNormalTable tr" >>> (this &&& (css "td" >. length))
-  [1, 10, 20, 30, 2, 99, 99, 99]
-    & buildContainerList
-    & toJson
-    & B.putStr
+  let tags   = parseTags html
+  let table  = head $ partitions (~== "<table class=MsoNormalTable") tags
+  let rows   = partitions (~== "<tr>") table
+  let tuples = rowTuples rows
 
 
-buildContainerList :: [Integer] -> [Container]
-buildContainerList items =
-  split (whenElt (< 10)) items
+  putStr ("Hello world: " ++ show (fmap isTitleRow rows))
+
+
+rowTuples rows =
+  split (whenElt isTitleRow) rows
     & tail
     & chunksOf 2
-    & map newContainerFromTuple
 
 
--- Input is a tuple with the header and content, like this:
--- [[0], [10, 20, 30]]
-newContainerFromTuple :: [[Integer]] -> Container
-newContainerFromTuple tuple =
-  let name    = head (head tuple)
-      content = head (tail tuple)
-  in
-    Container {header=name, body=content}
+isTitleRow r =
+  length (partitions (~== "<td>") r) == 1
 
 
-toJson =
-  encodePretty' (defConfig {confCompare=keyOrder ["header"]})
+newChapter row =
+  Chapter {chapterName="", number="", url=""}

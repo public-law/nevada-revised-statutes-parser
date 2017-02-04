@@ -30,8 +30,8 @@ executable nv-statutes-exe
                      , aeson-pretty
                      , base-unicode-symbols
                      , bytestring
-                     , HandsomeSoup
-                     , hxt
+                     , hspec
+                     , tagsoup
                      , split
 
 test-suite nv-statutes-test
@@ -46,9 +46,10 @@ test-suite nv-statutes-test
                      , aeson-pretty
                      , base-unicode-symbols
                      , bytestring
-                     , HandsomeSoup
-                     , hxt
+                     , hspec
+                     , tagsoup
                      , split
+
 
 source-repository head
   type:     git
