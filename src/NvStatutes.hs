@@ -6,7 +6,6 @@ module NvStatutes where
 import           Data.Aeson               (ToJSON)
 import           Data.Aeson.Encode.Pretty (confCompare, defConfig,
                                            encodePretty', keyOrder)
-import qualified Data.ByteString.Lazy     as B
 import           Data.Function            ((&))
 import           Data.List.Split          (chunksOf, split, splitOn, whenElt)
 import           Data.String.Conversions
@@ -77,8 +76,8 @@ nameFromRawTitle text =
 -- Output: 1
 numberFromRawTitle :: Text -> Int
 numberFromRawTitle text =
-  let thing = numberTextFromRawTitle text
-  in read $ Data.Text.unpack thing :: Int
+  let numberText = numberTextFromRawTitle text
+  in read $ unpack numberText :: Int
 
 
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
