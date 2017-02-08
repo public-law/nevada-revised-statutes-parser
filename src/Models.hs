@@ -4,7 +4,7 @@ module Models where
 
 import           Data.Aeson   (ToJSON)
 import           Data.Text    (Text)
-import           GHC.Generics
+import           GHC.Generics (Generic)
 
 
 data Title =
