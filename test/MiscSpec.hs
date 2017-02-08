@@ -15,10 +15,10 @@ import           Test.Hspec
 nrsIndexHtml :: IO String
 nrsIndexHtml = readFile "nrs.html"
 
-firstTitle :: String -> Title
-firstTitle html =
-  head (titles (convertString html))
-
+firstTitle :: IO Title
+firstTitle = do
+  html <- nrsIndexHtml
+  return (head (titles (convertString html)))
 
 
 main :: IO()
@@ -35,9 +35,9 @@ spec = do
 
   describe "titles" $ do
     it "gets the first title's name" $ do
-      html <- nrsIndexHtml
-      titleName (firstTitle html) `shouldBe` ("STATE JUDICIAL DEPARTMENT"::Text)
+      judicialDept <- firstTitle
+      titleName judicialDept `shouldBe` ("STATE JUDICIAL DEPARTMENT"::Text)
 
     it "gets the first title's number" $ do
-      html <- nrsIndexHtml
-      titleNumber (firstTitle html) `shouldBe` 1
+      judicialDept <- firstTitle
+      titleNumber judicialDept `shouldBe` 1
