@@ -70,14 +70,14 @@ nameFromRawTitle text =
   Data.Text.splitOn "\8212" text
     & tail
     & head
-    & Data.Text.strip
+    & strip
 
 
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: 1
 numberFromRawTitle :: Text -> Int
 numberFromRawTitle text =
-  let thing = Data.Text.pack $ convertString $ numberTextFromRawTitle text
+  let thing = numberTextFromRawTitle text
   in read $ Data.Text.unpack thing :: Int
 
 
@@ -87,7 +87,7 @@ numberTextFromRawTitle :: Text -> Text
 numberTextFromRawTitle text =
   Data.Text.splitOn "\8212" text
     & head
-    & Data.Text.strip
+    & strip
     & Data.Text.splitOn "\n"
     & tail
     & head
