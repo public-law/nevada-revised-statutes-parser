@@ -36,7 +36,15 @@ titles indexHtml =
       table      = head $ partitions (~== "<table class=MsoNormalTable") tags
       rows       = partitions (~== "<tr>") table
       tuples     = rowTuples rows
-  in []
+  in makeTitles tuples
+
+
+makeTitles tuples =
+  fmap newTitle tuples
+
+
+newTitle tuple =
+  Title { titleName = "", titleNumber = 0, chapters = [] }
 
 
 titleCount indexHtml =

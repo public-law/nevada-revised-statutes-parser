@@ -14,7 +14,7 @@ spec = do
       titleCount html `shouldBe` 59
 
   describe "titles" $ do
-    it "gets the first title's number " $ do
+    it "gets the first title's number" $ do
       html <- readFile "nrs.html"
       titleNumber (head (titles html)) `shouldBe` 1
 
