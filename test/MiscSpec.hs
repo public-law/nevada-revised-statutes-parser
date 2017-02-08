@@ -23,11 +23,12 @@ firstTitle = do
 
 main :: IO()
 main =
-  -- html <- readFile "nrs.html"
   hspec spec
 
 
+spec :: Spec
 spec = do
+
   describe "titleCount" $
     it "finds the correct number of titles" $ do
       html <- nrsIndexHtml
