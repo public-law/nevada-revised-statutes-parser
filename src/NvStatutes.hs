@@ -9,7 +9,7 @@ import qualified Data.ByteString.Lazy     as B
 import           Data.Function            ((&))
 import           Data.List.Split          (chunksOf, split, whenElt)
 import           GHC.Generics
-import           Text.HTML.TagSoup        (parseTags, partitions, (~/=), (~==))
+import           Text.HTML.TagSoup
 
 
 data Title =
@@ -44,7 +44,9 @@ makeTitles tuples =
 
 
 newTitle tuple =
-  Title { titleName = "", titleNumber = 0, chapters = [] }
+  let title_row = head(head tuple)
+      name      = innerText $ head $ partitions (~== "<b>") title_row
+  in Title { titleName = name, titleNumber = 0, chapters = [] }
 
 
 titleCount indexHtml =
