@@ -7,7 +7,7 @@ import           Data.Aeson.Encode.Pretty (confCompare, defConfig,
                                            encodePretty', keyOrder)
 import qualified Data.ByteString.Lazy     as B
 import           Data.Function            ((&))
-import           Data.List.Split          (chunksOf, split, whenElt)
+import           Data.List.Split
 import           GHC.Generics
 import           Text.HTML.TagSoup
 
@@ -45,8 +45,14 @@ makeTitles tuples =
 
 newTitle tuple =
   let title_row = head(head tuple)
-      name      = innerText $ head $ partitions (~== "<b>") title_row
+      rawTitle  = innerText $ head $ partitions (~== "<b>") title_row
+      name      = nameFromRawTitle rawTitle
   in Title { titleName = name, titleNumber = 0, chapters = [] }
+
+
+nameFromRawTitle :: String -> String
+nameFromRawTitle text =
+  head $ tail $ splitOn "\8212" text
 
 
 titleCount indexHtml =
