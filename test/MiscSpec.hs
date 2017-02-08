@@ -1,7 +1,12 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module MiscSpec where
 
+import           Data.String.Conversions
+import           Data.Text               (Text, strip)
 import           NvStatutes
 import           Test.Hspec
+
 
 main :: IO()
 main = hspec spec
@@ -16,9 +21,9 @@ spec = do
   describe "titles" $ do
     it "gets the first title's name" $ do
       html <- readFile "nrs.html"
-      titleName (head (titles html)) `shouldBe` "STATE JUDICIAL DEPARTMENT"
+      titleName (head (titles (cs html))) `shouldBe` ("STATE JUDICIAL DEPARTMENT"::Text)
 
     it "gets the first title's number" $ do
       pending
       html <- readFile "nrs.html"
-      titleNumber (head (titles html)) `shouldBe` 1
+      titleNumber (head (titles (cs html))) `shouldBe` 1

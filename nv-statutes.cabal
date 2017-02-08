@@ -32,6 +32,8 @@ executable nv-statutes-exe
                      , hspec
                      , tagsoup
                      , split
+                     , string-conversions
+                     , text
   other-modules:       NvStatutes
 
 test-suite nv-statutes-test
@@ -49,6 +51,8 @@ test-suite nv-statutes-test
                      , hspec
                      , tagsoup
                      , split
+                     , string-conversions
+                     , text
   other-modules:       MiscSpec, NvStatutes
 
 
