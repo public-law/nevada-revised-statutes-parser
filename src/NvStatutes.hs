@@ -35,18 +35,16 @@ instance ToJSON Title
 instance ToJSON Chapter
 
 
+titleCount :: Text -> Int
+titleCount indexHtml =
+  length $ titles indexHtml
+
+
 titles :: Text -> [Title]
 titles indexHtml =
   let rows   = contentRows indexHtml
       tuples = rowTuples rows
   in makeTitles tuples
-
-
-titleCount :: Text -> Int
-titleCount indexHtml =
-  let rows       = contentRows indexHtml
-      title_rows = filter isTitleRow rows
-  in length title_rows
 
 
 contentRows :: Text -> [[Tag Text]]
