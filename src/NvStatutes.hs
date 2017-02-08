@@ -4,10 +4,12 @@ module NvStatutes where
 
 import           Data.Function     ((&))
 import           Data.List.Split   (chunksOf, split, whenElt)
-import           Data.Text         (Text, pack, splitOn, strip, unpack)
-import           Models
+import           Data.Text         (Text, splitOn, strip, unpack)
 import           Text.HTML.TagSoup (Tag, innerText, parseTags, partitions,
                                     (~==))
+
+import           Models
+
 
 titleCount :: Text -> Int
 titleCount indexHtml =

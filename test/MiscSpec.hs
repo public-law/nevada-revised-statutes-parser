@@ -4,9 +4,10 @@ module MiscSpec where
 
 import           Data.String.Conversions (convertString)
 import           Data.Text               (Text)
+import           Test.Hspec
+
 import           Models
 import           NvStatutes
-import           Test.Hspec
 
 
 --
