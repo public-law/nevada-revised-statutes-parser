@@ -34,7 +34,7 @@ executable nv-statutes-exe
                      , split
                      , string-conversions
                      , text
-  other-modules:       NvStatutes
+  other-modules:       NvStatutes, Models
 
 test-suite nv-statutes-test
   type:                exitcode-stdio-1.0
@@ -53,7 +53,7 @@ test-suite nv-statutes-test
                      , split
                      , string-conversions
                      , text
-  other-modules:       MiscSpec, NvStatutes
+  other-modules:       MiscSpec, NvStatutes, Models
 
 
 source-repository head

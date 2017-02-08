@@ -1,34 +1,13 @@
-{-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module NvStatutes where
 
-import           Data.Aeson        (ToJSON)
 import           Data.Function     ((&))
 import           Data.List.Split   (chunksOf, split, whenElt)
 import           Data.Text         (Text, pack, splitOn, strip, unpack)
-import           GHC.Generics      (Generic)
+import           Models
 import           Text.HTML.TagSoup (Tag, innerText, parseTags, partitions,
                                     (~==))
-
-
-data Title =
-  Title {
-    titleName   :: Text,
-    titleNumber :: Int,
-    chapters    :: [Chapter]
-} deriving (Generic, Show)
-
-data Chapter =
-  Chapter {
-    chapterName   :: Text,
-    chapterNumber :: Text,
-    url           :: Text
-} deriving (Generic, Show)
-
-instance ToJSON Title
-instance ToJSON Chapter
-
 
 titleCount :: Text -> Int
 titleCount indexHtml =

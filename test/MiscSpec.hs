@@ -3,7 +3,8 @@
 module MiscSpec where
 
 import           Data.String.Conversions
-import           Data.Text               (Text, strip)
+import           Data.Text               (Text)
+import           Models
 import           NvStatutes
 import           Test.Hspec
 
