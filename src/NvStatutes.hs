@@ -7,8 +7,9 @@ import           Data.Aeson        (ToJSON)
 import           Data.Function     ((&))
 import           Data.List.Split   (chunksOf, split, whenElt)
 import           Data.Text         (Text, pack, split, splitOn, strip, unpack)
-import           GHC.Generics
-import           Text.HTML.TagSoup
+import           GHC.Generics      (Generic)
+import           Text.HTML.TagSoup (Tag, innerText, parseTags, partitions,
+                                    (~==))
 
 
 data Title =
@@ -61,7 +62,7 @@ newTitle tuple =
 -- Output: "STATE JUDICIAL DEPARTMENT"
 nameFromRawTitle :: Text -> Text
 nameFromRawTitle text =
-  Data.Text.splitOn "\8212" text
+  splitOn "\8212" text
     & tail
     & head
     & strip
@@ -79,10 +80,10 @@ numberFromRawTitle text =
 -- Output: "1"
 numberTextFromRawTitle :: Text -> Text
 numberTextFromRawTitle text =
-  Data.Text.splitOn "\8212" text
+  splitOn "\8212" text
     & head
     & strip
-    & Data.Text.splitOn "\n"
+    & splitOn "\n"
     & tail
     & head
 
