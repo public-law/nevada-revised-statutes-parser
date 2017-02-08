@@ -28,8 +28,10 @@ spec = do
   describe "titles" $ do
     it "gets the first title's name" $ do
       html <- nrsIndexHtml
-      titleName (head (titles (convertString html))) `shouldBe` ("STATE JUDICIAL DEPARTMENT"::Text)
+      let firstTitle = head (titles (convertString html))
+      titleName firstTitle `shouldBe` ("STATE JUDICIAL DEPARTMENT"::Text)
 
     it "gets the first title's number" $ do
       html <- nrsIndexHtml
-      titleNumber (head (titles (convertString html))) `shouldBe` 1
+      let firstTitle = head (titles (convertString html))
+      titleNumber firstTitle `shouldBe` 1
