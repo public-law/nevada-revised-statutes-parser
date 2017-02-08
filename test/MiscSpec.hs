@@ -13,8 +13,8 @@ main = hspec $ do
   describe "titles" $ do
     it "gets the first title's number " $ do
       html <- readFile "nrs.html"
-      title_number (head (titles html)) `shouldBe` 1
+      titleNumber (head (titles html)) `shouldBe` 1
 
     it "gets the first title's name" $ do
       html <- readFile "nrs.html"
-      title_name (head (titles html)) `shouldBe` "STATE JUDICIAL DEPARTMENT"
+      titleName (head (titles html)) `shouldBe` "STATE JUDICIAL DEPARTMENT"

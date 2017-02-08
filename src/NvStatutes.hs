@@ -13,16 +13,17 @@ import           Text.HTML.TagSoup        (parseTags, partitions, (~/=), (~==))
 
 data Title =
   Title {
-    titleName :: String,
-    chapters  :: [Chapter]
+    titleName   :: String,
+    titleNumber :: Integer,
+    chapters    :: [Chapter]
 } deriving (Generic, Show)
 
 
 data Chapter =
   Chapter {
-    chapterName :: String,
-    number      :: String,
-    url         :: String
+    chapterName   :: String,
+    chapterNumber :: String,
+    url           :: String
 } deriving (Generic, Show)
 
 instance ToJSON Title
@@ -47,4 +48,4 @@ isTitleRow r =
 
 
 newChapter row =
-  Chapter {chapterName="", number="", url=""}
+  Chapter {chapterName="", chapterNumber="", url=""}
