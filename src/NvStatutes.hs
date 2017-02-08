@@ -19,7 +19,7 @@ import           Text.StringLike
 data Title =
   Title {
     titleName   :: Text,
-    titleNumber :: Integer,
+    titleNumber :: Int,
     chapters    :: [Chapter]
 } deriving (Generic, Show)
 
@@ -48,8 +48,8 @@ makeTitles tuples =
 
 
 newTitle tuple =
-  let title_row = head(head tuple)
-      rawTitle  = innerText $ head $ partitions (~== ("<b>"::String)) title_row
+  let titleRow  = head(head tuple)
+      rawTitle  = innerText $ head $ partitions (~== ("<b>"::String)) titleRow
       name      = nameFromRawTitle rawTitle
   in Title { titleName = name, titleNumber = 0, chapters = [] }
 
@@ -61,6 +61,7 @@ nameFromRawTitle text =
   strip $ convertString $ head $ tail $ splitOn "\8212" (convertString text)
 
 
+titleCount :: Text -> Int
 titleCount indexHtml =
   let tags       = parseTags indexHtml
       table      = head $ partitions (~== ("<table class=MsoNormalTable"::String)) tags
@@ -74,6 +75,7 @@ rowTuples rows =
   split (whenElt isTitleRow) rows
     & tail
     & chunksOf 2
+
 
 isTitleRow :: [Tag Text] -> Bool
 isTitleRow r =
