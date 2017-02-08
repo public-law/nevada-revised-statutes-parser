@@ -35,18 +35,21 @@ instance ToJSON Title
 instance ToJSON Chapter
 
 
+titles :: Text -> [Title]
 titles indexHtml =
   let tags       = parseTags indexHtml
       table      = head $ partitions (~== ("<table class=MsoNormalTable"::String)) tags
-      rows       = partitions (~== ("<tr>" :: String)) table
+      rows       = partitions (~== ("<tr>"::String)) table
       tuples     = rowTuples rows
   in makeTitles tuples
 
 
+makeTitles :: [[[[Tag Text]]]] -> [Title]
 makeTitles tuples =
   fmap newTitle tuples
 
 
+newTitle :: [[[Tag Text]]] -> Title
 newTitle tuple =
   let titleRow  = head(head tuple)
       rawTitle  = innerText $ head $ partitions (~== ("<b>"::String)) titleRow
@@ -65,7 +68,7 @@ titleCount :: Text -> Int
 titleCount indexHtml =
   let tags       = parseTags indexHtml
       table      = head $ partitions (~== ("<table class=MsoNormalTable"::String)) tags
-      rows       = partitions (~== ("<tr>" :: String)) table
+      rows       = partitions (~== ("<tr>"::String)) table
       title_rows = filter isTitleRow rows
   in length title_rows
 
