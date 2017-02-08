@@ -8,9 +8,10 @@ import           Data.Aeson.Encode.Pretty (confCompare, defConfig,
                                            encodePretty', keyOrder)
 import qualified Data.ByteString.Lazy     as B
 import           Data.Function            ((&))
-import           Data.List.Split
+import           Data.List.Split          (chunksOf, split, splitOn, whenElt)
 import           Data.String.Conversions
-import           Data.Text                (Text, pack, strip, unpack)
+import           Data.Text                (Text, pack, split, splitOn, strip,
+                                           unpack)
 import           GHC.Generics
 import           Text.HTML.TagSoup
 import           Text.StringLike
@@ -66,7 +67,10 @@ newTitle tuple =
 -- Output: "STATE JUDICIAL DEPARTMENT"
 nameFromRawTitle :: Text -> Text
 nameFromRawTitle text =
-  strip $ convertString $ head $ tail $ splitOn "\8212" (convertString text)
+  Data.Text.splitOn "\8212" text
+    & tail
+    & head
+    & Data.Text.strip
 
 
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
@@ -81,22 +85,19 @@ numberFromRawTitle text =
 -- Output: "1"
 numberTextFromRawTitle :: Text -> Text
 numberTextFromRawTitle text =
-  splitOn "\8212" (convertString text)
+  Data.Text.splitOn "\8212" text
     & head
-    & convertString
-    & strip
-    & convertString
-    & splitOn "\n"
+    & Data.Text.strip
+    & Data.Text.splitOn "\n"
     & tail
     & head
-    & convertString
 
 
 rowTuples :: [[Tag Text]] -> [[[[Tag Text]]]]
 rowTuples rows =
-  split (whenElt isTitleRow) rows
+  Data.List.Split.split (whenElt isTitleRow) rows
     & tail
-    & chunksOf 2
+    & Data.List.Split.chunksOf 2
 
 
 isTitleRow :: [Tag Text] -> Bool
