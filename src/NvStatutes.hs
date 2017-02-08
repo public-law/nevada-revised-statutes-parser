@@ -37,11 +37,23 @@ instance ToJSON Chapter
 
 titles :: Text -> [Title]
 titles indexHtml =
+  let rows   = contentRows indexHtml
+      tuples = rowTuples rows
+  in makeTitles tuples
+
+
+titleCount :: Text -> Int
+titleCount indexHtml =
+  let rows       = contentRows indexHtml
+      title_rows = filter isTitleRow rows
+  in length title_rows
+
+
+contentRows :: Text -> [[Tag Text]]
+contentRows indexHtml =
   let tags       = parseTags indexHtml
       table      = head $ partitions (~== ("<table class=MsoNormalTable"::String)) tags
-      rows       = partitions (~== ("<tr>"::String)) table
-      tuples     = rowTuples rows
-  in makeTitles tuples
+  in partitions (~== ("<tr>"::String)) table
 
 
 makeTitles :: [[[[Tag Text]]]] -> [Title]
@@ -62,15 +74,6 @@ newTitle tuple =
 nameFromRawTitle :: Text -> Text
 nameFromRawTitle text =
   strip $ convertString $ head $ tail $ splitOn "\8212" (convertString text)
-
-
-titleCount :: Text -> Int
-titleCount indexHtml =
-  let tags       = parseTags indexHtml
-      table      = head $ partitions (~== ("<table class=MsoNormalTable"::String)) tags
-      rows       = partitions (~== ("<tr>"::String)) table
-      title_rows = filter isTitleRow rows
-  in length title_rows
 
 
 rowTuples :: [[Tag Text]] -> [[[[Tag Text]]]]
