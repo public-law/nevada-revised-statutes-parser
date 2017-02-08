@@ -23,7 +23,6 @@ data Title =
     chapters    :: [Chapter]
 } deriving (Generic, Show)
 
-
 data Chapter =
   Chapter {
     chapterName   :: Text,
@@ -44,7 +43,7 @@ titles :: Text -> [Title]
 titles indexHtml =
   let rows   = contentRows indexHtml
       tuples = rowTuples rows
-  in makeTitles tuples
+  in fmap newTitle tuples
 
 
 contentRows :: Text -> [[Tag Text]]
@@ -52,11 +51,6 @@ contentRows indexHtml =
   let tags       = parseTags indexHtml
       table      = head $ partitions (~== ("<table class=MsoNormalTable"::String)) tags
   in partitions (~== ("<tr>"::String)) table
-
-
-makeTitles :: [[[[Tag Text]]]] -> [Title]
-makeTitles tuples =
-  fmap newTitle tuples
 
 
 newTitle :: [[[Tag Text]]] -> Title
