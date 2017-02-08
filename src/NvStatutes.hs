@@ -10,7 +10,7 @@ import qualified Data.ByteString.Lazy     as B
 import           Data.Function            ((&))
 import           Data.List.Split
 import           Data.String.Conversions
-import           Data.Text                (Text, strip)
+import           Data.Text                (Text, pack, strip, unpack)
 import           GHC.Generics
 import           Text.HTML.TagSoup
 import           Text.StringLike
@@ -55,17 +55,39 @@ contentRows indexHtml =
 
 newTitle :: [[[Tag Text]]] -> Title
 newTitle tuple =
-  let titleRow  = head(head tuple)
+  let titleRow  = head (head tuple)
       rawTitle  = innerText $ head $ partitions (~== ("<b>"::String)) titleRow
       name      = nameFromRawTitle rawTitle
-  in Title { titleName = name, titleNumber = 0, chapters = [] }
+      number    = numberFromRawTitle rawTitle
+  in Title { titleName = name, titleNumber = number, chapters = [] }
 
 
--- Input: "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
+-- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: "STATE JUDICIAL DEPARTMENT"
 nameFromRawTitle :: Text -> Text
 nameFromRawTitle text =
   strip $ convertString $ head $ tail $ splitOn "\8212" (convertString text)
+
+
+-- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
+-- Output: 1
+numberFromRawTitle :: Text -> Int
+numberFromRawTitle text =
+  let thing = Data.Text.pack $ cs $ numberTextFromRawTitle text
+  in read $ Data.Text.unpack thing :: Int
+
+
+numberTextFromRawTitle :: Text -> Text
+numberTextFromRawTitle text =
+  splitOn "\8212" (cs text)
+    & head
+    & cs
+    & strip
+    & cs
+    & splitOn "\n"
+    & tail
+    & head
+    & cs
 
 
 rowTuples :: [[Tag Text]] -> [[[[Tag Text]]]]

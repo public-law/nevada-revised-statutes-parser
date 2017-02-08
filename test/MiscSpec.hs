@@ -24,6 +24,5 @@ spec = do
       titleName (head (titles (cs html))) `shouldBe` ("STATE JUDICIAL DEPARTMENT"::Text)
 
     it "gets the first title's number" $ do
-      pending
       html <- readFile "nrs.html"
       titleNumber (head (titles (cs html))) `shouldBe` 1
