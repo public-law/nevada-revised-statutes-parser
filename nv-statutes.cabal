@@ -27,9 +27,7 @@ executable nv-statutes-exe
                      , nv-statutes
                      , aeson
                      , aeson-pretty
-                     , base-unicode-symbols
                      , bytestring
-                     , hspec
                      , tagsoup
                      , split
                      , string-conversions
@@ -45,8 +43,6 @@ test-suite nv-statutes-test
   build-depends:       base
                      , nv-statutes
                      , aeson
-                     , aeson-pretty
-                     , base-unicode-symbols
                      , bytestring
                      , hspec
                      , tagsoup
