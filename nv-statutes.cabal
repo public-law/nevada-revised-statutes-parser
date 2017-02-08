@@ -43,7 +43,6 @@ test-suite nv-statutes-test
   build-depends:       base
                      , nv-statutes
                      , aeson
-                     , bytestring
                      , hspec
                      , tagsoup
                      , split
