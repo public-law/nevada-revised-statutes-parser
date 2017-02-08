@@ -11,6 +11,7 @@ import           Data.List.Split          (chunksOf, split, whenElt)
 import           GHC.Generics
 import           Text.HTML.TagSoup        (parseTags, partitions, (~/=), (~==))
 
+
 data Title =
   Title {
     titleName   :: String,
@@ -28,6 +29,15 @@ data Chapter =
 
 instance ToJSON Title
 instance ToJSON Chapter
+
+
+titles indexHtml =
+  let tags       = parseTags indexHtml
+      table      = head $ partitions (~== "<table class=MsoNormalTable") tags
+      rows       = partitions (~== "<tr>") table
+      tuples     = rowTuples rows
+  in []
+
 
 titleCount indexHtml =
   let tags       = parseTags indexHtml

@@ -3,8 +3,11 @@ module MiscSpec where
 import           NvStatutes
 import           Test.Hspec
 
-main :: IO ()
-main = hspec $ do
+main :: IO()
+main = hspec spec
+
+spec :: Spec
+spec = do
   describe "titleCount" $
     it "finds the correct number of titles" $ do
       html <- readFile "nrs.html"
