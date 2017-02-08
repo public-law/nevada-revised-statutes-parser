@@ -69,12 +69,13 @@ titleCount indexHtml =
   in length title_rows
 
 
+rowTuples :: [[Tag Text]] -> [[[[Tag Text]]]]
 rowTuples rows =
   split (whenElt isTitleRow) rows
     & tail
     & chunksOf 2
 
-
+isTitleRow :: [Tag Text] -> Bool
 isTitleRow r =
   length (partitions (~== ("<td>"::String)) r) == 1
 
