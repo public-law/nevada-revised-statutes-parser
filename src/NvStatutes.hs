@@ -79,15 +79,15 @@ numberFromRawTitle text =
 
 numberTextFromRawTitle :: Text -> Text
 numberTextFromRawTitle text =
-  splitOn "\8212" (cs text)
+  splitOn "\8212" (convertString text)
     & head
-    & cs
+    & convertString
     & strip
-    & cs
+    & convertString
     & splitOn "\n"
     & tail
     & head
-    & cs
+    & convertString
 
 
 rowTuples :: [[Tag Text]] -> [[[[Tag Text]]]]
