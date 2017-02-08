@@ -6,7 +6,7 @@ module NvStatutes where
 import           Data.Aeson        (ToJSON)
 import           Data.Function     ((&))
 import           Data.List.Split   (chunksOf, split, whenElt)
-import           Data.Text         (Text, pack, split, splitOn, strip, unpack)
+import           Data.Text         (Text, pack, splitOn, strip, unpack)
 import           GHC.Generics      (Generic)
 import           Text.HTML.TagSoup (Tag, innerText, parseTags, partitions,
                                     (~==))
@@ -90,9 +90,9 @@ numberTextFromRawTitle text =
 
 rowTuples :: [[Tag Text]] -> [[[[Tag Text]]]]
 rowTuples rows =
-  Data.List.Split.split (whenElt isTitleRow) rows
+  split (whenElt isTitleRow) rows
     & tail
-    & Data.List.Split.chunksOf 2
+    & chunksOf 2
 
 
 isTitleRow :: [Tag Text] -> Bool
