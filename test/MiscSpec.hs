@@ -2,28 +2,34 @@
 
 module MiscSpec where
 
-import           Data.String.Conversions
+import           Data.String.Conversions (convertString)
 import           Data.Text               (Text)
 import           Models
 import           NvStatutes
 import           Test.Hspec
 
 
-main :: IO()
-main = hspec spec
+nrsIndexHtml :: IO String
+nrsIndexHtml = readFile "nrs.html"
 
-spec :: Spec
+
+main :: IO()
+main =
+  -- html <- readFile "nrs.html"
+  hspec spec
+
+
 spec = do
   describe "titleCount" $
     it "finds the correct number of titles" $ do
-      html <- readFile "nrs.html"
-      titleCount (cs html) `shouldBe` 59
+      html <- nrsIndexHtml
+      titleCount (convertString html) `shouldBe` 59
 
   describe "titles" $ do
     it "gets the first title's name" $ do
-      html <- readFile "nrs.html"
-      titleName (head (titles (cs html))) `shouldBe` ("STATE JUDICIAL DEPARTMENT"::Text)
+      html <- nrsIndexHtml
+      titleName (head (titles (convertString html))) `shouldBe` ("STATE JUDICIAL DEPARTMENT"::Text)
 
     it "gets the first title's number" $ do
-      html <- readFile "nrs.html"
-      titleNumber (head (titles (cs html))) `shouldBe` 1
+      html <- nrsIndexHtml
+      titleNumber (head (titles (convertString html))) `shouldBe` 1
