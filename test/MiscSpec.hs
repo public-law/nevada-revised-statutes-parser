@@ -27,7 +27,7 @@ main =
 
 
 spec :: Spec
-spec = do
+spec = parallel $ do
 
   describe "titleCount" $
     it "finds the correct number of titles" $ do
