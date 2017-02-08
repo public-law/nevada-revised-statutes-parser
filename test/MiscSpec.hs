@@ -4,7 +4,8 @@ module MiscSpec where
 
 import           Data.String.Conversions (convertString)
 import           Data.Text               (Text)
-import           Test.Hspec
+import           Test.Hspec              (Spec, describe, hspec, it, parallel,
+                                          shouldBe)
 
 import           Models
 import           NvStatutes
