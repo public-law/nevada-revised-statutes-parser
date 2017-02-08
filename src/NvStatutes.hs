@@ -3,17 +3,12 @@
 
 module NvStatutes where
 
-import           Data.Aeson               (ToJSON)
-import           Data.Aeson.Encode.Pretty (confCompare, defConfig,
-                                           encodePretty', keyOrder)
-import           Data.Function            ((&))
-import           Data.List.Split          (chunksOf, split, splitOn, whenElt)
-import           Data.String.Conversions
-import           Data.Text                (Text, pack, split, splitOn, strip,
-                                           unpack)
+import           Data.Aeson        (ToJSON)
+import           Data.Function     ((&))
+import           Data.List.Split   (chunksOf, split, whenElt)
+import           Data.Text         (Text, pack, split, splitOn, strip, unpack)
 import           GHC.Generics
 import           Text.HTML.TagSoup
-import           Text.StringLike
 
 
 data Title =
