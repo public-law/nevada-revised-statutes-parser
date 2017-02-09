@@ -78,4 +78,4 @@ isTitleRow r =
 
 newChapter :: [Tag Text] -> Chapter
 newChapter row =
-  Chapter {chapterName="", chapterNumber="", url=""}
+  Chapter {chapterName="", chapterNumber="", url="", sections=[]}
