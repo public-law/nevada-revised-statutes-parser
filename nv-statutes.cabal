@@ -48,7 +48,7 @@ test-suite nv-statutes-test
                      , split
                      , string-conversions
                      , text
-  other-modules:       MiscSpec, NvStatutes, Models
+  other-modules:       NvStatutesSpec, NvStatutes, Models
 
 
 source-repository head

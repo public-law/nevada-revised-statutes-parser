@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module MiscSpec where
+module NvStatutesSpec where
 
 import           Data.String.Conversions (convertString)
 import           Data.Text               (Text)
-import           Test.Hspec
 import           Models
-import           NvStatutes
+import           NvStatutes              (titles)
+import           Test.Hspec
 
 
 --
@@ -27,7 +27,7 @@ main =
 
 
 spec :: Spec
-spec = parallel $ do
+spec = parallel $
 
   describe "titles" $ do
     it "finds the correct number of titles" $ do
