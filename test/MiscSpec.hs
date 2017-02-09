@@ -4,9 +4,7 @@ module MiscSpec where
 
 import           Data.String.Conversions (convertString)
 import           Data.Text               (Text)
-import           Test.Hspec              (Spec, describe, hspec, it, parallel,
-                                          shouldBe)
-
+import           Test.Hspec
 import           Models
 import           NvStatutes
 
@@ -31,12 +29,11 @@ main =
 spec :: Spec
 spec = parallel $ do
 
-  describe "titleCount" $
+  describe "titles" $ do
     it "finds the correct number of titles" $ do
       html <- nrsIndexHtml
-      titleCount (convertString html) `shouldBe` 59
+      length (titles (convertString html)) `shouldBe` 59
 
-  describe "titles" $ do
     it "gets the first title's name" $ do
       judicialDept <- firstTitle
       titleName judicialDept `shouldBe` ("STATE JUDICIAL DEPARTMENT"::Text)

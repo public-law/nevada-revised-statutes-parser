@@ -11,11 +11,6 @@ import           Text.HTML.TagSoup (Tag, innerText, parseTags, partitions,
 import           Models
 
 
-titleCount :: Text -> Int
-titleCount indexHtml =
-  length $ titles indexHtml
-
-
 titles :: Text -> [Title]
 titles indexHtml =
   let rows   = contentRows indexHtml
