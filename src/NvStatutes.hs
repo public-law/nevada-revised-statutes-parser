@@ -76,6 +76,6 @@ isTitleRow r =
   length (partitions (~== ("<td>"::String)) r) == 1
 
 
-newChapter :: [Tag Text] -> Chapter
-newChapter row =
+newChapter :: [Tag Text] -> [Section] -> Chapter
+newChapter row sections =
   Chapter {chapterName="", chapterNumber="", url="", sections=[]}
