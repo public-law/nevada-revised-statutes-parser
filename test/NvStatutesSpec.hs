@@ -26,7 +26,7 @@ main =
 
 
 spec :: Spec
-spec = parallel $
+spec = parallel $ do
 
   describe "titles" $ do
     it "finds the correct number of titles" $ do
@@ -35,8 +35,15 @@ spec = parallel $
 
     it "gets the first title's name" $ do
       judicialDept <- firstTitle
-      titleName judicialDept `shouldBe` ("STATE JUDICIAL DEPARTMENT"::Text)
+      titleName judicialDept `shouldBe` "STATE JUDICIAL DEPARTMENT"
 
     it "gets the first title's number" $ do
       judicialDept <- firstTitle
       titleNumber judicialDept `shouldBe` 1
+
+    it "reads a chapter correctly" $ do
+      judicialDept <- firstTitle
+      null (chapters judicialDept) `shouldBe` False
+
+      let firstChapter = head (chapters judicialDept)
+      chapterName firstChapter `shouldBe` "Judicial Department Generally"
