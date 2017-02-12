@@ -3,10 +3,9 @@
 module NvStatutesSpec where
 
 import           BasicPrelude
-import           Data.String.Conversions (convertString)
-import           Data.Text               (Text)
+import           Data.Text    (Text)
 import           Models
-import           NvStatutes              (titles)
+import           NvStatutes   (titles)
 import           Test.Hspec
 
 
@@ -19,7 +18,7 @@ nrsIndexHtml = readFile "nrs.html"
 firstTitle :: IO Title
 firstTitle = do
   html <- nrsIndexHtml
-  return (head (titles (convertString html)))
+  return (head (titles html))
 
 
 main :: IO()
@@ -33,7 +32,7 @@ spec = parallel $
   describe "titles" $ do
     it "finds the correct number of titles" $ do
       html <- nrsIndexHtml
-      length (titles (convertString html)) `shouldBe` 59
+      length (titles html) `shouldBe` 59
 
     it "gets the first title's name" $ do
       judicialDept <- firstTitle
