@@ -43,7 +43,7 @@ spec = parallel $ do
 
     it "reads a chapter correctly" $ do
       judicialDept <- firstTitle
-      null (chapters judicialDept) `shouldBe` False
+      length (chapters judicialDept) `shouldNotBe` 0
 
       let firstChapter = head (chapters judicialDept)
       chapterName firstChapter `shouldBe` "Judicial Department Generally"
