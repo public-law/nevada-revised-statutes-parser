@@ -5,7 +5,7 @@ module NvStatutes where
 import           BasicPrelude
 import           Data.Function     ((&))
 import           Data.List.Split   (chunksOf, split, whenElt)
-import           Data.Text         (Text, splitOn, strip, unpack)
+import           Data.Text         (splitOn, strip)
 import           Models
 import           Text.HTML.TagSoup (Tag, innerText, parseTags, partitions,
                                     (~==))
@@ -49,7 +49,7 @@ nameFromRawTitle text =
 numberFromRawTitle :: Text -> Int
 numberFromRawTitle text =
   let numberText = numberTextFromRawTitle text
-  in read $ numberText :: Int
+  in read numberText :: Int
 
 
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
