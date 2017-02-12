@@ -2,13 +2,14 @@
 
 module NvStatutes where
 
-import           Data.Function     ((&))
-import           Data.List.Split   (chunksOf, split, whenElt)
-import           Data.Text         (Text, splitOn, strip, unpack)
-import           Text.HTML.TagSoup (Tag, innerText, parseTags, partitions,
-                                    (~==))
-
+import           BasicPrelude
+import           Data.Function           ((&))
+import           Data.List.Split         (chunksOf, split, whenElt)
+import           Data.String.Conversions (convertString)
+import           Data.Text               (Text, splitOn, strip, unpack)
 import           Models
+import           Text.HTML.TagSoup       (Tag, innerText, parseTags, partitions,
+                                          (~==))
 
 
 titles :: Text -> [Title]
@@ -49,7 +50,7 @@ nameFromRawTitle text =
 numberFromRawTitle :: Text -> Int
 numberFromRawTitle text =
   let numberText = numberTextFromRawTitle text
-  in read $ unpack numberText :: Int
+  in read $ convertString $ unpack numberText :: Int
 
 
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "

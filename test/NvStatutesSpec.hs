@@ -2,6 +2,7 @@
 
 module NvStatutesSpec where
 
+import           BasicPrelude
 import           Data.String.Conversions (convertString)
 import           Data.Text               (Text)
 import           Models
@@ -12,7 +13,7 @@ import           Test.Hspec
 --
 -- Helper Functions
 --
-nrsIndexHtml :: IO String
+nrsIndexHtml :: IO Text
 nrsIndexHtml = readFile "nrs.html"
 
 firstTitle :: IO Title
