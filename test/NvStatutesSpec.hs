@@ -3,7 +3,6 @@
 module NvStatutesSpec where
 
 import           BasicPrelude
-import           Data.Text    (Text)
 import           Models
 import           NvStatutes   (titles)
 import           Test.Hspec
