@@ -38,7 +38,7 @@ newTitle tuple =
 -- Output: "STATE JUDICIAL DEPARTMENT"
 nameFromRawTitle :: Text -> Text
 nameFromRawTitle text =
-  splitOn "\8212" text
+  splitOn "—" text
     & tail
     & head
     & strip
@@ -56,7 +56,7 @@ numberFromRawTitle text =
 -- Output: "1"
 numberTextFromRawTitle :: Text -> Text
 numberTextFromRawTitle text =
-  splitOn "\8212" text
+  splitOn "—" text
     & head
     & strip
     & splitOn "\n"

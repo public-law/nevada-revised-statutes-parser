@@ -4,7 +4,6 @@ module Models where
 
 import           BasicPrelude
 import           Data.Aeson   (ToJSON)
-import           Data.Text    (Text)
 import           Data.Time    (Day, defaultTimeLocale, parseTimeOrError)
 import           GHC.Generics (Generic)
 
