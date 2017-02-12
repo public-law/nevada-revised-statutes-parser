@@ -31,7 +31,7 @@ spec = parallel $
   describe "titles" $ do
     it "finds the correct number of titles" $ do
       html <- nrsIndexHtml
-      length . titles html `shouldBe` 59
+      length (titles html) `shouldBe` 59
 
     it "gets the first title's name" $ do
       judicialDept <- firstTitle
