@@ -8,25 +8,8 @@ import           NvStatutes   (titles)
 import           Test.Hspec
 
 
---
--- Helper Functions
---
-nrsIndexHtml :: IO Text
-nrsIndexHtml = readFile "nrs.html"
-
-firstTitle :: IO Title
-firstTitle = do
-  html <- nrsIndexHtml
-  return (head (titles html))
-
-
-main :: IO()
-main =
-  hspec spec
-
-
 spec :: Spec
-spec = parallel $ do
+spec = parallel $
 
   describe "titles" $ do
     it "finds the correct number of titles" $ do
@@ -47,3 +30,19 @@ spec = parallel $ do
 
       let firstChapter = head (chapters judicialDept)
       chapterName firstChapter `shouldBe` "Judicial Department Generally"
+
+
+--
+-- Helper Functions
+--
+nrsIndexHtml :: IO Text
+nrsIndexHtml = readFile "nrs.html"
+
+firstTitle :: IO Title
+firstTitle = do
+  html <- nrsIndexHtml
+  return (head (titles html))
+
+main :: IO()
+main =
+  hspec spec
