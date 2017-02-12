@@ -21,14 +21,14 @@ titles indexHtml =
 contentRows :: Text -> [[Tag Text]]
 contentRows indexHtml =
   let tags       = parseTags indexHtml
-      table      = head $ partitions (~== ("<table class=MsoNormalTable"::String)) tags
-  in partitions (~== ("<tr>"::String)) table
+      table      = head $ partitions (~== s "<table class=MsoNormalTable") tags
+  in partitions (~== s "<tr>") table
 
 
 newTitle :: [[[Tag Text]]] -> Title
 newTitle tuple =
   let titleRow  = head (head tuple)
-      rawTitle  = innerText $ head $ partitions (~== ("<b>"::String)) titleRow
+      rawTitle  = innerText $ head $ partitions (~== s "<b>") titleRow
       name      = nameFromRawTitle rawTitle
       number    = numberFromRawTitle rawTitle
   in Title { titleName = name, titleNumber = number, chapters = [] }
@@ -73,9 +73,14 @@ rowTuples rows =
 
 isTitleRow :: [Tag Text] -> Bool
 isTitleRow r =
-  length (partitions (~== ("<td>"::String)) r) == 1
+  length (partitions (~== s "<td>") r) == 1
 
 
 newChapter :: [Tag Text] -> [Section] -> Chapter
 newChapter row sections =
   Chapter {chapterName="", chapterNumber="", url="", sections=[]}
+
+
+-- Lower-ceremony way to declare a string
+s :: String -> String
+s = id
