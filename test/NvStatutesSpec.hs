@@ -29,7 +29,7 @@ spec = parallel $
       length (chapters judicialDept) `shouldNotBe` 0
 
       let firstChapter = head (chapters judicialDept)
-      chapterName firstChapter `shouldBe` "Judicial Department Generally"
+      chapterName   firstChapter `shouldBe` "Judicial Department Generally"
       chapterNumber firstChapter `shouldBe` "1"
 
 
