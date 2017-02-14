@@ -41,7 +41,7 @@ newChapter row =
   let columns = partitions (~== s "<td>") row
       number  = head columns & innerText & strip & words & last
       name    = last columns & innerText & strip
-      link    = fromAttrib "href" $ head $ head $ partitions (~== s "<a>") row
+      link    = partitions (~== s "<a>") row & head & head & fromAttrib "href"
   in Chapter {chapterName=name, chapterNumber=number, url=link, sections=[]}
 
 
