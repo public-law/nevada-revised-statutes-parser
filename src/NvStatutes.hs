@@ -7,8 +7,8 @@ import           Data.Function     ((&))
 import           Data.List.Split   (chunksOf, split, whenElt)
 import           Data.Text         (splitOn, strip)
 import           Models
-import           Text.HTML.TagSoup (Tag, innerText, parseTags, partitions,
-                                    (~==))
+import           Text.HTML.TagSoup (Tag, fromAttrib, innerText, parseTags,
+                                    partitions, (~==))
 
 
 titles :: Text -> [Title]
@@ -41,7 +41,7 @@ newChapter row =
   let columns = partitions (~== s "<td>") row
       number  = head columns & innerText & strip & words & last
       name    = last columns & innerText & strip
-      link    = innerText $ head $ partitions (~== s "<a>") row
+      link    = fromAttrib "href" $ head $ head $ partitions (~== s "<a>") row
   in Chapter {chapterName=name, chapterNumber=number, url=link, sections=[]}
 
 
