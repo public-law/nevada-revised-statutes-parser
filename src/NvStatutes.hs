@@ -38,10 +38,11 @@ newTitle tuple =
 
 newChapter :: [Tag Text] -> Chapter
 newChapter row =
-  let columns = partitions (~== "<td>") row
+  let columns = partitions (~== s "<td>") row
       number  = head columns & innerText & strip & words & last
       name    = last columns & innerText & strip
-  in Chapter {chapterName=name, chapterNumber=number, url="", sections=[]}
+      link    = innerText $ head $ partitions (~== s "<a>") row
+  in Chapter {chapterName=name, chapterNumber=number, url=link, sections=[]}
 
 
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
