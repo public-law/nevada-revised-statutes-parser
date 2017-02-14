@@ -38,10 +38,10 @@ newTitle tuple =
 
 newChapter :: [Tag Text] -> Chapter
 newChapter row = Chapter {
-    chapterName = name,
+    chapterName   = name,
     chapterNumber = number,
-    url = url,
-    sections = []
+    chapterUrl    = url,
+    sections      = []
   }
   where columns = partitions (~== s "<td>") row
         number  = head columns & innerText & strip & words & last

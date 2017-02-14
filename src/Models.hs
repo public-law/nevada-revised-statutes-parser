@@ -34,7 +34,7 @@ data Chapter =
     chapterName   :: Text,
     chapterNumber :: Text,
     sections      :: [Section],
-    url           :: Text
+    chapterUrl    :: Text
 } deriving (Generic, Show)
 
 data Section =

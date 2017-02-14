@@ -31,7 +31,7 @@ spec = parallel $
       let firstChapter = head (chapters judicialDept)
       chapterName   firstChapter `shouldBe` "Judicial Department Generally"
       chapterNumber firstChapter `shouldBe` "1"
-      url           firstChapter `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
+      chapterUrl    firstChapter `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
 
 
 --
