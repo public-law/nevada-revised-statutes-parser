@@ -36,6 +36,12 @@ newTitle tuple =
   in Title { titleName = name, titleNumber = number, chapters = parsedChapters }
 
 
+newChapter :: [Tag Text] -> Chapter
+newChapter row =
+  let name = strip $ innerText $ head $ tail $ partitions (~== s "<p>") row
+  in Chapter {chapterName=name, chapterNumber="", url="", sections=[]}
+
+
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: "STATE JUDICIAL DEPARTMENT"
 nameFromRawTitle :: Text -> Text
@@ -76,12 +82,6 @@ rowTuples rows =
 isTitleRow :: [Tag Text] -> Bool
 isTitleRow r =
   length (partitions (~== s "<td>") r) == 1
-
-
-newChapter :: [Tag Text] -> Chapter
-newChapter row =
-  let name = innerText $ head $ tail $ partitions (~== s "<p>") row
-  in Chapter {chapterName=name, chapterNumber="", url="", sections=[]}
 
 
 -- Lower-ceremony way to declare a string
