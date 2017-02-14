@@ -80,7 +80,8 @@ isTitleRow r =
 
 newChapter :: [Tag Text] -> Chapter
 newChapter row =
-  Chapter {chapterName="", chapterNumber="", url="", sections=[]}
+  let name = innerText $ head $ tail $ partitions (~== s "<p>") row
+  in Chapter {chapterName=name, chapterNumber="", url="", sections=[]}
 
 
 -- Lower-ceremony way to declare a string
