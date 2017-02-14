@@ -4,7 +4,7 @@ module NvStatutesSpec where
 
 import           BasicPrelude
 import           Models
-import           NvStatutes   (titles, nrsIndexHtml)
+import           NvStatutes   (nrsIndexHtml, titles)
 import           Test.Hspec
 
 
@@ -30,6 +30,7 @@ spec = parallel $
 
       let firstChapter = head (chapters judicialDept)
       chapterName firstChapter `shouldBe` "Judicial Department Generally"
+      chapterNumber firstChapter `shouldBe` "1"
 
 
 --
