@@ -27,11 +27,13 @@ contentRows indexHtml =
 
 newTitle :: [[[Tag Text]]] -> Title
 newTitle tuple =
-  let titleRow  = head (head tuple)
-      rawTitle  = innerText $ head $ partitions (~== s "<b>") titleRow
-      name      = nameFromRawTitle rawTitle
-      number    = numberFromRawTitle rawTitle
-  in Title { titleName = name, titleNumber = number, chapters = [] }
+  let titleRow       = head (head tuple)
+      chapterRows    = head $ tail tuple
+      parsedChapters = fmap newChapter chapterRows
+      rawTitle       = innerText $ head $ partitions (~== s "<b>") titleRow
+      name           = nameFromRawTitle rawTitle
+      number         = numberFromRawTitle rawTitle
+  in Title { titleName = name, titleNumber = number, chapters = parsedChapters }
 
 
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
@@ -76,11 +78,15 @@ isTitleRow r =
   length (partitions (~== s "<td>") r) == 1
 
 
-newChapter :: [Tag Text] -> [Section] -> Chapter
-newChapter row sections =
+newChapter :: [Tag Text] -> Chapter
+newChapter row =
   Chapter {chapterName="", chapterNumber="", url="", sections=[]}
 
 
 -- Lower-ceremony way to declare a string
 s :: String -> String
 s = id
+
+
+nrsIndexHtml :: IO Text
+nrsIndexHtml = readFile "nrs.html"

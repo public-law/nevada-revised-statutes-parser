@@ -21,6 +21,7 @@ data Tree =
   treeTitles :: [Title]
 } deriving (Generic, Show)
 
+-- The top-level organizational unit in the Nevada Revised Statutes
 data Title =
   Title {
     titleName   :: Text,

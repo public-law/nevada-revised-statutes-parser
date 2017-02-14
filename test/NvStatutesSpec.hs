@@ -4,7 +4,7 @@ module NvStatutesSpec where
 
 import           BasicPrelude
 import           Models
-import           NvStatutes   (titles)
+import           NvStatutes   (titles, nrsIndexHtml)
 import           Test.Hspec
 
 
@@ -35,9 +35,6 @@ spec = parallel $
 --
 -- Helper Functions
 --
-nrsIndexHtml :: IO Text
-nrsIndexHtml = readFile "nrs.html"
-
 firstTitle :: IO Title
 firstTitle = do
   html <- nrsIndexHtml
