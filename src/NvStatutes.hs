@@ -47,7 +47,7 @@ newChapter row = Chapter {
         number  = head columns & innerText & strip & words & last
         name    = last columns & innerText & strip
         url     = partitions (~== s "<a>") row & head & head & fromAttrib "href"
-2
+
 
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: "STATE JUDICIAL DEPARTMENT"
