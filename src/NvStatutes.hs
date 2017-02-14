@@ -39,8 +39,8 @@ newTitle tuple =
 newChapter :: [Tag Text] -> Chapter
 newChapter row =
   let columns = partitions (~== s "<td>") row
-      number  = last $ words $ strip $ innerText $ head columns
-      name    = strip $ innerText $ last columns
+      number  = head columns & innerText & strip & words & last
+      name    = last columns & innerText & strip
   in Chapter {chapterName=name, chapterNumber=number, url="", sections=[]}
 
 
