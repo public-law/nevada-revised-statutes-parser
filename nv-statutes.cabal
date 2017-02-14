@@ -34,7 +34,7 @@ executable nv-statutes-exe
                      , string-conversions
                      , text
                      , time
-  other-modules:       NvStatutes, Models
+  other-modules:       NvStatutes, Models, Year
   default-extensions:  NoImplicitPrelude
 
 test-suite nv-statutes-test
@@ -53,7 +53,7 @@ test-suite nv-statutes-test
                      , string-conversions
                      , text
                      , time
-  other-modules:       NvStatutesSpec, NvStatutes, Models
+  other-modules:       NvStatutesSpec, NvStatutes, Models, Year
   default-extensions:  NoImplicitPrelude
 
 source-repository head

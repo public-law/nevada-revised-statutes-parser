@@ -6,6 +6,7 @@ import           BasicPrelude
 import           Data.Aeson   (ToJSON)
 import           Data.Time    (Day, defaultTimeLocale, parseTimeOrError)
 import           GHC.Generics (Generic)
+import           Year
 
 
 data NRS =
@@ -49,5 +50,3 @@ instance ToJSON Tree
 instance ToJSON Title
 instance ToJSON Chapter
 instance ToJSON Section
-
-type Year = Integer
