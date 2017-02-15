@@ -12,17 +12,21 @@ spec :: Spec
 spec = parallel $
 
   describe "titles" $ do
+
     it "finds the correct number of titles" $ do
       html <- nrsIndexHtml
       length (titles html) `shouldBe` 59
 
-    it "gets the first title's name" $ do
+
+    it "gets a title's name" $ do
       judicialDept <- firstTitle
       titleName judicialDept `shouldBe` "STATE JUDICIAL DEPARTMENT"
 
-    it "gets the first title's number" $ do
+
+    it "gets a title's number" $ do
       judicialDept <- firstTitle
       titleNumber judicialDept `shouldBe` 1
+
 
     it "reads a chapter correctly" $ do
       judicialDept <- firstTitle
