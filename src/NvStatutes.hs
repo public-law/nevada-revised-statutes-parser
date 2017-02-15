@@ -2,13 +2,13 @@
 
 module NvStatutes where
 
+import           BasicPrelude
 import           Data.Function     ((&))
 import           Data.List.Split   (chunksOf, split, whenElt)
-import           Data.Text         (Text, splitOn, strip, unpack)
-import           Text.HTML.TagSoup (Tag, innerText, parseTags, partitions,
-                                    (~==))
-
+import           Data.Text         (splitOn, strip)
 import           Models
+import           Text.HTML.TagSoup (Tag, fromAttrib, innerText, parseTags,
+                                    partitions, (~==))
 
 
 titles :: Text -> [Title]
@@ -21,24 +21,39 @@ titles indexHtml =
 contentRows :: Text -> [[Tag Text]]
 contentRows indexHtml =
   let tags       = parseTags indexHtml
-      table      = head $ partitions (~== ("<table class=MsoNormalTable"::String)) tags
-  in partitions (~== ("<tr>"::String)) table
+      table      = head $ partitions (~== s "<table class=MsoNormalTable") tags
+  in partitions (~== s "<tr>") table
 
 
 newTitle :: [[[Tag Text]]] -> Title
 newTitle tuple =
-  let titleRow  = head (head tuple)
-      rawTitle  = innerText $ head $ partitions (~== ("<b>"::String)) titleRow
-      name      = nameFromRawTitle rawTitle
-      number    = numberFromRawTitle rawTitle
-  in Title { titleName = name, titleNumber = number, chapters = [] }
+  let titleRow       = head (head tuple)
+      chapterRows    = head $ tail tuple
+      parsedChapters = fmap newChapter chapterRows
+      rawTitle       = innerText $ head $ partitions (~== s "<b>") titleRow
+      name           = nameFromRawTitle rawTitle
+      number         = numberFromRawTitle rawTitle
+  in Title { titleName = name, titleNumber = number, chapters = parsedChapters }
+
+
+newChapter :: [Tag Text] -> Chapter
+newChapter row = Chapter {
+    chapterName   = name,
+    chapterNumber = number,
+    chapterUrl    = url,
+    sections      = []
+  }
+  where columns = partitions (~== s "<td>") row
+        number  = head columns & innerText & strip & words & last
+        name    = last columns & innerText & strip
+        url     = partitions (~== s "<a>") row & head & head & fromAttrib "href"
 
 
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: "STATE JUDICIAL DEPARTMENT"
 nameFromRawTitle :: Text -> Text
 nameFromRawTitle text =
-  splitOn "\8212" text
+  splitOn "—" text
     & tail
     & head
     & strip
@@ -49,14 +64,14 @@ nameFromRawTitle text =
 numberFromRawTitle :: Text -> Int
 numberFromRawTitle text =
   let numberText = numberTextFromRawTitle text
-  in read $ unpack numberText :: Int
+  in read numberText :: Int
 
 
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: "1"
 numberTextFromRawTitle :: Text -> Text
 numberTextFromRawTitle text =
-  splitOn "\8212" text
+  splitOn "—" text
     & head
     & strip
     & splitOn "\n"
@@ -73,9 +88,13 @@ rowTuples rows =
 
 isTitleRow :: [Tag Text] -> Bool
 isTitleRow r =
-  length (partitions (~== ("<td>"::String)) r) == 1
+  length (partitions (~== s "<td>") r) == 1
 
 
-newChapter :: [Tag Text] -> Chapter
-newChapter row =
-  Chapter {chapterName="", chapterNumber="", url=""}
+-- Lower-ceremony way to declare a string
+s :: String -> String
+s = id
+
+
+nrsIndexHtml :: IO Text
+nrsIndexHtml = readFile "nrs.html"

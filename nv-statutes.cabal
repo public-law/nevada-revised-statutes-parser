@@ -21,10 +21,11 @@ library
 executable nv-statutes-exe
   hs-source-dirs:      app, src
   main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Werror
   default-language:    Haskell2010
   build-depends:       base
                      , nv-statutes
+                     , basic-prelude
                      , aeson
                      , aeson-pretty
                      , bytestring
@@ -32,24 +33,28 @@ executable nv-statutes-exe
                      , split
                      , string-conversions
                      , text
-  other-modules:       NvStatutes, Models
+                     , time
+  other-modules:       NvStatutes, Models, Year
+  default-extensions:  NoImplicitPrelude
 
 test-suite nv-statutes-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test, src
   main-is:             Spec.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Werror
   default-language:    Haskell2010
   build-depends:       base
                      , nv-statutes
+                     , basic-prelude
                      , aeson
                      , hspec
                      , tagsoup
                      , split
                      , string-conversions
                      , text
-  other-modules:       NvStatutesSpec, NvStatutes, Models
-
+                     , time
+  other-modules:       NvStatutesSpec, NvStatutes, Models, Year
+  default-extensions:  NoImplicitPrelude
 
 source-repository head
   type:     git
