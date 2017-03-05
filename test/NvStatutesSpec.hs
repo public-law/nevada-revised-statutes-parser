@@ -1,16 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
-
 module NvStatutesSpec where
-
 import           BasicPrelude
 import           Models
 import           NvStatutes   (nrsIndexHtml, titles)
 import           Test.Hspec
 
 
-spec :: Spec
 spec = parallel $
-
   describe "titles" $ do
 
     it "finds the correct number of titles" $ do

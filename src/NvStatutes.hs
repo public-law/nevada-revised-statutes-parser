@@ -37,7 +37,8 @@ newTitle tuple =
 
 
 newChapter :: [Tag Text] -> Chapter
-newChapter row = Chapter {
+newChapter row =
+  Chapter {
     chapterName   = name,
     chapterNumber = number,
     chapterUrl    = url,
