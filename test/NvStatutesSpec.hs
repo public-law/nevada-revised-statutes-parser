@@ -29,8 +29,8 @@ spec = parallel $ do
     it "reads a chapter correctly" $ do
       judicialDept <- firstTitle
       length (chapters judicialDept) `shouldNotBe` 0
+      let generally = head $ chapters judicialDept
 
-      let generally = head (chapters judicialDept)
       chapterName   generally `shouldBe` "Judicial Department Generally"
       chapterNumber generally `shouldBe` "1"
       chapterUrl    generally `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
@@ -40,8 +40,9 @@ spec = parallel $ do
 
     it "reads a section correctly" $ do
       judicialDept <- firstTitle
-      let judicialDeptGenerally = head (chapters judicialDept)
-      let courtsOfJustice       = head (sections judicialDeptGenerally)
+      let judicialDeptGenerally = head $ chapters judicialDept
+      let courtsOfJustice       = head $ sections judicialDeptGenerally
+
       sectionName courtsOfJustice `shouldBe` "Courts of justice"
 
 
