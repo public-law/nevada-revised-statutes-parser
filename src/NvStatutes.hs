@@ -95,7 +95,3 @@ isTitleRow r =
 -- Lower-ceremony way to declare a string
 s :: String -> String
 s = id
-
-
-nrsIndexHtml :: IO Text
-nrsIndexHtml = readFile "nrs.html"

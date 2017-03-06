@@ -2,11 +2,12 @@
 module NvStatutesSpec where
 import           BasicPrelude
 import           Models
-import           NvStatutes   (nrsIndexHtml, titles)
+import           NvStatutes   (titles)
 import           Test.Hspec
 
 
 spec = parallel $ do
+
   describe "titles" $ do
 
     it "finds the correct number of titles" $ do
@@ -49,11 +50,16 @@ spec = parallel $ do
 --
 -- Helper Functions
 --
+main :: IO()
+main =
+  hspec spec
+
+
 firstTitle :: IO Title
 firstTitle = do
   html <- nrsIndexHtml
   return (head (titles html))
 
-main :: IO()
-main =
-  hspec spec
+
+nrsIndexHtml :: IO Text
+nrsIndexHtml = readFile "test/fixtures/nrs.html"
