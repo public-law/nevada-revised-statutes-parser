@@ -6,7 +6,7 @@ import           NvStatutes   (nrsIndexHtml, titles)
 import           Test.Hspec
 
 
-spec = parallel $
+spec = parallel $ do
   describe "titles" $ do
 
     it "finds the correct number of titles" $ do
@@ -24,14 +24,25 @@ spec = parallel $
       titleNumber judicialDept `shouldBe` 1
 
 
+  describe "chapters" $
+
     it "reads a chapter correctly" $ do
       judicialDept <- firstTitle
       length (chapters judicialDept) `shouldNotBe` 0
 
-      let firstChapter = head (chapters judicialDept)
-      chapterName   firstChapter `shouldBe` "Judicial Department Generally"
-      chapterNumber firstChapter `shouldBe` "1"
-      chapterUrl    firstChapter `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
+      let generally = head (chapters judicialDept)
+      chapterName   generally `shouldBe` "Judicial Department Generally"
+      chapterNumber generally `shouldBe` "1"
+      chapterUrl    generally `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
+
+
+  describe "sections" $
+
+    it "reads a section correctly" $ do
+      judicialDept <- firstTitle
+      let judicialDeptGenerally = head (chapters judicialDept)
+      let courtsOfJustice       = head (sections judicialDeptGenerally)
+      sectionName courtsOfJustice `shouldBe` "Courts of justice"
 
 
 --

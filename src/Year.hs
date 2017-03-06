@@ -9,7 +9,6 @@ import           GHC.Generics (Generic)
 
 newtype Year = MakeYear Integer
   deriving ( Generic, Show )
-
 instance ToJSON Year
 
 
