@@ -35,7 +35,7 @@ executable nv-statutes-exe
                      , text
                      , time
   other-modules:       NvStatutes, Models, Year
-  default-extensions:  NoImplicitPrelude
+  default-extensions:  NoImplicitPrelude, UnicodeSyntax
 
 test-suite nv-statutes-test
   type:                exitcode-stdio-1.0
@@ -54,7 +54,7 @@ test-suite nv-statutes-test
                      , text
                      , time
   other-modules:       NvStatutesSpec, NvStatutes, Models, Year
-  default-extensions:  NoImplicitPrelude
+  default-extensions:  NoImplicitPrelude, UnicodeSyntax
 
 source-repository head
   type:     git

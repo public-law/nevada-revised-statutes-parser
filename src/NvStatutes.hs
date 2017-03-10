@@ -11,21 +11,21 @@ import           Text.HTML.TagSoup (Tag, fromAttrib, innerText, parseTags,
                                     partitions, (~==))
 
 
-titles :: Text -> [Title]
+titles ∷ Text → [Title]
 titles indexHtml =
   let rows   = contentRows indexHtml
       tuples = rowTuples rows
   in fmap newTitle tuples
 
 
-contentRows :: Text -> [[Tag Text]]
+contentRows ∷ Text → [[Tag Text]]
 contentRows indexHtml =
   let tags       = parseTags indexHtml
       table      = head $ partitions (~== s "<table class=MsoNormalTable") tags
   in partitions (~== s "<tr>") table
 
 
-newTitle :: [[[Tag Text]]] -> Title
+newTitle ∷ [[[Tag Text]]] -> Title
 newTitle tuple =
   let titleRow       = head (head tuple)
       chapterRows    = head $ tail tuple
@@ -36,7 +36,7 @@ newTitle tuple =
   in Title { titleName = name, titleNumber = number, chapters = parsedChapters }
 
 
-newChapter :: [Tag Text] -> Chapter
+newChapter ∷ [Tag Text] -> Chapter
 newChapter row =
   Chapter {
     chapterName   = name,
@@ -52,7 +52,7 @@ newChapter row =
 
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: "STATE JUDICIAL DEPARTMENT"
-nameFromRawTitle :: Text -> Text
+nameFromRawTitle ∷ Text → Text
 nameFromRawTitle text =
   splitOn "—" text
     & tail
@@ -62,15 +62,15 @@ nameFromRawTitle text =
 
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: 1
-numberFromRawTitle :: Text -> Int
+numberFromRawTitle ∷ Text → Int
 numberFromRawTitle text =
   let numberText = numberTextFromRawTitle text
-  in read numberText :: Int
+  in read numberText ∷ Int
 
 
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: "1"
-numberTextFromRawTitle :: Text -> Text
+numberTextFromRawTitle ∷ Text → Text
 numberTextFromRawTitle text =
   splitOn "—" text
     & head
@@ -80,18 +80,18 @@ numberTextFromRawTitle text =
     & head
 
 
-rowTuples :: [[Tag Text]] -> [[[[Tag Text]]]]
+rowTuples ∷ [[Tag Text]] → [[[[Tag Text]]]]
 rowTuples rows =
   split (whenElt isTitleRow) rows
     & tail
     & chunksOf 2
 
 
-isTitleRow :: [Tag Text] -> Bool
+isTitleRow ∷ [Tag Text] → Bool
 isTitleRow r =
   length (partitions (~== s "<td>") r) == 1
 
 
 -- Lower-ceremony way to declare a string
-s :: String -> String
+s ∷ String → String
 s = id
