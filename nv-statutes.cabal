@@ -17,11 +17,12 @@ library
   hs-source-dirs:      src
   build-depends:       base >= 4.7 && < 5
   default-language:    Haskell2010
+  default-extensions:  NoImplicitPrelude, UnicodeSyntax
 
 executable nv-statutes-exe
   hs-source-dirs:      app, src
   main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Werror
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
   default-language:    Haskell2010
   build-depends:       base
                      , base-unicode-symbols
@@ -42,7 +43,7 @@ test-suite nv-statutes-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test, src
   main-is:             Spec.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Werror
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
   default-language:    Haskell2010
   build-depends:       base
                      , base-unicode-symbols

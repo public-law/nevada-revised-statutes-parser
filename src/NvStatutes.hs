@@ -3,7 +3,6 @@
 module NvStatutes where
 
 import           BasicPrelude
-import           Control.Category         ((>>>))
 import           Control.Category.Unicode
 import           Data.Function            ((&))
 import           Data.List.Split          (chunksOf, split, whenElt)

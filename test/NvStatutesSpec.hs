@@ -6,6 +6,7 @@ import           NvStatutes   (titles)
 import           Test.Hspec
 
 
+spec :: SpecWith ()
 spec = parallel $ do
 
   describe "titles" $ do
