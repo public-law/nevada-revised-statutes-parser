@@ -51,16 +51,16 @@ spec = parallel $ do
 --
 -- Helper Functions
 --
-main :: IO()
+main ∷ IO()
 main =
   hspec spec
 
 
-firstTitle :: IO Title
+firstTitle ∷ IO Title
 firstTitle = do
   html <- nrsIndexHtml
   return (head (titles html))
 
 
-nrsIndexHtml :: IO Text
+nrsIndexHtml ∷ IO Text
 nrsIndexHtml = readFile "test/fixtures/nrs.html"

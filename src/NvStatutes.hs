@@ -2,14 +2,15 @@
 
 module NvStatutes where
 
-import           Control.Category  ((>>>))
 import           BasicPrelude
-import           Data.Function     ((&))
-import           Data.List.Split   (chunksOf, split, whenElt)
-import           Data.Text         (splitOn, strip)
+import           Control.Category         ((>>>))
+import           Control.Category.Unicode
+import           Data.Function            ((&))
+import           Data.List.Split          (chunksOf, split, whenElt)
+import           Data.Text                (splitOn, strip)
 import           Models
-import           Text.HTML.TagSoup (Tag, fromAttrib, innerText, parseTags,
-                                    partitions, (~==))
+import           Text.HTML.TagSoup        (Tag, fromAttrib, innerText,
+                                           parseTags, partitions, (~==))
 
 
 titles ∷ Text → [Title]
@@ -37,7 +38,7 @@ newTitle tuple =
   in Title { titleName = name, titleNumber = number, chapters = parsedChapters }
 
 
-newChapter ∷ [Tag Text] -> Chapter
+newChapter ∷ [Tag Text] → Chapter
 newChapter row =
   Chapter {
     chapterName   = name,
@@ -73,11 +74,11 @@ numberFromRawTitle =
 numberTextFromRawTitle ∷ Text → Text
 numberTextFromRawTitle =
     splitOn "—"
-      >>> head
-      >>> strip
-      >>> splitOn "\n"
-      >>> tail
-      >>> head
+      ⋙ head
+      ⋙ strip
+      ⋙ splitOn "\n"
+      ⋙ tail
+      ⋙ head
 
 
 rowTuples ∷ [[Tag Text]] → [[[[Tag Text]]]]
