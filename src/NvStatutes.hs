@@ -2,6 +2,7 @@
 
 module NvStatutes where
 
+import           Control.Category  ((>>>))
 import           BasicPrelude
 import           Data.Function     ((&))
 import           Data.List.Split   (chunksOf, split, whenElt)
@@ -60,24 +61,23 @@ nameFromRawTitle text =
     & strip
 
 
--- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
+-- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: 1
 numberFromRawTitle ∷ Text → Int
-numberFromRawTitle text =
-  let numberText = numberTextFromRawTitle text
-  in read numberText ∷ Int
+numberFromRawTitle =
+  read . numberTextFromRawTitle
 
 
--- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
+-- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: "1"
 numberTextFromRawTitle ∷ Text → Text
-numberTextFromRawTitle text =
-  splitOn "—" text
-    & head
-    & strip
-    & splitOn "\n"
-    & tail
-    & head
+numberTextFromRawTitle =
+    splitOn "—"
+      >>> head
+      >>> strip
+      >>> splitOn "\n"
+      >>> tail
+      >>> head
 
 
 rowTuples ∷ [[Tag Text]] → [[[[Tag Text]]]]
