@@ -43,7 +43,7 @@ newChapter row =
     chapterName   = name,
     chapterNumber = number,
     chapterUrl    = url,
-    sections      = []
+    subChapters   = []
   }
   where columns = partitions (~== s "<td>") row
         number  = head columns & innerText & strip & words & last

@@ -36,17 +36,17 @@ spec = parallel $ do
       chapterName   generally `shouldBe` "Judicial Department Generally"
       chapterNumber generally `shouldBe` "1"
       chapterUrl    generally `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
-
-
-  describe "sections" $
-
-    it "reads a section correctly" $ do
-      pendingWith "TODO"
-      judicialDept <- firstTitle
-      let judicialDeptGenerally = head $ chapters judicialDept
-      let courtsOfJustice       = head $ sections judicialDeptGenerally
-
-      sectionName courtsOfJustice `shouldBe` "Courts of justice"
+  --
+  --
+  -- describe "sections" $
+  --
+  --   it "reads a section correctly" $ do
+  --     pendingWith "TODO"
+  --     judicialDept <- firstTitle
+  --     let judicialDeptGenerally = head $ chapters judicialDept
+  --     let courtsOfJustice       = head $ sections judicialDeptGenerally
+  --
+  --     sectionName courtsOfJustice `shouldBe` "Courts of justice"
 
 
 --

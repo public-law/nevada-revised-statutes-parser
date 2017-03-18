@@ -34,8 +34,26 @@ data Chapter =
   Chapter {
     chapterName   ∷ Text,
     chapterNumber ∷ Text,
-    sections      ∷ [Section],
-    chapterUrl    ∷ Text
+    chapterUrl    ∷ Text,
+    subChapters   ∷ [SubChapter]
+} deriving (Generic, Show)
+
+data SubChapter =
+  SubChapter {
+    subChapterName     ∷ Text,
+    subChapterChildren ∷ SubChapterChildList
+} deriving (Generic, Show)
+
+-- This datatype is purely an implementation detail.
+data SubChapterChildList =
+  Sections [Section] |
+  SubSubChapters [SubSubChapter]
+    deriving (Generic, Show)
+
+data SubSubChapter =
+  SubSubChapter {
+    subSubChapterName     ∷ Text,
+    subSubChapterChildren ∷ [Section]
 } deriving (Generic, Show)
 
 data Section =
@@ -49,4 +67,7 @@ instance ToJSON NRS
 instance ToJSON Tree
 instance ToJSON Title
 instance ToJSON Chapter
+instance ToJSON SubChapter
+instance ToJSON SubChapterChildList
+instance ToJSON SubSubChapter
 instance ToJSON Section
