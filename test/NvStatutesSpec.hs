@@ -31,11 +31,11 @@ spec = parallel $ do
     it "reads a chapter correctly" $ do
       judicialDept <- firstTitle
       length (chapters judicialDept) `shouldNotBe` 0
-      let generally = head $ chapters judicialDept
+      let chapter1 = head $ chapters judicialDept
 
-      chapterName   generally `shouldBe` "Judicial Department Generally"
-      chapterNumber generally `shouldBe` "1"
-      chapterUrl    generally `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
+      chapterName   chapter1 `shouldBe` "Judicial Department Generally"
+      chapterNumber chapter1 `shouldBe` "1"
+      chapterUrl    chapter1 `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
   --
   --
   -- describe "sections" $
