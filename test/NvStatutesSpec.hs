@@ -26,7 +26,7 @@ spec = parallel $ do
       titleNumber judicialDept `shouldBe` 1
 
 
-  describe "chapters" $
+  describe "chapters" $ do
 
     it "reads a chapter correctly" $ do
       judicialDept <- firstTitle
@@ -36,6 +36,15 @@ spec = parallel $ do
       chapterName   chapter1 `shouldBe` "Judicial Department Generally"
       chapterNumber chapter1 `shouldBe` "1"
       chapterUrl    chapter1 `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
+
+    it "gets one that is further in" $ do
+      publicWelfare <- title38
+      titleName publicWelfare `shouldBe` "PUBLIC WELFARE"
+
+      let chapter432b = last $ chapters publicWelfare
+      chapterName chapter432b `shouldBe` "Protection of Children From Abuse and Neglect"
+
+
   --
   --
   -- describe "sections" $
@@ -59,8 +68,13 @@ main =
 
 firstTitle ∷ IO Title
 firstTitle = do
-  html <- nrsIndexHtml
+  html ← nrsIndexHtml
   return (head (titles html))
+
+title38 ∷ IO Title
+title38 = do
+  html ← nrsIndexHtml
+  return $ titles html !! 37
 
 
 nrsIndexHtml ∷ IO Text
