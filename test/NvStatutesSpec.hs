@@ -45,14 +45,14 @@ spec = parallel $ do
       chapterName chapter432b `shouldBe` "Protection of Children From Abuse and Neglect"
 
 
-  describe "sub-chapters" $
+  describe "parseChapter" $
 
-    it "gets one correctly" $ do
-      publicWelfareTitle ← title38
-      let chapter432b = last $ chapters publicWelfareTitle
-      let generalProvisions = head $ subChapters chapter432b
-      subChapterName generalProvisions `shouldBe` "GENERAL PROVISIONS"
+    it "gets the first sub chapter correctly" $ do
+      html ← chapter_432b_html
+      let subChapters     = parseChapter html
+      let firstSubChapter = head $ subChapters
 
+      subChapterName firstSubChapter `shouldBe` "GENERAL PROVISIONS"
 
 
 
@@ -89,3 +89,6 @@ title38 = do
 
 nrsIndexHtml ∷ IO Text
 nrsIndexHtml = readFile "test/fixtures/nrs.html"
+
+chapter_432b_html ∷ IO Text
+chapter_432b_html = readFile "text/fixtures/nrs-432b.html"
