@@ -45,6 +45,17 @@ spec = parallel $ do
       chapterName chapter432b `shouldBe` "Protection of Children From Abuse and Neglect"
 
 
+  describe "sub-chapters" $
+
+    it "gets one correctly" $ do
+      publicWelfareTitle ← title38
+      let chapter432b = last $ chapters publicWelfareTitle
+      let generalProvisions = head $ subChapters chapter432b
+      subChapterName generalProvisions `shouldBe` "GENERAL PROVISIONS"
+
+
+
+
   --
   --
   -- describe "sections" $
@@ -75,7 +86,6 @@ title38 ∷ IO Title
 title38 = do
   html ← nrsIndexHtml
   return $ titles html !! 37
-
 
 nrsIndexHtml ∷ IO Text
 nrsIndexHtml = readFile "test/fixtures/nrs.html"
