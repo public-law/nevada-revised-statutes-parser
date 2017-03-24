@@ -10,6 +10,10 @@ import           Data.Text                (splitOn, strip)
 import           Models
 import           Text.HTML.TagSoup        (Tag, fromAttrib, innerText,
                                            parseTags, partitions, (~==))
+import Text.Parser.Token
+import Text.Parser.Token.Style
+import Text.Parser.Combinators
+import Data.Attoparsec.Text (parseOnly)
 
 
 titles ∷ Text → [Title]
@@ -63,21 +67,28 @@ nameFromRawTitle text =
 
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: 1
-numberFromRawTitle ∷ Text → Int
+numberFromRawTitle ∷ Text → Integer
 numberFromRawTitle =
-  read . numberTextFromRawTitle
+  numberTextFromRawTitle
 
 
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: "1"
-numberTextFromRawTitle ∷ Text → Text
-numberTextFromRawTitle =
-    splitOn "—"
-      ⋙ head
-      ⋙ strip
-      ⋙ splitOn "\n"
-      ⋙ tail
-      ⋙ head
+numberTextFromRawTitle ∷ Text → Integer
+numberTextFromRawTitle input =
+  let f = parseOnly p input
+      p = textSymbol "TITLE" *> integer
+  in case f of
+    Left e -> error e
+    Right b -> b
+    --
+    -- splitOn "—"
+    --   ⋙ head
+    --   ⋙ strip
+    --   ⋙ splitOn "\n"
+    --   ⋙ tail
+    --   ⋙ head
+
 
 
 rowTuples ∷ [[Tag Text]] → [[[[Tag Text]]]]

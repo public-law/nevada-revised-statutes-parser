@@ -26,7 +26,7 @@ data Tree =
 data Title =
   Title {
     titleName   ∷ Text,
-    titleNumber ∷ Int,
+    titleNumber ∷ Integer,
     chapters    ∷ [Chapter]
 } deriving (Generic, Show)
 
