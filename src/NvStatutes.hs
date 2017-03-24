@@ -10,8 +10,9 @@ import           Data.Text                (splitOn, strip)
 import           Models
 import           Text.HTML.TagSoup        (Tag, fromAttrib, innerText,
                                            parseTags, partitions, (~==))
+
+import Text.Parser.Char
 import Text.Parser.Token
-import Text.Parser.Token.Style
 import Text.Parser.Combinators
 import Data.Attoparsec.Text (parseOnly)
 
@@ -63,6 +64,17 @@ nameFromRawTitle text =
     & tail
     & head
     & strip
+
+
+parseRawTitle ∷ Text -> (Integer, Text)
+parseRawTitle input =
+  let f = parseOnly p input
+      p = (,) <$>
+        (textSymbol "TITLE" *> integer) <*>
+        (textSymbol "—" *> (fromString <$> (manyTill anyChar (char '\n'))))
+  in case f of
+    Left e -> error e
+    Right b -> b
 
 
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
