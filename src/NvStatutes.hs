@@ -3,7 +3,7 @@
 module NvStatutes where
 
 import           BasicPrelude
-import           Control.Category.Unicode
+-- import           Control.Category.Unicode
 import           Data.Function            ((&))
 import           Data.List.Split          (chunksOf, split, whenElt)
 import           Data.Text                (splitOn, strip)
@@ -59,19 +59,21 @@ newChapter row =
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: "STATE JUDICIAL DEPARTMENT"
 nameFromRawTitle ∷ Text → Text
-nameFromRawTitle text =
-  splitOn "—" text
+nameFromRawTitle input =
+  splitOn "—" input
     & tail
     & head
     & strip
 
 
+-- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
+-- Output: (1,"STATE JUDICIAL DEPARTMENT")
 parseRawTitle ∷ Text -> (Integer, Text)
 parseRawTitle input =
   let f = parseOnly p input
       p = (,) <$>
         (textSymbol "TITLE" *> integer) <*>
-        (textSymbol "—" *> (fromString <$> (manyTill anyChar (char '\n'))))
+        (textSymbol "—" *> (fromString <$> many (notChar '\n')))
   in case f of
     Left e -> error e
     Right b -> b
