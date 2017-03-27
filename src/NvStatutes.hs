@@ -6,7 +6,7 @@ import           BasicPrelude
 import           Data.Attoparsec.Text    (parseOnly)
 import           Data.Function           ((&))
 import           Data.List.Split         (chunksOf, split, whenElt)
-import           Data.Text               (splitOn, strip)
+import           Data.Text               (strip)
 import           Models
 import           Text.HTML.TagSoup       (Tag, fromAttrib, innerText, parseTags,
                                           partitions, (~==))
@@ -34,9 +34,8 @@ newTitle tuple =
   let titleRow       = head (head tuple)
       chapterRows    = head $ tail tuple
       parsedChapters = fmap newChapter chapterRows
-      rawTitle       = innerText $ head $ partitions (~== s "<b>") titleRow
-      name           = nameFromRawTitle rawTitle
-      number         = numberFromRawTitle rawTitle
+      titleText      = innerText $ head $ partitions (~== s "<b>") titleRow
+      (number, name) = parseRawTitle titleText
   in Title { titleName = name, titleNumber = number, chapters = parsedChapters }
 
 
@@ -54,35 +53,14 @@ newChapter row =
         url     = partitions (~== s "<a>") row & head & head & fromAttrib "href"
 
 
--- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
--- Output: "STATE JUDICIAL DEPARTMENT"
-nameFromRawTitle ∷ Text → Text
-nameFromRawTitle input =
-  splitOn "—" input
-    & tail
-    & head
-    & strip
-
-
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
--- Output: (1,"STATE JUDICIAL DEPARTMENT")
+-- Output: (1, "STATE JUDICIAL DEPARTMENT")
 parseRawTitle ∷ Text -> (Integer, Text)
 parseRawTitle input =
   let f = parseOnly p input
       p = (,) <$>
         (textSymbol "TITLE" *> integer) <*>
         (textSymbol "—" *> (fromString <$> many (notChar '\n')))
-  in case f of
-    Left e  -> error e
-    Right b -> b
-
-
--- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
--- Output: 1
-numberFromRawTitle ∷ Text → Integer
-numberFromRawTitle input =
-  let f = parseOnly p input
-      p = textSymbol "TITLE" *> integer
   in case f of
     Left e  -> error e
     Right b -> b
