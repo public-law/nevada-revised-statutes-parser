@@ -3,13 +3,18 @@
 module NvStatutes where
 
 import           BasicPrelude
-import           Control.Category.Unicode
+-- import           Control.Category.Unicode
 import           Data.Function            ((&))
 import           Data.List.Split          (chunksOf, split, whenElt)
 import           Data.Text                (splitOn, strip)
 import           Models
 import           Text.HTML.TagSoup        (Tag, fromAttrib, innerText,
                                            parseTags, partitions, (~==))
+
+import Text.Parser.Char
+import Text.Parser.Token
+import Text.Parser.Combinators
+import Data.Attoparsec.Text (parseOnly)
 
 
 titles ∷ Text → [Title]
@@ -54,30 +59,50 @@ newChapter row =
 -- Input:  "TITLE\n  1 \8212 STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: "STATE JUDICIAL DEPARTMENT"
 nameFromRawTitle ∷ Text → Text
-nameFromRawTitle text =
-  splitOn "—" text
+nameFromRawTitle input =
+  splitOn "—" input
     & tail
     & head
     & strip
 
 
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
+-- Output: (1,"STATE JUDICIAL DEPARTMENT")
+parseRawTitle ∷ Text -> (Integer, Text)
+parseRawTitle input =
+  let f = parseOnly p input
+      p = (,) <$>
+        (textSymbol "TITLE" *> integer) <*>
+        (textSymbol "—" *> (fromString <$> many (notChar '\n')))
+  in case f of
+    Left e -> error e
+    Right b -> b
+
+
+-- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: 1
-numberFromRawTitle ∷ Text → Int
+numberFromRawTitle ∷ Text → Integer
 numberFromRawTitle =
-  read . numberTextFromRawTitle
+  numberTextFromRawTitle
 
 
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: "1"
-numberTextFromRawTitle ∷ Text → Text
-numberTextFromRawTitle =
-    splitOn "—"
-      ⋙ head
-      ⋙ strip
-      ⋙ splitOn "\n"
-      ⋙ tail
-      ⋙ head
+numberTextFromRawTitle ∷ Text → Integer
+numberTextFromRawTitle input =
+  let f = parseOnly p input
+      p = textSymbol "TITLE" *> integer
+  in case f of
+    Left e -> error e
+    Right b -> b
+    --
+    -- splitOn "—"
+    --   ⋙ head
+    --   ⋙ strip
+    --   ⋙ splitOn "\n"
+    --   ⋙ tail
+    --   ⋙ head
+
 
 
 rowTuples ∷ [[Tag Text]] → [[[[Tag Text]]]]
