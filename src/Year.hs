@@ -12,11 +12,11 @@ newtype Year = MakeYear Integer
 instance ToJSON Year
 
 
-toYear ∷ Integer → Year
-toYear x | x < 1800  = error "Can't create years before 1800"
-         | x > 2025  = error "Can't create years after 2025"
-         | otherwise = MakeYear x
+toYear :: Integer -> Year
+toYear i | i < 1800  = error "Can't create years before 1800"
+         | i > 2025  = error "Can't create years after 2025"
+         | otherwise = MakeYear i
 
 
-fromYear ∷ Year → Integer
-fromYear (MakeYear y) = y
+fromYear :: Year -> Integer
+fromYear (MakeYear i) = i
