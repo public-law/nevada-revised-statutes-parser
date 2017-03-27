@@ -3,18 +3,16 @@
 module NvStatutes where
 
 import           BasicPrelude
--- import           Control.Category.Unicode
-import           Data.Function            ((&))
-import           Data.List.Split          (chunksOf, split, whenElt)
-import           Data.Text                (splitOn, strip)
+import           Data.Attoparsec.Text    (parseOnly)
+import           Data.Function           ((&))
+import           Data.List.Split         (chunksOf, split, whenElt)
+import           Data.Text               (splitOn, strip)
 import           Models
-import           Text.HTML.TagSoup        (Tag, fromAttrib, innerText,
-                                           parseTags, partitions, (~==))
-
-import Text.Parser.Char
-import Text.Parser.Token
-import Text.Parser.Combinators
-import Data.Attoparsec.Text (parseOnly)
+import           Text.HTML.TagSoup       (Tag, fromAttrib, innerText, parseTags,
+                                          partitions, (~==))
+import           Text.Parser.Char
+import           Text.Parser.Combinators
+import           Text.Parser.Token
 
 
 titles ∷ Text → [Title]
@@ -75,34 +73,19 @@ parseRawTitle input =
         (textSymbol "TITLE" *> integer) <*>
         (textSymbol "—" *> (fromString <$> many (notChar '\n')))
   in case f of
-    Left e -> error e
+    Left e  -> error e
     Right b -> b
 
 
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: 1
 numberFromRawTitle ∷ Text → Integer
-numberFromRawTitle =
-  numberTextFromRawTitle
-
-
--- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
--- Output: "1"
-numberTextFromRawTitle ∷ Text → Integer
-numberTextFromRawTitle input =
+numberFromRawTitle input =
   let f = parseOnly p input
       p = textSymbol "TITLE" *> integer
   in case f of
-    Left e -> error e
+    Left e  -> error e
     Right b -> b
-    --
-    -- splitOn "—"
-    --   ⋙ head
-    --   ⋙ strip
-    --   ⋙ splitOn "\n"
-    --   ⋙ tail
-    --   ⋙ head
-
 
 
 rowTuples ∷ [[Tag Text]] → [[[[Tag Text]]]]
