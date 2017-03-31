@@ -7,12 +7,13 @@ import           Data.Attoparsec.Text    (parseOnly)
 import           Data.Function           ((&))
 import           Data.List.Split         (chunksOf, split, whenElt)
 import           Data.Text               (strip)
+import           HtmlUtils               (findAll)
 import           Models
-import           Text.HTML.TagSoup       (Tag, fromAttrib, innerText, parseTags,
-                                          partitions, (~==))
+import           Text.HTML.TagSoup       (Tag, fromAttrib, innerText, parseTags)
 import           Text.Parser.Char
 import           Text.Parser.Combinators
 import           Text.Parser.Token
+
 
 
 titles ∷ Text → [Title]
@@ -25,8 +26,8 @@ titles indexHtml =
 contentRows ∷ Text → [[Tag Text]]
 contentRows indexHtml =
   let tags       = parseTags indexHtml
-      table      = head $ partitions (~== s "<table class=MsoNormalTable") tags
-  in partitions (~== s "<tr>") table
+      table      = head $ findAll "<table class=MsoNormalTable" tags
+  in findAll "<tr>" table
 
 
 newTitle ∷ [[[Tag Text]]] -> Title
@@ -34,7 +35,7 @@ newTitle tuple =
   let titleRow       = head (head tuple)
       chapterRows    = head $ tail tuple
       parsedChapters = fmap newChapter chapterRows
-      titleText      = innerText $ head $ partitions (~== s "<b>") titleRow
+      titleText      = innerText $ head $ findAll "<b>" titleRow
       (number, name) = parseRawTitle titleText
   in Title { titleName = name, titleNumber = number, chapters = parsedChapters }
 
@@ -47,10 +48,10 @@ newChapter row =
     chapterUrl    = url,
     subChapters   = []
   }
-  where columns = partitions (~== s "<td>") row
+  where columns = findAll "<td>" row
         number  = head columns & innerText & strip & words & last
         name    = last columns & innerText & strip
-        url     = partitions (~== s "<a>") row & head & head & fromAttrib "href"
+        url     = findAll "<a>" row & head & head & fromAttrib "href"
 
 
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
@@ -74,10 +75,5 @@ rowTuples rows =
 
 
 isTitleRow ∷ [Tag Text] → Bool
-isTitleRow r =
-  length (partitions (~== s "<td>") r) == 1
-
-
--- Lower-ceremony way to declare a string
-s ∷ String → String
-s = id
+isTitleRow html =
+  length (findAll "<td>" html) == 1

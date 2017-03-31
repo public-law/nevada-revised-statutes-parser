@@ -2,7 +2,7 @@
 module NvStatutesSpec where
 import           BasicPrelude
 import           Models
-import           NvStatutes   (parseChapter, titles)
+import           NvStatutes   (titles)
 import           Test.Hspec
 
 
@@ -45,14 +45,14 @@ spec = parallel $ do
       chapterName chapter432b `shouldBe` "Protection of Children From Abuse and Neglect"
 
 
-  describe "parseChapter" $
-
-    it "gets the first sub chapter correctly" $ do
-      html ← chapter_432b_html
-      let subChapters     = parseChapter html
-      let firstSubChapter = head subChapters
-
-      subChapterName firstSubChapter `shouldBe` "GENERAL PROVISIONS"
+  -- describe "parseChapter" $
+  --
+  --   it "gets the first sub chapter correctly" $ do
+  --     html ← chapter_432b_html
+  --     let subChapters     = parseChapter html
+  --     let firstSubChapter = head subChapters
+  --
+  --     subChapterName firstSubChapter `shouldBe` "GENERAL PROVISIONS"
 
 
 
