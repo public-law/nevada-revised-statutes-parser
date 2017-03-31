@@ -7,7 +7,7 @@ import           Data.Attoparsec.Text    (parseOnly)
 import           Data.Function           ((&))
 import           Data.List.Split         (chunksOf, split, whenElt)
 import           Data.Text               (strip)
-import           HtmlUtils               (findAll)
+import           HtmlUtils               (findFirst, findAll)
 import           Models
 import           Text.HTML.TagSoup       (Tag, fromAttrib, innerText, parseTags)
 import           Text.Parser.Char
@@ -26,7 +26,7 @@ titles indexHtml =
 contentRows ∷ Text → [[Tag Text]]
 contentRows indexHtml =
   let tags       = parseTags indexHtml
-      table      = head $ findAll "<table class=MsoNormalTable" tags
+      table      = findFirst "<table class=MsoNormalTable" tags
   in findAll "<tr>" table
 
 
@@ -35,7 +35,7 @@ newTitle tuple =
   let titleRow       = head (head tuple)
       chapterRows    = head $ tail tuple
       parsedChapters = fmap newChapter chapterRows
-      titleText      = innerText $ head $ findAll "<b>" titleRow
+      titleText      = innerText $ findFirst "<b>" titleRow
       (number, name) = parseRawTitle titleText
   in Title { titleName = name, titleNumber = number, chapters = parsedChapters }
 
@@ -51,7 +51,7 @@ newChapter row =
   where columns = findAll "<td>" row
         number  = head columns & innerText & strip & words & last
         name    = last columns & innerText & strip
-        url     = findAll "<a>" row & head & head & fromAttrib "href"
+        url     = findFirst "<a>" row & head & fromAttrib "href"
 
 
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
