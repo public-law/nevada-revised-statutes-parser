@@ -50,7 +50,7 @@ spec = parallel $ do
   --   it "gets the first sub chapter correctly" $ do
   --     html ← chapter_432b_html
   --     let subChapters     = parseChapter html
-  --     let firstSubChapter = head $ subChapters
+  --     let firstSubChapter = head subChapters
   --
   --     subChapterName firstSubChapter `shouldBe` "GENERAL PROVISIONS"
 

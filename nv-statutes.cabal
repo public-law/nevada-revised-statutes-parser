@@ -32,13 +32,14 @@ executable nv-statutes-exe
                      , aeson
                      , aeson-pretty
                      , bytestring
+                     , hspec
                      , parsers
                      , tagsoup
                      , split
                      , string-conversions
                      , text
                      , time
-  other-modules:       NvStatutes, Models, Year
+  other-modules:       NvStatutes, Models, Year, HtmlUtils
   default-extensions:  NoImplicitPrelude, UnicodeSyntax
 
 test-suite nv-statutes-test
@@ -60,7 +61,7 @@ test-suite nv-statutes-test
                      , string-conversions
                      , text
                      , time
-  other-modules:       NvStatutesSpec, NvStatutes, Models, Year
+  other-modules:       NvStatutesSpec, NvStatutes, Models, Year, HtmlUtils
   default-extensions:  NoImplicitPrelude, UnicodeSyntax
 
 source-repository head
