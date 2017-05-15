@@ -3,7 +3,7 @@ nv-statutes
 
 Input: The Nevada "laws" (i.e., the Nevada Revised Statutes) directly from [the website](https://www.leg.state.nv.us/NRS/).
 
-Output: JSON with as much semantic information as possible, similar to my [Oregon parser](https://github.com/dogweather/analyze-oregon-law-haskell):
+Output: Semantic JSON, similar to this [Oregon parser](https://github.com/dogweather/analyze-oregon-law-haskell) output:
 
 ```json
 {
