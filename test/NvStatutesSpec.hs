@@ -80,13 +80,20 @@ firstTitle = do
   html ← nrsIndexHtml
   return (head (titles html))
 
+
 title38 ∷ IO Title
 title38 = do
   html ← nrsIndexHtml
   return $ titles html !! 37
 
+
 nrsIndexHtml ∷ IO Text
-nrsIndexHtml = readFile "test/fixtures/nrs.html"
+nrsIndexHtml = readFile $ fixture "nrs.html"
+
 
 chapter_432b_html ∷ IO Text
-chapter_432b_html = readFile "text/fixtures/nrs-432b.html"
+chapter_432b_html = readFile $ fixture "nrs-432b.html"
+
+
+fixture :: String -> String
+fixture filename = "test/fixtures/" ++ filename
