@@ -91,6 +91,8 @@ nrsIndexHtml ∷ IO Text
 nrsIndexHtml = readFile $ fixture "nrs.html"
 
 
+-- TODO: Read from this encoding-fixing pipe:
+-- `iconv -f LATIN1 -t utf-8 nrs-432b.html`
 chapter_432b_html ∷ IO Text
 chapter_432b_html = readFile $ fixture "nrs-432b.html"
 
