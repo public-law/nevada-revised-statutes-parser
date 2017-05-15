@@ -105,6 +105,5 @@ fixture filename = "test/fixtures/" ++ filename
 readFileAsUtf8 :: String -> IO Text
 readFileAsUtf8 pathname = do
   let stdin' = ""
-  (_, stdout', _) <- readProcessWithExitCode "iconv" ["-f", "LATIN1", "-t", "utf-8", pathname] stdin'
-  -- TODO: Check for error
+  stdout' <- readProcess "iconv" ["-f", "LATIN1", "-t", "utf-8", pathname] stdin'
   return $ pack stdout'
