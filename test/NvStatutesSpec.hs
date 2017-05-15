@@ -26,8 +26,6 @@ spec = parallel $ do
       titleNumber judicialDept `shouldBe` 1
 
 
-  describe "chapters" $ do
-
     it "reads a chapter correctly" $ do
       judicialDept <- firstTitle
       length (chapters judicialDept) `shouldNotBe` 0
@@ -37,6 +35,7 @@ spec = parallel $ do
       chapterNumber chapter1 `shouldBe` "1"
       chapterUrl    chapter1 `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
 
+
     it "gets one that is further in" $ do
       publicWelfare <- title38
       titleName publicWelfare `shouldBe` "PUBLIC WELFARE"
@@ -45,14 +44,13 @@ spec = parallel $ do
       chapterName chapter432b `shouldBe` "Protection of Children From Abuse and Neglect"
 
 
-  -- describe "parseChapter" $
-  --
-  --   it "gets the first sub chapter correctly" $ do
-  --     html ← chapter_432b_html
-  --     let subChapters     = parseChapter html
-  --     let firstSubChapter = head subChapters
-  --
-  --     subChapterName firstSubChapter `shouldBe` "GENERAL PROVISIONS"
+  describe "parseChapter" $
+  
+    it "gets the chapter name correctly" $ do
+      html ← chapter_432b_html
+      let chapter432b     = parseChapter html
+
+      chapterName chapter432b `shouldBe` "Protection of Children from Abuse and Neglect"
 
 
 
