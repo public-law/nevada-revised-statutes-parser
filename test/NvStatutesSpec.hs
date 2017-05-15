@@ -2,7 +2,7 @@
 module NvStatutesSpec where
 import           BasicPrelude
 import           Models
-import           NvStatutes   (titles)
+import           NvStatutes   (titles, parseChapter)
 import           Test.Hspec
 
 

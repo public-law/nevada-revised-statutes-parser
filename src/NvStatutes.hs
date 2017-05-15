@@ -14,16 +14,26 @@ import           Text.Parser.Char
 import           Text.Parser.Combinators
 import           Text.Parser.Token
 
+type Html = Text
+
+parseChapter :: Html -> Chapter
+parseChapter _ =
+  Chapter {
+    chapterName = "",
+    chapterNumber = "",
+    chapterUrl = "",
+    subChapters = []
+  }
 
 
-titles ∷ Text → [Title]
+titles ∷ Html → [Title]
 titles indexHtml =
   let rows   = contentRows indexHtml
       tuples = rowTuples rows
   in fmap newTitle tuples
 
 
-contentRows ∷ Text → [[Tag Text]]
+contentRows ∷ Html → [[Tag Text]]
 contentRows indexHtml =
   let tags       = parseTags indexHtml
       table      = findFirst "<table class=MsoNormalTable" tags
