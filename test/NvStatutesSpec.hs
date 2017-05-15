@@ -95,15 +95,15 @@ nrsIndexHtml = readFile $ fixture "nrs.html"
 
 chapter_432b_html :: IO Text
 chapter_432b_html = 
-  readFileAsUtf8 $ fixture "nrs-432b.html"
+  readFileAsUtf8 (fixture "nrs-432b.html") "LATIN1"
 
 
 fixture :: String -> String
 fixture filename = "test/fixtures/" ++ filename
 
 
-readFileAsUtf8 :: String -> IO Text
-readFileAsUtf8 pathname = do
+readFileAsUtf8 :: String -> String -> IO Text
+readFileAsUtf8 pathname sourceEncoding = do
   let stdin' = ""
-  stdout' <- readProcess "iconv" ["-f", "LATIN1", "-t", "utf-8", pathname] stdin'
+  stdout' <- readProcess "iconv" ["-f", sourceEncoding, "-t", "utf-8", pathname] stdin'
   return $ pack stdout'
