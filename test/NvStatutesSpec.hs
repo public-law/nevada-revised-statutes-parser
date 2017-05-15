@@ -1,8 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 module NvStatutesSpec where
 import           BasicPrelude
+import           Data.Text (pack)
 import           Models
 import           NvStatutes   (titles, parseChapter)
+import           System.Process
 import           Test.Hspec
 
 
@@ -70,32 +72,39 @@ spec = parallel $ do
 --
 -- Helper Functions
 --
-main ∷ IO()
+main :: IO()
 main =
   hspec spec
 
 
-firstTitle ∷ IO Title
+firstTitle :: IO Title
 firstTitle = do
   html ← nrsIndexHtml
   return (head (titles html))
 
 
-title38 ∷ IO Title
+title38 :: IO Title
 title38 = do
   html ← nrsIndexHtml
   return $ titles html !! 37
 
 
-nrsIndexHtml ∷ IO Text
+nrsIndexHtml :: IO Text
 nrsIndexHtml = readFile $ fixture "nrs.html"
 
 
--- TODO: Read from this encoding-fixing pipe:
--- `iconv -f LATIN1 -t utf-8 nrs-432b.html`
-chapter_432b_html ∷ IO Text
-chapter_432b_html = readFile $ fixture "nrs-432b.html"
+chapter_432b_html :: IO Text
+chapter_432b_html = 
+  readFileAsUtf8 $ fixture "nrs-432b.html"
 
 
 fixture :: String -> String
 fixture filename = "test/fixtures/" ++ filename
+
+
+readFileAsUtf8 :: String -> IO Text
+readFileAsUtf8 pathname = do
+  let stdin' = ""
+  (_, stdout', _) <- readProcessWithExitCode "iconv" ["-f", "LATIN1", "-t", "utf-8", pathname] stdin'
+  -- TODO: Check for error
+  return $ pack stdout'
