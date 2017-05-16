@@ -27,7 +27,7 @@ parseChapter chapterHtml =
   in Chapter {
     chapterName   = name,
     chapterNumber = number,
-    chapterUrl    = "",
+    chapterUrl    = "https://www.leg.state.nv.us/nrs/NRS-" ++ number ++ ".html",
     subChapters   = []
   }
 
