@@ -3,7 +3,8 @@
 module NvStatutes where
 
 import           BasicPrelude
-import           Data.Attoparsec.Text    (parseOnly)
+import           Data.Attoparsec.Text    (isHorizontalSpace, parseOnly, Parser, skipWhile, takeText)
+import           Data.Char               (isLetter)
 import           Data.Function           ((&))
 import           Data.List.Split         (chunksOf, split, whenElt)
 import           Data.Text               (strip)
@@ -18,30 +19,30 @@ type Html = Text
 
 parseChapter :: Html -> Chapter
 parseChapter chapterHtml =
-  let title = parseTags chapterHtml & titleText
+  let rawTitle = parseTags chapterHtml & titleText
   in Chapter {
-    chapterName = title,
+    chapterName = parseChapterFileTitle rawTitle,
     chapterNumber = "",
     chapterUrl = "",
     subChapters = []
   }
 
 
-titles ∷ Html → [Title]
+titles :: Html → [Title]
 titles indexHtml =
   let rows   = contentRows indexHtml
       tuples = rowTuples rows
   in fmap newTitle tuples
 
 
-contentRows ∷ Html → [[Tag Text]]
+contentRows :: Html → [[Tag Text]]
 contentRows indexHtml =
   let tags       = parseTags indexHtml
       table      = findFirst "<table class=MsoNormalTable" tags
   in findAll "<tr>" table
 
 
-newTitle ∷ [[[Tag Text]]] -> Title
+newTitle :: [[[Tag Text]]] -> Title
 newTitle tuple =
   let titleRow       = head (head tuple)
       chapterRows    = head $ tail tuple
@@ -51,7 +52,7 @@ newTitle tuple =
   in Title { titleName = name, titleNumber = number, chapters = parsedChapters }
 
 
-newChapter ∷ [Tag Text] → Chapter
+newChapter :: [Tag Text] → Chapter
 newChapter row =
   Chapter {
     chapterName   = name,
@@ -67,7 +68,7 @@ newChapter row =
 
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: (1, "STATE JUDICIAL DEPARTMENT")
-parseRawTitle ∷ Text -> (Integer, Text)
+parseRawTitle :: Text -> (Integer, Text)
 parseRawTitle input =
   let f = parseOnly p input
       p = (,) <$>
@@ -78,13 +79,35 @@ parseRawTitle input =
     Right b -> b
 
 
-rowTuples ∷ [[Tag Text]] → [[[[Tag Text]]]]
+-- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
+-- Output: "Protection of Children from Abuse and Neglect"
+parseChapterFileTitle :: Text -> Text
+parseChapterFileTitle input =
+  let f = parseOnly chapterTitleParser input
+  in case f of
+    Left e  -> error e
+    Right b -> b
+        
+
+chapterTitleParser :: Parser Text
+chapterTitleParser = do
+  skipWhile (not . isHyphen)
+  skipWhile (not . isLetter)
+  title <- takeText
+  return title
+
+
+isHyphen :: Char -> Bool
+isHyphen c = c == '-'
+
+
+rowTuples :: [[Tag Text]] → [[[[Tag Text]]]]
 rowTuples rows =
   split (whenElt isTitleRow) rows
     & tail
     & chunksOf 2
 
 
-isTitleRow ∷ [Tag Text] → Bool
+isTitleRow :: [Tag Text] → Bool
 isTitleRow html =
   length (findAll "<td>" html) == 1
