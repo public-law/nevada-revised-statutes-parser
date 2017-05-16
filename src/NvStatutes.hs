@@ -3,8 +3,8 @@
 module NvStatutes where
 
 import           BasicPrelude            hiding (takeWhile)
-import           Data.Attoparsec.Text    (parseOnly, Parser, skipWhile, takeText, takeWhile)
-import           Data.Char               (isDigit, isLetter, isSpace)
+import           Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
+import           Data.Char               (isSpace)
 import           Data.Function           ((&))
 import           Data.List.Split         (chunksOf, split, whenElt)
 import           Data.Text               (strip)
@@ -14,7 +14,7 @@ import           Text.Parser.Combinators
 import           Text.Parser.Token
 
 import           HtmlUtils               (findFirst, findAll, titleText)
-import           TextUtils               (isHyphen, titleize)
+import           TextUtils               (titleize)
 import           Models
 
 
@@ -84,7 +84,7 @@ parseRawTitle input =
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
--- Output: "Protection of Children from Abuse and Neglect"
+-- Output: ("432B", "Protection of Children from Abuse and Neglect")
 parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input =
   case (parseOnly chapterTitleParser input) of
@@ -93,14 +93,13 @@ parseChapterFileTitle input =
         
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
--- Output: "Protection of Children from Abuse and Neglect"
+-- Output: ("432B", "Protection of Children from Abuse and Neglect")
 chapterTitleParser :: Parser (Text, Text)
 chapterTitleParser = do
-  skipWhile (not . isDigit)
+  _      <- string "NRS: CHAPTER "
   number <- takeWhile (not . isSpace)
-  skipWhile (not . isHyphen)
-  skipWhile (not . isLetter)
-  title <- takeText
+  _      <- string " - "
+  title  <- takeText
   return $ (number, titleize title)
 
 
