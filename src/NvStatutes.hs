@@ -7,15 +7,16 @@ import           Data.Attoparsec.Text    (parseOnly, Parser, skipWhile, takeText
 import           Data.Char               (isLetter)
 import           Data.Function           ((&))
 import           Data.List.Split         (chunksOf, split, whenElt)
-import           Data.Text               (strip, toLower)
-import           Data.Text.Titlecase          (titlecase)
-import           Data.Text.Titlecase.Internal (unTitlecase)
-import           HtmlUtils               (findFirst, findAll, titleText)
-import           Models
+import           Data.Text               (strip)
 import           Text.HTML.TagSoup       (Tag, fromAttrib, innerText, parseTags)
 import           Text.Parser.Char
 import           Text.Parser.Combinators
 import           Text.Parser.Token
+
+import           HtmlUtils               (findFirst, findAll, titleText)
+import           TextUtils               (titleize)
+import           Models
+
 
 type Html = Text
 
@@ -98,11 +99,7 @@ chapterTitleParser = do
   skipWhile (not . isHyphen)
   skipWhile (not . isLetter)
   title <- takeText
-  return $ toTitle title
-
-
-toTitle :: Text -> Text
-toTitle = unTitlecase . titlecase . toLower
+  return $ titleize title
 
 
 isHyphen :: Char -> Bool
