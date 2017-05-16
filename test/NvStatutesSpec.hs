@@ -52,23 +52,17 @@ spec = parallel $ do
   
     it "gets the chapter name" $ do
       html ← chapter_432b_html
-      let chapter432b = parseChapter html
-
-      chapterName chapter432b `shouldBe` "Protection of Children from Abuse and Neglect"
+      chapterName (parseChapter html) `shouldBe` "Protection of Children from Abuse and Neglect"
 
 
     it "gets the chapter number" $ do
       html ← chapter_432b_html
-      let chapter432b = parseChapter html
-
-      chapterNumber chapter432b `shouldBe` "432B"
+      chapterNumber (parseChapter html) `shouldBe` "432B"
 
 
     it "gets the chapter URL" $ do
       html ← chapter_432b_html
-      let chapter432b = parseChapter html
-
-      chapterUrl chapter432b `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
+      chapterUrl (parseChapter html) `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
 
 
 
