@@ -41,7 +41,7 @@ executable nv-statutes-exe
                      , text
                      , time
                      , titlecase
-  other-modules:       NvStatutes, Models, Year, HtmlUtils, TextUtils
+  other-modules:       NvStatutes, Models, Year, HtmlUtils, TextUtils, FileUtils
   default-extensions:  NoImplicitPrelude, UnicodeSyntax
 
 test-suite nv-statutes-test
@@ -65,7 +65,7 @@ test-suite nv-statutes-test
                      , text
                      , time
                      , titlecase
-  other-modules:       NvStatutesSpec, NvStatutes, Models, Year, HtmlUtils, TextUtils
+  other-modules:       NvStatutesSpec, NvStatutes, Models, Year, HtmlUtils, TextUtils, FileUtils
   default-extensions:  NoImplicitPrelude, UnicodeSyntax
 
 source-repository head
