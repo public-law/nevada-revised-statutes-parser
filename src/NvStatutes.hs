@@ -23,9 +23,10 @@ type Html = Text
 parseChapter :: Html -> Chapter
 parseChapter chapterHtml =
   let rawTitle = parseTags chapterHtml & titleText
+      (number, name) = parseChapterFileTitle rawTitle
   in Chapter {
-    chapterName   = parseChapterFileTitle rawTitle,
-    chapterNumber = parseChapterFileNumber rawTitle,
+    chapterName   = name,
+    chapterNumber = number,
     chapterUrl    = "",
     subChapters   = []
   }
@@ -84,7 +85,7 @@ parseRawTitle input =
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
 -- Output: "Protection of Children from Abuse and Neglect"
-parseChapterFileTitle :: Text -> Text
+parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input =
   case (parseOnly chapterTitleParser input) of
     Left e  -> error e
@@ -92,29 +93,15 @@ parseChapterFileTitle input =
         
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
--- Output: "432B"
-parseChapterFileNumber :: Text -> Text
-parseChapterFileNumber input =
-  case (parseOnly chapterNumberParser input) of
-    Left e  -> error e
-    Right b -> b
-        
-
--- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
 -- Output: "Protection of Children from Abuse and Neglect"
-chapterTitleParser :: Parser Text
+chapterTitleParser :: Parser (Text, Text)
 chapterTitleParser = do
+  skipWhile (not . isDigit)
+  number <- takeWhile (not . isSpace)
   skipWhile (not . isHyphen)
   skipWhile (not . isLetter)
   title <- takeText
-  return $ titleize title
-
-
-chapterNumberParser :: Parser Text
-chapterNumberParser = do
-  skipWhile (not . isDigit)
-  number <- takeWhile (not . isSpace)
-  return number
+  return $ (number, titleize title)
 
 
 rowTuples :: [[Tag Text]] → [[[[Tag Text]]]]
