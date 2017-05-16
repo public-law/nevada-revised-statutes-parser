@@ -3,11 +3,13 @@
 module NvStatutes where
 
 import           BasicPrelude
-import           Data.Attoparsec.Text    (isHorizontalSpace, parseOnly, Parser, skipWhile, takeText)
+import           Data.Attoparsec.Text    (parseOnly, Parser, skipWhile, takeText)
 import           Data.Char               (isLetter)
 import           Data.Function           ((&))
 import           Data.List.Split         (chunksOf, split, whenElt)
-import           Data.Text               (strip)
+import           Data.Text               (strip, toLower)
+import           Data.Text.Titlecase          (titlecase)
+import           Data.Text.Titlecase.Internal (unTitlecase)
 import           HtmlUtils               (findFirst, findAll, titleText)
 import           Models
 import           Text.HTML.TagSoup       (Tag, fromAttrib, innerText, parseTags)
@@ -89,12 +91,18 @@ parseChapterFileTitle input =
     Right b -> b
         
 
+-- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
+-- Output: "Protection of Children from Abuse and Neglect"
 chapterTitleParser :: Parser Text
 chapterTitleParser = do
   skipWhile (not . isHyphen)
   skipWhile (not . isLetter)
   title <- takeText
-  return title
+  return $ toTitle title
+
+
+toTitle :: Text -> Text
+toTitle = unTitlecase . titlecase . toLower
 
 
 isHyphen :: Char -> Bool
