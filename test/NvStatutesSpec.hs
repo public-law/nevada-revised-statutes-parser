@@ -92,7 +92,8 @@ title38 = do
 
 
 nrsIndexHtml :: IO Text
-nrsIndexHtml = readFile $ fixture "nrs.html"
+nrsIndexHtml =
+  readFile (fixture "nrs.html")
 
 
 chapter_432b_html :: IO Text
@@ -101,4 +102,5 @@ chapter_432b_html =
 
 
 fixture :: String -> String
-fixture filename = "test/fixtures/" ++ filename
+fixture filename =
+  "test/fixtures/" ++ filename
