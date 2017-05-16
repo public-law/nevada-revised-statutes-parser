@@ -14,7 +14,7 @@ import           Text.Parser.Combinators
 import           Text.Parser.Token
 
 import           HtmlUtils               (findFirst, findAll, titleText)
-import           TextUtils               (titleize)
+import           TextUtils               (isHyphen, titleize)
 import           Models
 
 
@@ -99,10 +99,6 @@ chapterTitleParser = do
   skipWhile (not . isLetter)
   title <- takeText
   return $ titleize title
-
-
-isHyphen :: Char -> Bool
-isHyphen c = c == '-'
 
 
 rowTuples :: [[Tag Text]] → [[[[Tag Text]]]]

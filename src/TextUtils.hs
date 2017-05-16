@@ -10,3 +10,7 @@ import          Data.Text.Titlecase.Internal    (unTitlecase)
 
 titleize :: Text -> Text
 titleize = unTitlecase . titlecase . toLower
+
+
+isHyphen :: Char -> Bool
+isHyphen c = c == '-'
