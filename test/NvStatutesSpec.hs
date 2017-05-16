@@ -1,11 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module NvStatutesSpec where
+
 import           BasicPrelude
 import           Data.Text (pack)
-import           Models
-import           NvStatutes   (titles, parseChapter)
 import           System.Process
 import           Test.Hspec
+
+import           Models
+import           NvStatutes   (titles, parseChapter)
 
 
 spec :: SpecWith ()

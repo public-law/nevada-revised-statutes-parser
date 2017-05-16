@@ -86,8 +86,7 @@ parseRawTitle input =
 -- Output: "Protection of Children from Abuse and Neglect"
 parseChapterFileTitle :: Text -> Text
 parseChapterFileTitle input =
-  let f = parseOnly chapterTitleParser input
-  in case f of
+  case (parseOnly chapterTitleParser input) of
     Left e  -> error e
     Right b -> b
         
