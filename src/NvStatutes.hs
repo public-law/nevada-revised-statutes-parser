@@ -2,7 +2,7 @@
 
 module NvStatutes where
 
-import           BasicPrelude
+import           BasicPrelude            hiding (takeWhile)
 import           Data.Attoparsec.Text    (parseOnly, Parser, skipWhile, takeText, takeWhile)
 import           Data.Char               (isDigit, isLetter, isSpace)
 import           Data.Function           ((&))
@@ -113,7 +113,7 @@ chapterTitleParser = do
 chapterNumberParser :: Parser Text
 chapterNumberParser = do
   skipWhile (not . isDigit)
-  number <- Data.Attoparsec.Text.takeWhile (not . isSpace)
+  number <- takeWhile (not . isSpace)
   return number
 
 
