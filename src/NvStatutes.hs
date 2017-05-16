@@ -7,7 +7,7 @@ import           Data.Attoparsec.Text    (parseOnly)
 import           Data.Function           ((&))
 import           Data.List.Split         (chunksOf, split, whenElt)
 import           Data.Text               (strip)
-import           HtmlUtils               (findFirst, findAll)
+import           HtmlUtils               (findFirst, findAll, titleText)
 import           Models
 import           Text.HTML.TagSoup       (Tag, fromAttrib, innerText, parseTags)
 import           Text.Parser.Char
@@ -17,9 +17,10 @@ import           Text.Parser.Token
 type Html = Text
 
 parseChapter :: Html -> Chapter
-parseChapter _ =
-  Chapter {
-    chapterName = "",
+parseChapter chapterHtml =
+  let title = parseTags chapterHtml & titleText
+  in Chapter {
+    chapterName = title,
     chapterNumber = "",
     chapterUrl = "",
     subChapters = []
@@ -45,8 +46,8 @@ newTitle tuple =
   let titleRow       = head (head tuple)
       chapterRows    = head $ tail tuple
       parsedChapters = fmap newChapter chapterRows
-      titleText      = innerText $ findFirst "<b>" titleRow
-      (number, name) = parseRawTitle titleText
+      title          = innerText $ findFirst "<b>" titleRow
+      (number, name) = parseRawTitle title
   in Title { titleName = name, titleNumber = number, chapters = parsedChapters }
 
 

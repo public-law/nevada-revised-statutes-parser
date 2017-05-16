@@ -3,7 +3,12 @@
 module HtmlUtils where
 
 import           BasicPrelude
-import           Text.HTML.TagSoup (Tag, partitions, (~==))
+import           Text.HTML.TagSoup (Tag, partitions, (~==), innerText)
+
+
+
+titleText :: [Tag Text] -> Text
+titleText tags = innerText $ [(findFirst "<title>" tags) !! 1]
 
 
 -- Return the first occurrence of an HTML tag within the given
