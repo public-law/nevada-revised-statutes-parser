@@ -48,13 +48,20 @@ spec = parallel $ do
       chapterName chapter432b `shouldBe` "Protection of Children From Abuse and Neglect"
 
 
-  describe "parseChapter" $
+  describe "parseChapter" $ do
   
-    it "gets the chapter name correctly" $ do
+    it "gets the chapter name" $ do
       html ← chapter_432b_html
       let chapter432b     = parseChapter html
 
       chapterName chapter432b `shouldBe` "Protection of Children from Abuse and Neglect"
+
+
+    it "gets the chapter number" $ do
+      html ← chapter_432b_html
+      let chapter432b     = parseChapter html
+
+      chapterNumber chapter432b `shouldBe` "432B"
 
 
 
