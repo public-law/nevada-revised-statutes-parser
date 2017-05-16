@@ -64,6 +64,13 @@ spec = parallel $ do
       chapterNumber chapter432b `shouldBe` "432B"
 
 
+    it "gets the chapter URL" $ do
+      html ← chapter_432b_html
+      let chapter432b = parseChapter html
+
+      chapterUrl chapter432b `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
+
+
 
   --
   --
