@@ -22,7 +22,7 @@ spec = parallel $ do
 
     it "gets a title's name" $ do
       judicialDept <- firstTitle
-      titleName judicialDept `shouldBe` "STATE JUDICIAL DEPARTMENT"
+      titleName judicialDept `shouldBe` "State Judicial Department"
 
 
     it "gets a title's number" $ do
@@ -42,7 +42,7 @@ spec = parallel $ do
 
     it "gets one that is further in" $ do
       publicWelfare <- title38
-      titleName publicWelfare `shouldBe` "PUBLIC WELFARE"
+      titleName publicWelfare `shouldBe` "Public Welfare"
 
       let chapter432b = last $ chapters publicWelfare
       chapterName chapter432b `shouldBe` "Protection of Children From Abuse and Neglect"

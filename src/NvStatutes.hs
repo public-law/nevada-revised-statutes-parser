@@ -53,7 +53,7 @@ newTitle tuple =
       parsedChapters = fmap newChapter chapterRows
       title          = innerText $ findFirst "<b>" titleRow
       (number, name) = parseRawTitle title
-  in Title { titleName = name, titleNumber = number, chapters = parsedChapters }
+  in Title { titleName = titleize name, titleNumber = number, chapters = parsedChapters }
 
 
 newChapter :: [Tag Text] → Chapter
