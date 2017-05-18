@@ -66,6 +66,7 @@ spec = parallel $ do
 
 
     it "gets the sub-chapters" $ do
+      pendingWith "Functional test"
       html ← chapter_432b_html
       let chapter_432b = parseChapter html
       let administration = (subChapters chapter_432b) !! 1
