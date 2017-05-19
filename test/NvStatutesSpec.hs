@@ -79,7 +79,7 @@ spec = parallel $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters ( parseChapter html )
       case subChapterChildren generalProvisions of
-        SubSubChapters _ -> error "Got sub-sub chapters"
+        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
         Sections xs      -> length xs `shouldBe` 10
 
 

@@ -20,7 +20,7 @@ parseChapter chapterHtml =
   let tags           = parseTags chapterHtml
       rawTitle       = titleText tags
       (number, name) = parseChapterFileTitle rawTitle
-      subChaps       = map (\n -> SubChapter { subChapterName = n }) (subchapterNames tags)
+      subChaps       = fmap newSubChapter (subchapterNames tags)
   in Chapter {
     chapterName   = name,
     chapterNumber = number,
@@ -29,11 +29,12 @@ parseChapter chapterHtml =
   }
 
 
--- newSubChapter :: Text -> SubChapter
--- newSubChapter name =
---   SubChapter {
---     subChapterName = name
---   }
+newSubChapter :: Text -> SubChapter
+newSubChapter name =
+  SubChapter {
+    subChapterName = name,
+    subChapterChildren = SubSubChapters []    
+  }
 
 
 subchapterNames :: [Tag Text] -> [Text]
