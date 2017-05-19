@@ -5,15 +5,10 @@ module ChapterFile where
 import           BasicPrelude            hiding (takeWhile)
 import           Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
 import           Data.Char               (isSpace)
-import           Data.Function           ((&))
-import           Data.List.Split         (chunksOf, split, whenElt)
-import           Data.Text               (strip)
-import           Text.HTML.TagSoup       (Tag, fromAttrib, innerText, parseTags, partitions, fromTagText, (~==))
+import           Text.HTML.TagSoup       (Tag, parseTags, partitions, fromTagText, (~==))
 import           Text.Parser.Char
-import           Text.Parser.Combinators
-import           Text.Parser.Token
 
-import           HtmlUtil                (findFirst, findAll, titleText)
+import           HtmlUtil                (titleText)
 import           TextUtil                (titleize)
 import           Models
 
