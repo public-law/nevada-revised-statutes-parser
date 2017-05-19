@@ -6,7 +6,8 @@ import           BasicPrelude
 import           Test.Hspec
 
 import           Models
-import           NvStatutes   (titles, parseChapter)
+import           NvStatutes   (titles)
+import           ChapterFile  (parseChapter)
 import           FileUtil     (fixture, readFileAsUtf8)
 
 
@@ -116,4 +117,3 @@ nrsIndexHtml =
 chapter_432b_html :: IO Text
 chapter_432b_html = 
   readFileAsUtf8 (fixture "nrs-432b.html") "LATIN1"
-  
