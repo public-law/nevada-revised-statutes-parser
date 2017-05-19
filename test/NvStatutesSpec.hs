@@ -75,13 +75,20 @@ spec = parallel $ do
       subChapterName (subchapters !! 3) `shouldBe` "Protective Services and Custody"
 
 
-    it "gets a simple sub-chapter's section names" $ do
+    it "gets a simple sub-chapter's sections" $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters ( parseChapter html )
       case subChapterChildren generalProvisions of
         SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
         Sections xs      -> length xs `shouldBe` 31
 
+
+    it "gets the sub-chapter's section names right" $ do
+      html <- chapter_432b_html
+      let generalProvisions = head $ subChapters ( parseChapter html )
+      case subChapterChildren generalProvisions of
+        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
+        Sections xs      -> sectionName (head xs) `shouldBe` "Definitions."
 
 
 --
