@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module HtmlUtils where
+module HtmlUtil  where
 
 import           BasicPrelude
 import           Text.HTML.TagSoup (Tag, partitions, (~==), innerText)

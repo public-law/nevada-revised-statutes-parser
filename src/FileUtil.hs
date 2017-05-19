@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module FileUtils where
+module FileUtil where
 
 import           BasicPrelude
 import           Data.Text (pack)

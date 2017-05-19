@@ -7,7 +7,7 @@ import           Test.Hspec
 
 import           Models
 import           NvStatutes   (titles, parseChapter)
-import           FileUtils    (readFileAsUtf8)
+import           FileUtil     (readFileAsUtf8)
 
 
 spec :: SpecWith ()
