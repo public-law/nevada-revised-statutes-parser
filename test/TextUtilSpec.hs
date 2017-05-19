@@ -14,4 +14,4 @@ spec = parallel $ do
   describe "titleize" $
 
     it "handles all uppercase" $ do
-      TextUtil.titleize "PROTECTION OF CHILDREN" `shouldBe` "Protection of Children"
+      titleize "PROTECTION OF CHILDREN" `shouldBe` "Protection of Children"
