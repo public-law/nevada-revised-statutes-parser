@@ -7,7 +7,7 @@ import           Test.Hspec
 
 import           Models
 import           NvStatutes   (titles, parseChapter)
-import           FileUtil     (readFileAsUtf8)
+import           FileUtil     (fixture, readFileAsUtf8)
 
 
 spec :: SpecWith ()
@@ -67,7 +67,7 @@ spec = parallel $ do
     
     it "gets the sub-chapter names" $ do
       html ← chapter_432b_html
-      let subchapters = subChapters $ parseChapter html
+      let subchapters = subChapters ( parseChapter html )
 
       subChapterName (subchapters !! 0) `shouldBe` "General Provisions"
       subChapterName (subchapters !! 1) `shouldBe` "Administration"
@@ -116,8 +116,4 @@ nrsIndexHtml =
 chapter_432b_html :: IO Text
 chapter_432b_html = 
   readFileAsUtf8 (fixture "nrs-432b.html") "LATIN1"
-
-
-fixture :: String -> String
-fixture filename =
-  "test/fixtures/" ++ filename
+  
