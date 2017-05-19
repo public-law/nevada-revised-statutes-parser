@@ -5,7 +5,7 @@ module TextUtilSpec where
 import           BasicPrelude
 import           Test.Hspec
 
-import           TextUtils
+import           TextUtil
 
 
 spec :: SpecWith ()
@@ -14,4 +14,4 @@ spec = parallel $ do
   describe "titleize" $
 
     it "handles all uppercase" $ do
-      TextUtils.titleize "PROTECTION OF CHILDREN" `shouldBe` "Protection of Children"
+      TextUtil.titleize "PROTECTION OF CHILDREN" `shouldBe` "Protection of Children"

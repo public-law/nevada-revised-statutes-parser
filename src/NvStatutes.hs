@@ -14,7 +14,7 @@ import           Text.Parser.Combinators
 import           Text.Parser.Token
 
 import           HtmlUtils               (findFirst, findAll, titleText)
-import           TextUtils               (titleize)
+import           TextUtil                (titleize)
 import           Models
 
 

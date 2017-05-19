@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module TextUtils where
+module TextUtil where
 
 import          BasicPrelude
 import          Data.Text                       (toLower)
