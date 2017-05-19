@@ -5,7 +5,7 @@ module ChapterFile where
 import           BasicPrelude            hiding (takeWhile)
 import           Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
 import           Data.Char               (isSpace)
-import           Text.HTML.TagSoup       (Tag, parseTags, partitions, fromTagText, (~==))
+import           Text.HTML.TagSoup       (innerText, Tag, parseTags, partitions, fromTagText, (~==))
 import           Text.Parser.Char
 
 import           HtmlUtil                (titleText)
@@ -20,7 +20,7 @@ parseChapter chapterHtml =
   let tags           = parseTags chapterHtml
       rawTitle       = titleText tags
       (number, name) = parseChapterFileTitle rawTitle
-      subChaps       = fmap newSubChapter (subchapterNames tags)
+      subChaps       = fmap newSubChapter (headingGroups tags)
   in Chapter {
     chapterName   = name,
     chapterNumber = number,
@@ -29,11 +29,11 @@ parseChapter chapterHtml =
   }
 
 
-newSubChapter :: Text -> SubChapter
-newSubChapter name =
+newSubChapter :: [Tag Text] -> SubChapter
+newSubChapter headingGroup =
   SubChapter {
-    subChapterName = name,
-    subChapterChildren = SubSubChapters []    
+    subChapterName = subChapterNameFromGroup headingGroup,
+    subChapterChildren = Sections $ map (\n ->  Section {sectionName = n}) (sectionNamesFromGroup headingGroup)
   }
 
 
@@ -47,8 +47,14 @@ subChapterNameFromGroup =
     titleize . fromTagText . (!! 1)
 
 
+sectionNamesFromGroup :: [Tag Text] -> [Text]
+sectionNamesFromGroup headingGroup =
+    map (titleize . innerText) (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
+
+
 headingGroups :: [Tag Text] -> [[Tag Text]]
-headingGroups tags = partitions (~== ("<p class=COHead2>" :: String)) tags
+headingGroups tags = 
+    partitions (~== ("<p class=COHead2>" :: String)) tags
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"

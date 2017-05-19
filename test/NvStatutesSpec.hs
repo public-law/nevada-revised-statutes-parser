@@ -80,7 +80,7 @@ spec = parallel $ do
       let generalProvisions = head $ subChapters ( parseChapter html )
       case subChapterChildren generalProvisions of
         SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
-        Sections xs      -> length xs `shouldBe` 10
+        Sections xs      -> length xs `shouldBe` 31
 
 
 
