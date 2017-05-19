@@ -8,10 +8,17 @@ import           Test.Hspec
 import           Models
 import           NvStatutes   (titles, parseChapter)
 import           FileUtils    (readFileAsUtf8)
+import           TextUtils
 
 
 spec :: SpecWith ()
 spec = parallel $ do
+
+  describe "titleize" $
+
+    it "handles all uppercase" $ do
+      TextUtils.titleize "PROTECTION OF CHILDREN" `shouldBe` "Protection of Children"
+
 
   describe "titles" $ do
 
