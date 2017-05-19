@@ -64,14 +64,14 @@ spec = parallel $ do
       html ← chapter_432b_html
       chapterUrl (parseChapter html) `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
 
-
-    it "gets the sub-chapters" $ do
-      pendingWith "Functional test"
+    
+    it "gets the sub-chapter names" $ do
       html ← chapter_432b_html
-      let chapter_432b = parseChapter html
-      let administration = (subChapters chapter_432b) !! 1
+      let subchapters = subChapters $ parseChapter html
 
-      subChapterName administration `shouldBe` "Administration"
+      subChapterName (subchapters !! 0) `shouldBe` "General Provisions"
+      subChapterName (subchapters !! 1) `shouldBe` "Administration"
+      subChapterName (subchapters !! 3) `shouldBe` "Protective Services and Custody"
 
 
 
