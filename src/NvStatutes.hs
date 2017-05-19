@@ -8,7 +8,7 @@ import           Data.Char               (isSpace)
 import           Data.Function           ((&))
 import           Data.List.Split         (chunksOf, split, whenElt)
 import           Data.Text               (strip)
-import           Text.HTML.TagSoup       (Tag, fromAttrib, innerText, parseTags)
+import           Text.HTML.TagSoup       (Tag, fromAttrib, innerText, parseTags, partitions, fromTagText, (~==))
 import           Text.Parser.Char
 import           Text.Parser.Combinators
 import           Text.Parser.Token
@@ -22,14 +22,30 @@ type Html = Text
 
 parseChapter :: Html -> Chapter
 parseChapter chapterHtml =
-  let rawTitle = parseTags chapterHtml & titleText
+  let tags           = parseTags chapterHtml
+      rawTitle       = titleText tags
       (number, name) = parseChapterFileTitle rawTitle
+      subChaps       = map newSubChapter (subchapterNames tags)
   in Chapter {
     chapterName   = name,
     chapterNumber = number,
     chapterUrl    = "https://www.leg.state.nv.us/nrs/NRS-" ++ number ++ ".html",
-    subChapters   = []
+    subChapters   = subChaps
   }
+
+
+newSubChapter :: Text -> SubChapter
+newSubChapter name =
+  SubChapter {
+    subChapterName = name
+  }
+
+
+subchapterNames :: [Tag Text] -> [Text]
+subchapterNames tags =
+  let headingGroups = partitions (~== ("<p class=COHead2>" :: String)) tags
+      names         = map ( titleize . fromTagText . (!! 1)) headingGroups
+  in  names
 
 
 titles :: Html → [Title]
