@@ -39,9 +39,16 @@ newSubChapter name =
 
 subchapterNames :: [Tag Text] -> [Text]
 subchapterNames tags =
-  let headingGroups = partitions (~== ("<p class=COHead2>" :: String)) tags
-      names         = map ( titleize . fromTagText . (!! 1)) headingGroups
-  in  names
+    map subChapterNameFromGroup (headingGroups tags)
+
+
+subChapterNameFromGroup :: [Tag Text] -> Text
+subChapterNameFromGroup = 
+    titleize . fromTagText . (!! 1)
+
+
+headingGroups :: [Tag Text] -> [[Tag Text]]
+headingGroups tags = partitions (~== ("<p class=COHead2>" :: String)) tags
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
