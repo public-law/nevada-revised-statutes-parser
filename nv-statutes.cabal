@@ -14,59 +14,56 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
+  exposed-modules:     NvStatutes
+                       , ChapterFile
+                       , FileUtil
+                       , HtmlUtil
+                       , Models
+                       , TextUtil
+                       , Year
   hs-source-dirs:      src
-  build-depends:       base >= 4.7 && < 5
   default-language:    Haskell2010
+  ghc-options:         -Wall
   default-extensions:  NoImplicitPrelude, UnicodeSyntax
-
-executable nv-statutes-exe
-  hs-source-dirs:      app, src
-  main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
-  default-language:    Haskell2010
-  build-depends:       base
-                     , attoparsec
-                     , base-unicode-symbols
-                     , nv-statutes
-                     , basic-prelude
+  build-depends:       base >= 4.7 && < 5
                      , aeson
                      , aeson-pretty
+                     , attoparsec
+                     , base-unicode-symbols
+                     , basic-prelude
                      , bytestring
-                     , hspec
                      , parsers
                      , process
-                     , tagsoup
                      , split
                      , string-conversions
+                     , tagsoup
                      , text
                      , time
                      , titlecase
-  other-modules:       ChapterFile, NvStatutes, Models, Year, HtmlUtil, TextUtil, FileUtil
-  default-extensions:  NoImplicitPrelude, UnicodeSyntax
+
 
 test-suite nv-statutes-test
   type:                exitcode-stdio-1.0
-  hs-source-dirs:      test, src
+  hs-source-dirs:      test
   main-is:             Spec.hs
+  default-extensions:  NoImplicitPrelude, UnicodeSyntax
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
   default-language:    Haskell2010
-  build-depends:       base
-                     , attoparsec
-                     , base-unicode-symbols
-                     , nv-statutes
-                     , basic-prelude
-                     , aeson
-                     , hspec
-                     , tagsoup
-                     , parsers
-                     , process
-                     , split
-                     , string-conversions
-                     , text
-                     , time
-                     , titlecase
-  other-modules:       ChapterFile, TextUtilSpec, NvStatutesSpec, NvStatutes, Models, Year, HtmlUtil, TextUtil, FileUtil
-  default-extensions:  NoImplicitPrelude, UnicodeSyntax
+  build-depends:       basic-prelude
+                       , hspec
+                       , nv-statutes
+  other-modules:       NvStatutesSpec, TextUtilSpec
+
+
+-- executable nv-statutes-exe
+--   hs-source-dirs:      app
+--   main-is:             Main.hs
+--   ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
+--   default-language:    Haskell2010
+--   default-extensions:  NoImplicitPrelude, UnicodeSyntax
+--   build-depends:       basic-prelude
+--                        , nv-statutes
+
 
 source-repository head
   type:     git
