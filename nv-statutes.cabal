@@ -65,7 +65,7 @@ test-suite nv-statutes-test
                      , text
                      , time
                      , titlecase
-  other-modules:       NvStatutesSpec, NvStatutes, Models, Year, HtmlUtils, TextUtils, FileUtils
+  other-modules:       TextUtilSpec, NvStatutesSpec, NvStatutes, Models, Year, HtmlUtils, TextUtils, FileUtils
   default-extensions:  NoImplicitPrelude, UnicodeSyntax
 
 source-repository head
