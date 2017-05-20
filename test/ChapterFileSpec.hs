@@ -80,6 +80,11 @@ spec = parallel $ do
       let generalProvisions = (!! 0) $ headingGroups $ parseTags html 
       isSimpleSubChapter generalProvisions `shouldBe` True
 
+    it "correctly identifies a complex sub-chapter" $ do
+      html <- chapter_432b_html
+      let generalProvisions = (!! 1) $ headingGroups $ parseTags html 
+      isSimpleSubChapter generalProvisions `shouldBe` False
+
 
 
 --
