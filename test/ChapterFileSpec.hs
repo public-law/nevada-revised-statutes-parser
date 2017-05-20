@@ -65,7 +65,6 @@ spec = parallel $ do
 
 
     it "gets a complex sub-chapter's sub-sub-chapters" $ do
-      pendingWith "functional test"
       html <- chapter_432b_html
       let administration = (!!1) $ subChapters $ parseChapter html
       case subChapterChildren administration of
