@@ -53,6 +53,7 @@ test-suite nv-statutes-test
   build-depends:       basic-prelude
                        , hspec
                        , nv-statutes
+                       , tagsoup
   other-modules:       ChapterFileSpec, IndexFileSpec, TextUtilSpec
 
 

@@ -4,9 +4,10 @@ module ChapterFileSpec where
 
 import           BasicPrelude
 import           Test.Hspec
+import           Text.HTML.TagSoup
 
 import           Models
-import           ChapterFile  (parseChapter)
+import           ChapterFile
 import           FileUtil     (fixture, readFileAsUtf8)
 
 
@@ -64,11 +65,20 @@ spec = parallel $ do
 
 
     it "gets a complex sub-chapter's sub-sub-chapters" $ do
+      pendingWith "functional test"
       html <- chapter_432b_html
       let administration = (!!1) $ subChapters $ parseChapter html
       case subChapterChildren administration of
         SubSubChapters xs -> length xs `shouldBe` 31
         Sections _        -> error "Got sections but expected sub-sub-chapters"
+
+
+  describe "isSimpleSubChapter" $ do
+    
+    it "correctly identifies a simple sub-chapter" $ do
+      html <- chapter_432b_html
+      let generalProvisions = (!! 0) $ headingGroups $ parseTags html 
+      isSimpleSubChapter generalProvisions `shouldBe` True
 
 
 
