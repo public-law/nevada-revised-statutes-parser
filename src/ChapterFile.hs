@@ -58,8 +58,11 @@ sectionNameFromParagraph =
   fixUnicodeChars . normalizeWhiteSpace . strip . innerText . (dropWhile (~/= ("</a>" :: String)))
 
 
+normalizeWhiteSpace :: Text -> Text
 normalizeWhiteSpace = replace "\r\n" " "
 
+
+fixUnicodeChars :: Text -> Text
 fixUnicodeChars = (replace "\147" "\8220") . (replace "\148" "\8221")
 
 
