@@ -5,7 +5,7 @@ module ChapterFile where
 import           BasicPrelude            hiding (takeWhile)
 import           Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
 import           Data.Char               (isSpace)
-import           Text.HTML.TagSoup       (innerText, Tag, parseTags, partitions, fromTagText, (~==))
+import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
 import           HtmlUtil                (titleText)
@@ -53,7 +53,7 @@ sectionNamesFromGroup headingGroup =
 
 
 sectionNameFromParagraph :: [Tag Text] -> Text
-sectionNameFromParagraph ptags = (titleize . innerText) ptags
+sectionNameFromParagraph ptags = (titleize . innerText) (dropWhile (~/= ("</a>" :: String)) ptags)
 
 
 headingGroups :: [Tag Text] -> [[Tag Text]]
