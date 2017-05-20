@@ -49,7 +49,11 @@ subChapterNameFromGroup =
 
 sectionNamesFromGroup :: [Tag Text] -> [Text]
 sectionNamesFromGroup headingGroup =
-    map (titleize . innerText) (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
+    map sectionNameFromParagraph (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
+
+
+sectionNameFromParagraph :: [Tag Text] -> Text
+sectionNameFromParagraph ptags = (titleize . innerText) ptags
 
 
 headingGroups :: [Tag Text] -> [[Tag Text]]

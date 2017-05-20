@@ -14,4 +14,4 @@ titleize = unTitlecase . titlecase . toLower
 
 isHyphen :: Char -> Bool
 isHyphen '-' = True
-isHyphen _   = False
+isHyphen  _  = False
