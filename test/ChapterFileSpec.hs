@@ -65,8 +65,8 @@ spec = parallel $ do
 
     it "gets a complex sub-chapter's sub-sub-chapters" $ do
       html <- chapter_432b_html
-      let generalProvisions = head $ subChapters ( parseChapter html )
-      case subChapterChildren generalProvisions of
+      let administration = (!!1) $ subChapters $ parseChapter html
+      case subChapterChildren administration of
         SubSubChapters xs -> length xs `shouldBe` 31
         Sections _        -> error "Got sections but expected sub-sub-chapters"
 
