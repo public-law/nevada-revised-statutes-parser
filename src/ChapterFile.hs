@@ -91,3 +91,6 @@ chapterTitleParser = do
   return $ (number, titleize title)
 
 
+isSimpleSubChapter :: [Tag Text] -> Bool
+isSimpleSubChapter headingGroup =
+  null (partitions (~== ("<p class=COHead4>" :: String)) headingGroup)
