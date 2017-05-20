@@ -14,7 +14,7 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     NvStatutes
+  exposed-modules:     IndexFile
                        , ChapterFile
                        , FileUtil
                        , HtmlUtil
@@ -53,7 +53,7 @@ test-suite nv-statutes-test
   build-depends:       basic-prelude
                        , hspec
                        , nv-statutes
-  other-modules:       NvStatutesSpec, ChapterFileSpec, TextUtilSpec
+  other-modules:       ChapterFileSpec, IndexFileSpec, TextUtilSpec
 
 
 executable nv-statutes-exe

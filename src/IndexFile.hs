@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module NvStatutes where
+module IndexFile where
 
 import           BasicPrelude            hiding (takeWhile)
 import           Data.Attoparsec.Text    (parseOnly)

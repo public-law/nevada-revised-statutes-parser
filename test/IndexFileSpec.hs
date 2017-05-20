@@ -1,14 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module NvStatutesSpec where
+module IndexFileSpec where
 
 import           BasicPrelude
 import           Test.Hspec
 
 import           Models
-import           NvStatutes   (titles)
-import           ChapterFile  (parseChapter)
-import           FileUtil     (fixture, readFileAsUtf8)
+import           FileUtil     (fixture)
+import           IndexFile    (titles)
 
 
 spec :: SpecWith ()

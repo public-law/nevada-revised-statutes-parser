@@ -6,7 +6,6 @@ import           BasicPrelude
 import           Test.Hspec
 
 import           Models
-import           NvStatutes   (titles)
 import           ChapterFile  (parseChapter)
 import           FileUtil     (fixture, readFileAsUtf8)
 
