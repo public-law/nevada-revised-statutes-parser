@@ -43,24 +43,34 @@ spec = parallel $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters ( parseChapter html )
       case subChapterChildren generalProvisions of
-        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
         Sections xs      -> length xs `shouldBe` 31
+        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
 
     it "gets the sub-chapter's section names right - 1" $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters ( parseChapter html )
       case subChapterChildren generalProvisions of
-        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
         Sections xs      -> sectionName (xs !! 0) `shouldBe` "Definitions."
+        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
 
     it "gets the sub-chapter's section names right - 2" $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters ( parseChapter html )
       case subChapterChildren generalProvisions of
-        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
         Sections xs      -> sectionName (xs !! 1) `shouldBe` "“Abuse or neglect of a child” defined."
+        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
+
+
+    it "gets a complex sub-chapter's sub-sub-chapters" $ do
+      html <- chapter_432b_html
+      let generalProvisions = head $ subChapters ( parseChapter html )
+      case subChapterChildren generalProvisions of
+        SubSubChapters xs -> length xs `shouldBe` 31
+        Sections _        -> error "Got sections but expected sub-sub-chapters"
+
+
 
 --
 -- Helper Functions
