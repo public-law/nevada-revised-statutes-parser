@@ -33,10 +33,10 @@ parseChapter chapterHtml =
 newSubChapter :: [Tag Text] -> SubChapter
 newSubChapter headingGroup =
   let children = if isSimpleSubChapter headingGroup
-                   then Sections $ map (\n ->  Section {sectionName = n}) (sectionNamesFromGroup headingGroup)
-                   else SubSubChapters []
+                     then Sections $ map (\n ->  Section {sectionName = n}) (sectionNamesFromGroup headingGroup)
+                     else SubSubChapters []
   in SubChapter {
-    subChapterName = subChapterNameFromGroup headingGroup,
+    subChapterName     = subChapterNameFromGroup headingGroup,
     subChapterChildren = children
   }
 
