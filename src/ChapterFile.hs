@@ -5,6 +5,7 @@ module ChapterFile where
 import           BasicPrelude            hiding (takeWhile)
 import           Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
 import           Data.Char               (isSpace)
+import           Data.Text               (replace, strip)
 import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
@@ -39,26 +40,32 @@ newSubChapter headingGroup =
 
 subchapterNames :: [Tag Text] -> [Text]
 subchapterNames tags =
-    map subChapterNameFromGroup (headingGroups tags)
+  map subChapterNameFromGroup (headingGroups tags)
 
 
 subChapterNameFromGroup :: [Tag Text] -> Text
 subChapterNameFromGroup = 
-    titleize . fromTagText . (!! 1)
+  titleize . fromTagText . (!! 1)
 
 
 sectionNamesFromGroup :: [Tag Text] -> [Text]
 sectionNamesFromGroup headingGroup =
-    map sectionNameFromParagraph (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
+  map sectionNameFromParagraph (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
 
 
 sectionNameFromParagraph :: [Tag Text] -> Text
-sectionNameFromParagraph ptags = (titleize . innerText) (dropWhile (~/= ("</a>" :: String)) ptags)
+sectionNameFromParagraph = 
+  fixUnicodeChars . normalizeWhiteSpace . strip . innerText . (dropWhile (~/= ("</a>" :: String)))
+
+
+normalizeWhiteSpace = replace "\r\n" " "
+
+fixUnicodeChars = (replace "\147" "\8220") . (replace "\148" "\8221")
 
 
 headingGroups :: [Tag Text] -> [[Tag Text]]
 headingGroups tags = 
-    partitions (~== ("<p class=COHead2>" :: String)) tags
+  partitions (~== ("<p class=COHead2>" :: String)) tags
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
