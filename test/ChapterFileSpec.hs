@@ -44,63 +44,63 @@ spec = parallel $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters ( parseChapter html )
       case subChapterChildren generalProvisions of
-        Sections xs      -> length xs `shouldBe` 31
-        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
+        SubChapterSections xs -> length xs `shouldBe` 31
+        SubSubChapters _      -> error "Got sub-sub chapters but expected Sections"
 
 
     it "gets the sub-chapter's section names right - 1" $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters ( parseChapter html )
       case subChapterChildren generalProvisions of
-        Sections xs      -> sectionName (xs !! 0) `shouldBe` "Definitions."
-        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
+        SubChapterSections xs -> sectionName (xs !! 0) `shouldBe` "Definitions."
+        SubSubChapters _      -> error "Got sub-sub chapters but expected Sections"
 
 
     it "gets the sub-chapter's section names right - 2" $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters ( parseChapter html )
       case subChapterChildren generalProvisions of
-        Sections xs      -> sectionName (xs !! 1) `shouldBe` "“Abuse or neglect of a child” defined."
-        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
+        SubChapterSections xs -> sectionName (xs !! 1) `shouldBe` "“Abuse or neglect of a child” defined."
+        SubSubChapters _      -> error "Got sub-sub chapters but expected Sections"
 
     it "gets the sub-chapter's section numbers right" $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters ( parseChapter html )
       case subChapterChildren generalProvisions of
-        Sections xs      -> sectionNumber (xs !! 1) `shouldBe` "432B.020"
-        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
+        SubChapterSections xs -> sectionNumber (xs !! 1) `shouldBe` "432B.020"
+        SubSubChapters _      -> error "Got sub-sub chapters but expected Sections"
 
 
     it "gets a complex sub-chapter's sub-sub-chapters" $ do
       html <- chapter_432b_html
       let administration = (!!1) $ subChapters $ parseChapter html
       case subChapterChildren administration of
-        SubSubChapters xs -> length xs `shouldBe` 3
-        Sections _        -> error "Got sections but expected sub-sub-chapters"
+        SubSubChapters xs    -> length xs `shouldBe` 3
+        SubChapterSections _ -> error "Got sections but expected sub-sub-chapters"
 
 
     it "gets a complex sub-chapter's sub-sub-chapter names - 1" $ do
       html <- chapter_432b_html
       let administration = (!!1) $ subChapters $ parseChapter html
       case subChapterChildren administration of
-        SubSubChapters xs -> (subSubChapterName (xs !! 0)) `shouldBe` "General Provisions"
-        Sections _        -> error "Got sections but expected sub-sub-chapters"
+        SubSubChapters xs    -> (subSubChapterName (xs !! 0)) `shouldBe` "General Provisions"
+        SubChapterSections _ -> error "Got sections but expected sub-sub-chapters"
 
 
     it "gets a complex sub-chapter's sub-sub-chapter names - 2" $ do
       html <- chapter_432b_html
       let administration = (!!1) $ subChapters $ parseChapter html
       case subChapterChildren administration of
-        SubSubChapters xs -> (subSubChapterName (xs !! 2)) `shouldBe` "Grants to Agency Which Provides Child Welfare Services"
-        Sections _        -> error "Got sections but expected sub-sub-chapters"
+        SubSubChapters xs    -> (subSubChapterName (xs !! 2)) `shouldBe` "Grants to Agency Which Provides Child Welfare Services"
+        SubChapterSections _ -> error "Got sections but expected sub-sub-chapters"
 
 
     it "gets a complex sub-chapter's sub-sub-chapter sections" $ do
       html <- chapter_432b_html
       let administration    = (!!1) $ subChapters $ parseChapter html
       case subChapterChildren administration of
-        SubSubChapters xs -> (sectionName $ (!! 0) $ subSubChapterSections $ (xs !! 0)) `shouldBe` "Duties of Division of Child and Family Services."
-        Sections _        -> error "Got sections but expected sub-sub-chapters"
+        SubSubChapters xs    -> (sectionName $ (!! 0) $ subSubChapterSections $ (xs !! 0)) `shouldBe` "Duties of Division of Child and Family Services."
+        SubChapterSections _ -> error "Got sections but expected sub-sub-chapters"
 
 
 

@@ -37,7 +37,7 @@ newSubChapter headingGroup =
     subChapterChildren = children
   }
   where children = if isSimpleSubChapter headingGroup
-                     then Sections $ parseSectionsFromHeadingGroup headingGroup
+                     then SubChapterSections $ parseSectionsFromHeadingGroup headingGroup
                      else SubSubChapters $ parseSubSubChapters headingGroup
 
 

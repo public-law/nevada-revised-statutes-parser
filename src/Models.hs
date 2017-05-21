@@ -45,8 +45,8 @@ data SubChapter =
 } deriving (Generic, Show)
 
 -- This datatype is purely an implementation detail.
-data SubChapterChildList = Sections [Section]
-                         | SubSubChapters [SubSubChapter]
+data SubChapterChildList = SubChapterSections [Section]
+                         | SubSubChapters     [SubSubChapter]
     deriving (Generic, Show)
 
 data SubSubChapter =
