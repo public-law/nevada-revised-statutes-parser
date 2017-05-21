@@ -1,46 +1,50 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module NvStatutes where
+module IndexFile where
 
-import           BasicPrelude
+import           BasicPrelude            hiding (takeWhile)
 import           Data.Attoparsec.Text    (parseOnly)
 import           Data.Function           ((&))
 import           Data.List.Split         (chunksOf, split, whenElt)
 import           Data.Text               (strip)
-import           HtmlUtils               (findFirst, findAll)
-import           Models
 import           Text.HTML.TagSoup       (Tag, fromAttrib, innerText, parseTags)
 import           Text.Parser.Char
 import           Text.Parser.Combinators
 import           Text.Parser.Token
 
+import           HtmlUtil                (findFirst, findAll)
+import           TextUtil                (titleize)
+import           Models
 
 
-titles ∷ Text → [Title]
+type Html = Text
+
+
+titles :: Html → [Title]
 titles indexHtml =
   let rows   = contentRows indexHtml
       tuples = rowTuples rows
   in fmap newTitle tuples
 
 
-contentRows ∷ Text → [[Tag Text]]
+contentRows :: Html → [[Tag Text]]
 contentRows indexHtml =
   let tags       = parseTags indexHtml
       table      = findFirst "<table class=MsoNormalTable" tags
   in findAll "<tr>" table
 
 
-newTitle ∷ [[[Tag Text]]] -> Title
+newTitle :: [[[Tag Text]]] -> Title
 newTitle tuple =
   let titleRow       = head (head tuple)
       chapterRows    = head $ tail tuple
       parsedChapters = fmap newChapter chapterRows
-      titleText      = innerText $ findFirst "<b>" titleRow
-      (number, name) = parseRawTitle titleText
-  in Title { titleName = name, titleNumber = number, chapters = parsedChapters }
+      title          = innerText $ findFirst "<b>" titleRow
+      (number, name) = parseRawTitle title
+  in Title { titleName = titleize name, titleNumber = number, chapters = parsedChapters }
 
 
-newChapter ∷ [Tag Text] → Chapter
+newChapter :: [Tag Text] → Chapter
 newChapter row =
   Chapter {
     chapterName   = name,
@@ -56,7 +60,7 @@ newChapter row =
 
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: (1, "STATE JUDICIAL DEPARTMENT")
-parseRawTitle ∷ Text -> (Integer, Text)
+parseRawTitle :: Text -> (Integer, Text)
 parseRawTitle input =
   let f = parseOnly p input
       p = (,) <$>
@@ -67,13 +71,13 @@ parseRawTitle input =
     Right b -> b
 
 
-rowTuples ∷ [[Tag Text]] → [[[[Tag Text]]]]
+rowTuples :: [[Tag Text]] → [[[[Tag Text]]]]
 rowTuples rows =
   split (whenElt isTitleRow) rows
     & tail
     & chunksOf 2
 
 
-isTitleRow ∷ [Tag Text] → Bool
+isTitleRow :: [Tag Text] → Bool
 isTitleRow html =
   length (findAll "<td>" html) == 1

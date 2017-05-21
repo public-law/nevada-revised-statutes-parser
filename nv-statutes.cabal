@@ -1,6 +1,6 @@
 name:                nv-statutes
 version:             0.1.0.0
-synopsis:            Initial project template from stack
+synopsis:            Scraper and parser for the Nevada Revised Statutes
 description:         Please see README.md
 homepage:            https://github.com/dogweather/nv-statutes#readme
 license:             BSD3
@@ -14,55 +14,59 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
+  exposed-modules:     IndexFile
+                       , ChapterFile
+                       , FileUtil
+                       , HtmlUtil
+                       , Models
+                       , TextUtil
+                       , Year
   hs-source-dirs:      src
-  build-depends:       base >= 4.7 && < 5
   default-language:    Haskell2010
+  ghc-options:         -Wall
   default-extensions:  NoImplicitPrelude, UnicodeSyntax
-
-executable nv-statutes-exe
-  hs-source-dirs:      app, src
-  main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
-  default-language:    Haskell2010
-  build-depends:       base
-                     , attoparsec
-                     , base-unicode-symbols
-                     , nv-statutes
-                     , basic-prelude
+  build-depends:       base >= 4.7 && < 5
                      , aeson
                      , aeson-pretty
+                     , attoparsec
+                     , base-unicode-symbols
+                     , basic-prelude
                      , bytestring
                      , hspec
                      , parsers
-                     , tagsoup
+                     , process
                      , split
                      , string-conversions
+                     , tagsoup
                      , text
                      , time
-  other-modules:       NvStatutes, Models, Year, HtmlUtils
-  default-extensions:  NoImplicitPrelude, UnicodeSyntax
+                     , titlecase
+
 
 test-suite nv-statutes-test
   type:                exitcode-stdio-1.0
-  hs-source-dirs:      test, src
+  hs-source-dirs:      test
   main-is:             Spec.hs
+  default-extensions:  NoImplicitPrelude, UnicodeSyntax
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
   default-language:    Haskell2010
-  build-depends:       base
-                     , attoparsec
-                     , base-unicode-symbols
-                     , nv-statutes
-                     , basic-prelude
-                     , aeson
-                     , hspec
-                     , tagsoup
-                     , parsers
-                     , split
-                     , string-conversions
-                     , text
-                     , time
-  other-modules:       NvStatutesSpec, NvStatutes, Models, Year, HtmlUtils
+  build-depends:       basic-prelude
+                       , hspec
+                       , nv-statutes
+                       , tagsoup
+  other-modules:       ChapterFileSpec, IndexFileSpec, TextUtilSpec
+
+
+executable nv-statutes-exe
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
+  default-language:    Haskell2010
   default-extensions:  NoImplicitPrelude, UnicodeSyntax
+  build-depends:       basic-prelude
+                       , hspec
+                       , nv-statutes
+
 
 source-repository head
   type:     git
