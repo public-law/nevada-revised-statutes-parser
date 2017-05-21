@@ -66,7 +66,12 @@ subSubChapterHeadingGroups headingGroup =
 
 parseSubSubChapter :: [Tag Text] -> SubSubChapter
 parseSubSubChapter subSubChapterHeadingGroup =
-  ((\n -> SubSubChapter { subSubChapterName = n }) . normalizeWhiteSpace . (!!0) . lines . innerText) subSubChapterHeadingGroup
+  SubSubChapter {
+    subSubChapterName = name,
+    subSubChapterChildren = []
+  }
+  where
+    name = (normalizeWhiteSpace . (!!0) . lines . innerText) subSubChapterHeadingGroup
 
 
 subchapterNames :: [Tag Text] -> [Text]
