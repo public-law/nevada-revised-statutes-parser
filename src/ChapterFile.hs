@@ -62,7 +62,7 @@ sectionNameFromParagraph =
 
 
 normalizeWhiteSpace :: Text -> Text
-normalizeWhiteSpace = replace "\r\n" " "
+normalizeWhiteSpace = unwords . words
 
 
 fixUnicodeChars :: Text -> Text
