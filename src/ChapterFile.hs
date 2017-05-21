@@ -56,7 +56,12 @@ parseSectionFromHeadingParagraph paragraph =
 
 parseSubSubChapters :: [Tag Text] -> [SubSubChapter]
 parseSubSubChapters headingGroup =
-  map ( (\n -> SubSubChapter { subSubChapterName = n }) . normalizeWhiteSpace . (!!0) . lines . innerText) (partitions (~== ("<p class=COHead4>" :: String)) headingGroup)
+  map ( (\n -> SubSubChapter { subSubChapterName = n }) . normalizeWhiteSpace . (!!0) . lines . innerText) (subSubChapterHeadingGroups headingGroup)
+
+
+subSubChapterHeadingGroups :: [Tag Text] -> [[Tag Text]]
+subSubChapterHeadingGroups headingGroup =
+  (partitions (~== ("<p class=COHead4>" :: String)) headingGroup)
 
 
 subchapterNames :: [Tag Text] -> [Text]
