@@ -22,3 +22,5 @@ Parser for the Nevada Revised Statutes
     }
 }
 ```
+
+The [Nevada Laws](http://www.nevadalaws.org) web app will read in and display the content.
