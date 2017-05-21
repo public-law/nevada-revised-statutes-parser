@@ -99,7 +99,7 @@ spec = parallel $ do
       html <- chapter_432b_html
       let administration    = (!!1) $ subChapters $ parseChapter html
       case subChapterChildren administration of
-        SubSubChapters xs -> ( sectionName $ (!! 0) $ subSubChapterChildren $ (xs !! 0)) `shouldBe` "Duties of Division of Child and Family Services."
+        SubSubChapters xs -> (sectionName $ (!! 0) $ subSubChapterSections $ (xs !! 0)) `shouldBe` "Duties of Division of Child and Family Services."
         Sections _        -> error "Got sections but expected sub-sub-chapters"
 
 

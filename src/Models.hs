@@ -52,7 +52,7 @@ data SubChapterChildList = Sections [Section]
 data SubSubChapter =
   SubSubChapter {
     subSubChapterName     ∷ Text,
-    subSubChapterChildren ∷ [Section]
+    subSubChapterSections ∷ [Section]
 } deriving (Generic, Show)
 
 data Section =
