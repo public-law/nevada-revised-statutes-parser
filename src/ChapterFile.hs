@@ -5,12 +5,12 @@ module ChapterFile where
 import           BasicPrelude            hiding (takeWhile)
 import           Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
 import           Data.Char               (isSpace)
-import           Data.Text               (replace, strip)
+import           Data.Text               (strip)
 import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
 import           HtmlUtil                (titleText)
-import           TextUtil                (normalizeWhiteSpace, titleize)
+import           TextUtil                (fixUnicodeChars, normalizeWhiteSpace, titleize)
 import           Models
 
 
@@ -37,8 +37,21 @@ newSubChapter headingGroup =
     subChapterChildren = children
   }
   where children = if isSimpleSubChapter headingGroup
-                     then Sections $ map (\n ->  Section {sectionName = n}) (sectionNamesFromGroup headingGroup)
+                     then Sections $ parseSectionsFromHeadingGroup headingGroup
                      else SubSubChapters $ parseSubSubChapters headingGroup
+
+
+parseSectionsFromHeadingGroup :: [Tag Text] -> [Section]
+parseSectionsFromHeadingGroup headingGroup =
+  map parseSectionFromHeadingParagraph (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
+
+
+parseSectionFromHeadingParagraph :: [Tag Text] -> Section
+parseSectionFromHeadingParagraph paragraph =
+  Section {
+    sectionName   = fixUnicodeChars $ normalizeWhiteSpace $ innerText $ (dropWhile (~/= ("</a>" :: String))) paragraph,
+    sectionNumber = (!! 1) $ words $ fixUnicodeChars $ normalizeWhiteSpace $ innerText $ paragraph
+  }
 
 
 parseSubSubChapters :: [Tag Text] -> [SubSubChapter]
@@ -64,10 +77,6 @@ sectionNamesFromGroup headingGroup =
 sectionNameFromParagraph :: [Tag Text] -> Text
 sectionNameFromParagraph = 
   fixUnicodeChars . normalizeWhiteSpace . strip . innerText . (dropWhile (~/= ("</a>" :: String)))
-
-
-fixUnicodeChars :: Text -> Text
-fixUnicodeChars = (replace "\147" "\8220") . (replace "\148" "\8221")
 
 
 headingGroups :: [Tag Text] -> [[Tag Text]]
