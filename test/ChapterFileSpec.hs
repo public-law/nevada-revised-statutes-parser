@@ -68,7 +68,7 @@ spec = parallel $ do
       html <- chapter_432b_html
       let administration = (!!1) $ subChapters $ parseChapter html
       case subChapterChildren administration of
-        SubSubChapters xs -> length xs `shouldBe` 31
+        SubSubChapters xs -> length xs `shouldBe` 3
         Sections _        -> error "Got sections but expected sub-sub-chapters"
 
 

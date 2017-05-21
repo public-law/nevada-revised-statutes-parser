@@ -15,3 +15,7 @@ titleize = unTitlecase . titlecase . toLower
 isHyphen :: Char -> Bool
 isHyphen '-' = True
 isHyphen  _  = False
+
+
+normalizeWhiteSpace :: Text -> Text
+normalizeWhiteSpace = unwords . words

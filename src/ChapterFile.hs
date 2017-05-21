@@ -10,7 +10,7 @@ import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
 import           HtmlUtil                (titleText)
-import           TextUtil                (titleize)
+import           TextUtil                (normalizeWhiteSpace, titleize)
 import           Models
 
 
@@ -38,7 +38,12 @@ newSubChapter headingGroup =
   }
   where children = if isSimpleSubChapter headingGroup
                      then Sections $ map (\n ->  Section {sectionName = n}) (sectionNamesFromGroup headingGroup)
-                     else SubSubChapters []
+                     else SubSubChapters $ parseSubSubChapters headingGroup
+
+
+parseSubSubChapters :: [Tag Text] -> [SubSubChapter]
+parseSubSubChapters headingGroup =
+  []
 
 
 subchapterNames :: [Tag Text] -> [Text]
@@ -59,10 +64,6 @@ sectionNamesFromGroup headingGroup =
 sectionNameFromParagraph :: [Tag Text] -> Text
 sectionNameFromParagraph = 
   fixUnicodeChars . normalizeWhiteSpace . strip . innerText . (dropWhile (~/= ("</a>" :: String)))
-
-
-normalizeWhiteSpace :: Text -> Text
-normalizeWhiteSpace = unwords . words
 
 
 fixUnicodeChars :: Text -> Text
