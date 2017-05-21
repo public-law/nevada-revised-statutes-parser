@@ -38,7 +38,7 @@ newSubChapter headingGroup =
   }
   where children = if isSimpleSubChapter headingGroup
                      then SubChapterSections $ parseSectionsFromHeadingGroup headingGroup
-                     else SubSubChapters $ parseSubSubChapters headingGroup
+                     else SubSubChapters     $ parseSubSubChapters headingGroup
 
 
 parseSectionsFromHeadingGroup :: [Tag Text] -> [Section]
@@ -67,8 +67,8 @@ subSubChapterHeadingGroups headingGroup =
 parseSubSubChapter :: [Tag Text] -> SubSubChapter
 parseSubSubChapter subSubChapterHeadingGroup =
   SubSubChapter {
-    subSubChapterName = name,
-    subSubChapterSections = []
+    subSubChapterName     = name,
+    subSubChapterSections = parseSectionsFromHeadingGroup subSubChapterHeadingGroup
   }
   where
     name = (normalizeWhiteSpace . (!!0) . lines . innerText) subSubChapterHeadingGroup
