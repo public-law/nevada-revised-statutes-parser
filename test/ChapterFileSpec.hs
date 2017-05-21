@@ -80,6 +80,14 @@ spec = parallel $ do
         Sections _        -> error "Got sections but expected sub-sub-chapters"
 
 
+    it "gets a complex sub-chapter's sub-sub-chapter names - 2" $ do
+      html <- chapter_432b_html
+      let administration = (!!1) $ subChapters $ parseChapter html
+      case subChapterChildren administration of
+        SubSubChapters xs -> (subSubChapterName (xs !! 2)) `shouldBe` "Grants to Agency Which Provides Child Welfare Services"
+        Sections _        -> error "Got sections but expected sub-sub-chapters"
+
+
   describe "isSimpleSubChapter" $ do
     
     it "correctly identifies a simple sub-chapter" $ do
