@@ -1,14 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes, ExtendedDefaultRules #-}
 
 module ChapterFileSpec where
 
-import           BasicPrelude
-import           Test.Hspec
-import           Text.HTML.TagSoup
+import          BasicPrelude
+import          Data.Text                     (pack)
+import          Test.Hspec
+import          Text.HTML.TagSoup
+import          Text.InterpolatedString.Perl6 (q)
 
-import           Models
-import           ChapterFile
-import           FileUtil     (fixture, readFileAsUtf8)
+import          Models
+import          ChapterFile
+import          FileUtil                      (fixture, readFileAsUtf8)
 
 
 spec :: SpecWith ()
@@ -115,6 +118,30 @@ spec = parallel $ do
       html <- chapter_432b_html
       let administration = (!! 1) $ headingGroups $ parseTags html 
       isSimpleSubChapter administration `shouldBe` False
+
+  describe "sectionBody" $ do
+    
+    it "returns the complete HTML" $ do
+      html <- chapter_432b_html
+      let dom = parseTags html
+      let expectedHtml = pack [q|
+<p class="SectBody"><span class=Empty>      <a name="NRS432BSec200"></a>NRS&#8194;</span><span
+class=Section>432B.200</span><span class=Empty>&#8194;&#8194;</span><span
+class=Leadline>Toll-free telephone number for reports of abuse or neglect.</span><span
+class=Empty>&#8194;&#8194;</span>The Division of Child and Family Services
+shall establish and maintain a center with a toll-free telephone number to
+receive reports of abuse or neglect of a child in this State 24 hours a day, 7
+days a week. Any reports made to this center must be promptly transmitted to
+the agency which provides child welfare services in the community where the
+child is located.</p>
+
+<p class="SourceNote">      (Added to NRS by <a
+href="../Statutes/63rd/Stats198506.html#Stats198506page1371">1985, 1371</a>; A <a
+href="../Statutes/67th/Stats199313.html#Stats199313page2706">1993, 2706</a>; <a
+href="../Statutes/17thSS/Stats2001SS1701.html#Stats2001SS1701page36">2001
+Special Session, 36</a>)</p>
+      |]
+      parseSectionBody "432B.200" dom `shouldBe` expectedHtml
 
 
 

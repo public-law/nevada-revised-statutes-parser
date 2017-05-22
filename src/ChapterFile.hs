@@ -55,6 +55,11 @@ parseSectionFromHeadingParagraph paragraph =
     number = (!! 1) $ words $ normalizedInnerText $ takeWhile (~/= "</a>") paragraph
 
 
+parseSectionBody :: Text -> [Tag Text] -> Text
+parseSectionBody number dom = pack ""
+
+
+
 parseSubSubChapters :: [Tag Text] -> [SubSubChapter]
 parseSubSubChapters headingGroup =
   fmap parseSubSubChapter (subSubChapterHeadingGroups headingGroup)
