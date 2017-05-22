@@ -53,8 +53,8 @@ parseSectionFromHeadingParagraph paragraph =
     sectionNumber = number
   }
   where
-    number = (!! 1) $ words $ fixUnicodeChars $ normalizeWhiteSpace $ innerText $ paragraph
     name   = fixUnicodeChars $ normalizeWhiteSpace $ innerText $ dropWhile (~/= ("</a>" :: String)) paragraph
+    number = (!! 1) $ words $ fixUnicodeChars $ normalizeWhiteSpace $ innerText $ paragraph
 
 
 parseSubSubChapters :: [Tag Text] -> [SubSubChapter]
