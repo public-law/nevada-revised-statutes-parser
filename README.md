@@ -3,23 +3,33 @@ Parser for the Nevada Revised Statutes
 
 **Input:** The Nevada laws (i.e., the Nevada Revised Statutes) [website](https://www.leg.state.nv.us/NRS/).
 
-**Output:** Semantic JSON, similar to this [Oregon parser](https://github.com/dogweather/analyze-oregon-law-haskell) output:
+**Output:** Semantic JSON:
 
 ```json
 {
-    "summary": "Relating to speed limits on highways that traverse state lines; creating new provisions; amending ORS 811.111; and declaring an emergency.",
-    "bill": {
-        "billNumber": 4047,
-        "billType": "HB"
-    }, 
-    "effectiveDate": "2016-03-01",
-    "year": 2016,
-    "affectedSections": {
-        "repealed": [],
-        "amended": [
-            "811.111"
-        ]
-    }
+    "chapterName": "Protection of Children from Abuse and Neglect",
+    "chapterNumber": "432B",
+    "chapterUrl": "https://www.leg.state.nv.us/nrs/NRS-432B.html",
+    "subChapters": [
+        {
+            "subChapterName": "General Provisions",
+            "subChapterChildren": {
+                "tag": "SubChapterSections",
+                "contents": [
+                    {
+                        "sectionNumber": "432B.010",
+                        "sectionName": "Definitions.",
+                        "sectionBody": "<p class=SectBody><span class=\"Section\">432B.010</span>..."
+                    },
+                    {
+                        "sectionNumber": "432B.020",
+                        "sectionName": "“Abuse or neglect of a child” defined.",
+                        "sectionBody": "<p class=SectBody><span class=\"Section\">432B.020</span>..."
+                    }
+                ]
+            }
+        }
+    ]
 }
 ```
 
