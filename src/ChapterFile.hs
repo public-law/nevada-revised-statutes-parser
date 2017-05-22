@@ -92,7 +92,7 @@ sectionNamesFromGroup headingGroup =
 
 sectionNameFromParagraph :: [Tag Text] -> Text
 sectionNameFromParagraph = 
-  fixUnicodeChars . normalizeWhiteSpace . strip . innerText . (dropWhile (~/= "</a>"))
+  normalizedInnerText . (dropWhile (~/= "</a>"))
 
 
 headingGroups :: [Tag Text] -> [[Tag Text]]
