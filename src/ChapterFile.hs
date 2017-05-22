@@ -1,16 +1,14 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module ChapterFile where
 
-import           BasicPrelude            hiding (takeWhile)
-import           Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
+import           BasicPrelude
+import qualified Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
 import           Data.Char               (isSpace)
-import           Data.Text               (strip)
+import           Data.Text               (pack)
 import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
-import           HtmlUtil                (titleText)
-import           TextUtil                (fixUnicodeChars, normalizeWhiteSpace, titleize)
+import           HtmlUtil                (shaveBackTagsToLastClosingP, titleText)
+import           TextUtil                (normalizeWhiteSpace, normalizedInnerText, titleize)
 import           Models
 
 
@@ -18,57 +16,62 @@ type Html = Text
 
 parseChapter :: Html -> Chapter
 parseChapter chapterHtml =
-  let tags           = parseTags chapterHtml
-      rawTitle       = titleText tags
-      (number, name) = parseChapterFileTitle rawTitle
-      subChaps       = fmap newSubChapter (headingGroups tags)
-  in Chapter {
+  Chapter {
     chapterName   = name,
     chapterNumber = number,
-    chapterUrl    = "https://www.leg.state.nv.us/nrs/NRS-" ++ number ++ ".html",
+    chapterUrl    = (pack "https://www.leg.state.nv.us/nrs/NRS-") ++ number ++ (pack ".html"),
     subChapters   = subChaps
   }
+  where tags           = parseTags chapterHtml
+        rawTitle       = titleText tags
+        (number, name) = parseChapterFileTitle rawTitle
+        subChaps       = fmap (newSubChapter tags) (headingGroups tags)
 
 
-newSubChapter :: [Tag Text] -> SubChapter
-newSubChapter headingGroup =
+newSubChapter :: [Tag Text] -> [Tag Text] -> SubChapter
+newSubChapter dom headingGroup =
   SubChapter {
     subChapterName     = subChapterNameFromGroup headingGroup,
     subChapterChildren = children
   }
   where children = if isSimpleSubChapter headingGroup
-                     then SubChapterSections $ parseSectionsFromHeadingGroup headingGroup
-                     else SubSubChapters     $ parseSubSubChapters headingGroup
+                     then SubChapterSections $ parseSectionsFromHeadingGroup dom headingGroup
+                     else SubSubChapters     $ parseSubSubChapters dom headingGroup
 
 
-parseSectionsFromHeadingGroup :: [Tag Text] -> [Section]
-parseSectionsFromHeadingGroup headingGroup =
-  map parseSectionFromHeadingParagraph (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
+parseSectionsFromHeadingGroup :: [Tag Text] -> [Tag Text] -> [Section]
+parseSectionsFromHeadingGroup dom headingGroup =
+  fmap (parseSectionFromHeadingParagraph dom) (partitions (~== "<p class=COLeadline>") headingGroup)
 
 
-parseSectionFromHeadingParagraph :: [Tag Text] -> Section
-parseSectionFromHeadingParagraph paragraph =
+parseSectionFromHeadingParagraph :: [Tag Text] -> [Tag Text] -> Section
+parseSectionFromHeadingParagraph dom paragraph =
   Section {
-    sectionName   = fixUnicodeChars $ normalizeWhiteSpace $ innerText $ (dropWhile (~/= ("</a>" :: String))) paragraph,
-    sectionNumber = (!! 1) $ words $ fixUnicodeChars $ normalizeWhiteSpace $ innerText $ paragraph
+    sectionName   = name,
+    sectionNumber = number,
+    sectionBody   = body
   }
+  where
+    name   = normalizedInnerText $ dropWhile (~/= "</a>") paragraph
+    number = (!! 1) $ words $ normalizedInnerText $ takeWhile (~/= "</a>") paragraph
+    body   = parseSectionBody number dom
 
 
-parseSubSubChapters :: [Tag Text] -> [SubSubChapter]
-parseSubSubChapters headingGroup =
-  map parseSubSubChapter (subSubChapterHeadingGroups headingGroup)
+parseSubSubChapters :: [Tag Text] ->[Tag Text] -> [SubSubChapter]
+parseSubSubChapters dom headingGroup =
+  fmap (parseSubSubChapter dom) (subSubChapterHeadingGroups headingGroup)
 
 
 subSubChapterHeadingGroups :: [Tag Text] -> [[Tag Text]]
 subSubChapterHeadingGroups headingGroup =
-  (partitions (~== ("<p class=COHead4>" :: String)) headingGroup)
+  (partitions (~== "<p class=COHead4>") headingGroup)
 
 
-parseSubSubChapter :: [Tag Text] -> SubSubChapter
-parseSubSubChapter subSubChapterHeadingGroup =
+parseSubSubChapter :: [Tag Text] ->[Tag Text] -> SubSubChapter
+parseSubSubChapter dom subSubChapterHeadingGroup =
   SubSubChapter {
     subSubChapterName     = name,
-    subSubChapterSections = parseSectionsFromHeadingGroup subSubChapterHeadingGroup
+    subSubChapterSections = parseSectionsFromHeadingGroup dom subSubChapterHeadingGroup
   }
   where
     name = (normalizeWhiteSpace . (!!0) . lines . innerText) subSubChapterHeadingGroup
@@ -76,7 +79,7 @@ parseSubSubChapter subSubChapterHeadingGroup =
 
 subchapterNames :: [Tag Text] -> [Text]
 subchapterNames tags =
-  map subChapterNameFromGroup (headingGroups tags)
+  fmap subChapterNameFromGroup (headingGroups tags)
 
 
 subChapterNameFromGroup :: [Tag Text] -> Text
@@ -86,39 +89,57 @@ subChapterNameFromGroup =
 
 sectionNamesFromGroup :: [Tag Text] -> [Text]
 sectionNamesFromGroup headingGroup =
-  map sectionNameFromParagraph (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
+  fmap sectionNameFromParagraph (partitions (~== "<p class=COLeadline>") headingGroup)
 
 
 sectionNameFromParagraph :: [Tag Text] -> Text
 sectionNameFromParagraph = 
-  fixUnicodeChars . normalizeWhiteSpace . strip . innerText . (dropWhile (~/= ("</a>" :: String)))
+  normalizedInnerText . (dropWhile (~/= "</a>"))
 
 
 headingGroups :: [Tag Text] -> [[Tag Text]]
 headingGroups tags = 
-  partitions (~== ("<p class=COHead2>" :: String)) tags
+  partitions (~== "<p class=COHead2>") tags
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
 parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input =
-  case (parseOnly chapterTitleParser input) of
+  case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
     Left e  -> error e
     Right b -> b
         
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
-chapterTitleParser :: Parser (Text, Text)
+chapterTitleParser :: Data.Attoparsec.Text.Parser (Text, Text)
 chapterTitleParser = do
   _      <- string "NRS: CHAPTER "
-  number <- takeWhile (not . isSpace)
+  number <- Data.Attoparsec.Text.takeWhile (not . isSpace)
   _      <- string " - "
-  title  <- takeText
+  title  <- Data.Attoparsec.Text.takeText
   return $ (number, titleize title)
 
 
 isSimpleSubChapter :: [Tag Text] -> Bool
 isSimpleSubChapter headingGroup =
-  null (partitions (~== ("<p class=COHead4>" :: String)) headingGroup)
+  null (partitions (~== "<p class=COHead4>") headingGroup)
+
+
+parseSectionBody :: Text -> [Tag Text] -> Text
+parseSectionBody number dom = 
+  sectionText
+  where sectionGroups   = partitions (~== "<span class=Section") dom
+        rawSectionGroup = shaveBackTagsToLastClosingP $ (!! 0) $ filter (isSectionBodyNumber number) sectionGroups 
+        sectionText     = normalizeWhiteSpace $ pack "<p class=SectBody>" ++ (renderTags rawSectionGroup)
+
+
+isSectionBodyNumber :: Text -> [Tag Text] -> Bool
+isSectionBodyNumber number dom =
+  parseSectionBodyNumber dom == number
+  
+
+parseSectionBodyNumber :: [Tag Text] -> Text
+parseSectionBodyNumber dom = 
+  innerText $ takeWhile (~/= "</span>") dom

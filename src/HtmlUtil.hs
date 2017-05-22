@@ -1,9 +1,7 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module HtmlUtil  where
 
 import           BasicPrelude
-import           Text.HTML.TagSoup (Tag, partitions, (~==), innerText)
+import           Text.HTML.TagSoup (innerText, Tag, partitions, (~==), (~/=))
 
 
 
@@ -22,9 +20,9 @@ findFirst searchTerm html =
 -- HTML chunk.
 findAll ∷ String → [Tag Text] → [[Tag Text]]
 findAll searchTerm =
-  partitions (~== s searchTerm)
+  partitions (~== searchTerm)
 
 
--- Lower-ceremony way to declare a string
-s ∷ String → String
-s = id
+shaveBackTagsToLastClosingP :: [Tag Text] -> [Tag Text]
+shaveBackTagsToLastClosingP input =
+  reverse $ dropWhile (~/= "</p>") $ reverse input
