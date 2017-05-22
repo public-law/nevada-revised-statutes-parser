@@ -129,10 +129,10 @@ isSimpleSubChapter headingGroup =
 
 parseSectionBody :: Text -> [Tag Text] -> Text
 parseSectionBody number dom = 
-  sectionGroup
+  sectionText
   where sectionGroups   = partitions (~== "<span class=Section") dom
         rawSectionGroup = takeWhile (~/= "<p class=SectBody>") $ (!! 0) $ filter (isSectionBodyNumber number) sectionGroups 
-        sectionGroup    = pack "<p class=SectBody>" ++ (renderTags rawSectionGroup)
+        sectionText     = normalizeWhiteSpace $ pack "<p class=SectBody>" ++ (renderTags rawSectionGroup)
 
 isSectionBodyNumber :: Text -> [Tag Text] -> Bool
 isSectionBodyNumber number dom =
