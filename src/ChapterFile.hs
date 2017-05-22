@@ -3,7 +3,7 @@ module ChapterFile where
 import           BasicPrelude
 import qualified Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
 import           Data.Char               (isSpace)
-import           Data.Text               (pack)
+import           Data.Text               (pack, unpack)
 import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
@@ -53,15 +53,15 @@ parseSectionFromHeadingParagraph dom paragraph =
   }
   where
     name   = normalizedInnerText $ dropWhile (~/= "</a>") paragraph
-    number = (!! 1) $ words $ normalizedInnerText $ takeWhile (~/= "</a>") paragraph
+    number = parseNumberFromRawNumberText (normalizedInnerText $ takeWhile (~/= "</a>") paragraph) (renderTags paragraph)
     body   = parseSectionBody number dom
 
 
-parseNumberFromRawNumberText :: Text -> Text
-parseNumberFromRawNumberText numberText =
+parseNumberFromRawNumberText :: Text -> Text -> Text
+parseNumberFromRawNumberText numberText name =
   case words numberText of
     (_:x:_) -> x
-    _       -> error "Expected " ++ numberText ++ pack " to have at least two words"
+    _       -> error ("Expected section \"" ++ (unpack name) ++ "\" raw number \"" ++ (unpack numberText) ++ "\" to have at least two words")
 
 
 parseSubSubChapters :: [Tag Text] ->[Tag Text] -> [SubSubChapter]
