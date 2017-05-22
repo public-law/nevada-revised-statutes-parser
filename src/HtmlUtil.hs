@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module HtmlUtil  where
 
 import           BasicPrelude
@@ -22,9 +20,4 @@ findFirst searchTerm html =
 -- HTML chunk.
 findAll ∷ String → [Tag Text] → [[Tag Text]]
 findAll searchTerm =
-  partitions (~== s searchTerm)
-
-
--- Lower-ceremony way to declare a string
-s ∷ String → String
-s = id
+  partitions (~== searchTerm)

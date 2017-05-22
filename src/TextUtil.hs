@@ -6,6 +6,7 @@ import          BasicPrelude
 import          Data.Text                       (replace, toLower)
 import          Data.Text.Titlecase             (titlecase)
 import          Data.Text.Titlecase.Internal    (unTitlecase)
+import          Text.HTML.TagSoup
 
 
 titleize :: Text -> Text
@@ -15,6 +16,10 @@ titleize = unTitlecase . titlecase . toLower
 isHyphen :: Char -> Bool
 isHyphen '-' = True
 isHyphen  _  = False
+
+
+normalizedInnerText :: [Tag Text] -> Text
+normalizedInnerText = fixUnicodeChars . normalizeWhiteSpace . innerText
 
 
 normalizeWhiteSpace :: Text -> Text

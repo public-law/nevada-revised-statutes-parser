@@ -8,7 +8,7 @@ import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
 import           HtmlUtil                (titleText)
-import           TextUtil                (fixUnicodeChars, normalizeWhiteSpace, titleize)
+import           TextUtil                (fixUnicodeChars, normalizeWhiteSpace, normalizedInnerText, titleize)
 import           Models
 
 
@@ -51,8 +51,8 @@ parseSectionFromHeadingParagraph paragraph =
     sectionNumber = number
   }
   where
-    name   = fixUnicodeChars $ normalizeWhiteSpace $ innerText $ dropWhile (~/= "</a>") paragraph
-    number = (!! 1) $ words  $ normalizeWhiteSpace $ innerText $ takeWhile (~/= "</a>") paragraph
+    name   = normalizedInnerText $ dropWhile (~/= "</a>") paragraph
+    number = (!! 1) $ words $ normalizedInnerText $ takeWhile (~/= "</a>") paragraph
 
 
 parseSubSubChapters :: [Tag Text] -> [SubSubChapter]
