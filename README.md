@@ -1,7 +1,7 @@
-nv-statutes
-===========
+Parser for the Nevada Revised Statutes 
+======================================
 
-**Input:** The Nevada laws (i.e., the Nevada Revised Statutes) directly from [the website](https://www.leg.state.nv.us/NRS/).
+**Input:** The Nevada laws (i.e., the Nevada Revised Statutes) [website](https://www.leg.state.nv.us/NRS/).
 
 **Output:** Semantic JSON, similar to this [Oregon parser](https://github.com/dogweather/analyze-oregon-law-haskell) output:
 
@@ -22,3 +22,5 @@ nv-statutes
     }
 }
 ```
+
+The [Nevada Laws](http://www.nevadalaws.org) web app will read in and display the content.
