@@ -2,8 +2,8 @@
 
 module ChapterFile where
 
-import           BasicPrelude            hiding (takeWhile)
-import           Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
+import           BasicPrelude
+import qualified Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
 import           Data.Char               (isSpace)
 import           Data.Text               (strip)
 import           Text.HTML.TagSoup
@@ -106,19 +106,19 @@ headingGroups tags =
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
 parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input =
-  case (parseOnly chapterTitleParser input) of
+  case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
     Left e  -> error e
     Right b -> b
         
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
-chapterTitleParser :: Parser (Text, Text)
+chapterTitleParser :: Data.Attoparsec.Text.Parser (Text, Text)
 chapterTitleParser = do
   _      <- string "NRS: CHAPTER "
-  number <- takeWhile (not . isSpace)
+  number <- Data.Attoparsec.Text.takeWhile (not . isSpace)
   _      <- string " - "
-  title  <- takeText
+  title  <- Data.Attoparsec.Text.takeText
   return $ (number, titleize title)
 
 
