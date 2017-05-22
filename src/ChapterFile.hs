@@ -25,44 +25,41 @@ parseChapter chapterHtml =
   where tags           = parseTags chapterHtml
         rawTitle       = titleText tags
         (number, name) = parseChapterFileTitle rawTitle
-        subChaps       = fmap newSubChapter (headingGroups tags)
+        subChaps       = fmap (newSubChapter tags) (headingGroups tags)
 
 
-newSubChapter :: [Tag Text] -> SubChapter
-newSubChapter headingGroup =
+newSubChapter :: [Tag Text] -> [Tag Text] -> SubChapter
+newSubChapter dom headingGroup =
   SubChapter {
     subChapterName     = subChapterNameFromGroup headingGroup,
     subChapterChildren = children
   }
   where children = if isSimpleSubChapter headingGroup
-                     then SubChapterSections $ parseSectionsFromHeadingGroup headingGroup
-                     else SubSubChapters     $ parseSubSubChapters headingGroup
+                     then SubChapterSections $ parseSectionsFromHeadingGroup dom headingGroup
+                     else SubSubChapters     $ parseSubSubChapters dom headingGroup
 
 
-parseSectionsFromHeadingGroup :: [Tag Text] -> [Section]
-parseSectionsFromHeadingGroup headingGroup =
-  fmap parseSectionFromHeadingParagraph (partitions (~== "<p class=COLeadline>") headingGroup)
+parseSectionsFromHeadingGroup :: [Tag Text] -> [Tag Text] -> [Section]
+parseSectionsFromHeadingGroup dom headingGroup =
+  fmap (parseSectionFromHeadingParagraph dom) (partitions (~== "<p class=COLeadline>") headingGroup)
 
 
-parseSectionFromHeadingParagraph :: [Tag Text] -> Section
-parseSectionFromHeadingParagraph paragraph =
+parseSectionFromHeadingParagraph :: [Tag Text] -> [Tag Text] -> Section
+parseSectionFromHeadingParagraph dom paragraph =
   Section {
     sectionName   = name,
-    sectionNumber = number
+    sectionNumber = number,
+    sectionBody   = body
   }
   where
     name   = normalizedInnerText $ dropWhile (~/= "</a>") paragraph
     number = (!! 1) $ words $ normalizedInnerText $ takeWhile (~/= "</a>") paragraph
+    body   = parseSectionBody number dom
 
 
-parseSectionBody :: Text -> [Tag Text] -> Text
-parseSectionBody number dom = pack ""
-
-
-
-parseSubSubChapters :: [Tag Text] -> [SubSubChapter]
-parseSubSubChapters headingGroup =
-  fmap parseSubSubChapter (subSubChapterHeadingGroups headingGroup)
+parseSubSubChapters :: [Tag Text] ->[Tag Text] -> [SubSubChapter]
+parseSubSubChapters dom headingGroup =
+  fmap (parseSubSubChapter dom) (subSubChapterHeadingGroups headingGroup)
 
 
 subSubChapterHeadingGroups :: [Tag Text] -> [[Tag Text]]
@@ -70,11 +67,11 @@ subSubChapterHeadingGroups headingGroup =
   (partitions (~== "<p class=COHead4>") headingGroup)
 
 
-parseSubSubChapter :: [Tag Text] -> SubSubChapter
-parseSubSubChapter subSubChapterHeadingGroup =
+parseSubSubChapter :: [Tag Text] ->[Tag Text] -> SubSubChapter
+parseSubSubChapter dom subSubChapterHeadingGroup =
   SubSubChapter {
     subSubChapterName     = name,
-    subSubChapterSections = parseSectionsFromHeadingGroup subSubChapterHeadingGroup
+    subSubChapterSections = parseSectionsFromHeadingGroup dom subSubChapterHeadingGroup
   }
   where
     name = (normalizeWhiteSpace . (!!0) . lines . innerText) subSubChapterHeadingGroup
@@ -128,3 +125,20 @@ chapterTitleParser = do
 isSimpleSubChapter :: [Tag Text] -> Bool
 isSimpleSubChapter headingGroup =
   null (partitions (~== "<p class=COHead4>") headingGroup)
+
+
+parseSectionBody :: Text -> [Tag Text] -> Text
+parseSectionBody number dom = 
+  renderTags sectionGroup
+  where sectionGroups = partitions (~== "<span class=Section") dom
+        sectionGroup  = (!! 0) $ BasicPrelude.filter (isSectionBodyNumber number) sectionGroups 
+
+
+isSectionBodyNumber :: Text -> [Tag Text] -> Bool
+isSectionBodyNumber number dom =
+  parseSectionBodyNumber dom == number
+  
+
+parseSectionBodyNumber :: [Tag Text] -> Text
+parseSectionBodyNumber dom = 
+  innerText $ takeWhile (~/= "</span>") dom
