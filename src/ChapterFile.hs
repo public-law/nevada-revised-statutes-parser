@@ -8,7 +8,7 @@ import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
 import           HtmlUtil                (titleText)
-import           TextUtil                (fixUnicodeChars, normalizeWhiteSpace, normalizedInnerText, titleize)
+import           TextUtil                (normalizeWhiteSpace, normalizedInnerText, titleize)
 import           Models
 
 
