@@ -10,5 +10,5 @@ import          ChapterFile
 
 main :: IO ()
 main = do
-    html <- readFileAsUtf8 (fixture "nrs-432b.html") "LATIN1"
+    html <- readFileLatin1 (fixture "nrs-432b.html")
     B.putStr $ encodePretty $ parseChapter html

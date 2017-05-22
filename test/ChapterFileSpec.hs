@@ -11,7 +11,7 @@ import          Text.HTML.TagSoup
 
 import          Models
 import          ChapterFile
-import          FileUtil                      (fixture, readFileAsUtf8)
+import          FileUtil
 
 
 spec :: SpecWith ()
@@ -146,4 +146,4 @@ main =
 
 chapter_432b_html :: IO Text
 chapter_432b_html = 
-  readFileAsUtf8 (fixture "nrs-432b.html") "LATIN1"
+  readFileLatin1 (fixture "nrs-432b.html")
