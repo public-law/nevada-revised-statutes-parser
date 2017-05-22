@@ -41,7 +41,7 @@ newSubChapter headingGroup =
 
 parseSectionsFromHeadingGroup :: [Tag Text] -> [Section]
 parseSectionsFromHeadingGroup headingGroup =
-  fmap parseSectionFromHeadingParagraph (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
+  fmap parseSectionFromHeadingParagraph (partitions (~== "<p class=COLeadline>") headingGroup)
 
 
 parseSectionFromHeadingParagraph :: [Tag Text] -> Section
@@ -51,8 +51,8 @@ parseSectionFromHeadingParagraph paragraph =
     sectionNumber = number
   }
   where
-    name   = fixUnicodeChars $ normalizeWhiteSpace $ innerText $ dropWhile (~/= ("</a>" :: String)) paragraph
-    number = (!! 1) $ words  $ normalizeWhiteSpace $ innerText $ takeWhile (~/= ("</a>" :: String)) paragraph
+    name   = fixUnicodeChars $ normalizeWhiteSpace $ innerText $ dropWhile (~/= "</a>") paragraph
+    number = (!! 1) $ words  $ normalizeWhiteSpace $ innerText $ takeWhile (~/= "</a>") paragraph
 
 
 parseSubSubChapters :: [Tag Text] -> [SubSubChapter]
@@ -62,7 +62,7 @@ parseSubSubChapters headingGroup =
 
 subSubChapterHeadingGroups :: [Tag Text] -> [[Tag Text]]
 subSubChapterHeadingGroups headingGroup =
-  (partitions (~== ("<p class=COHead4>" :: String)) headingGroup)
+  (partitions (~== "<p class=COHead4>") headingGroup)
 
 
 parseSubSubChapter :: [Tag Text] -> SubSubChapter
@@ -87,17 +87,17 @@ subChapterNameFromGroup =
 
 sectionNamesFromGroup :: [Tag Text] -> [Text]
 sectionNamesFromGroup headingGroup =
-  fmap sectionNameFromParagraph (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
+  fmap sectionNameFromParagraph (partitions (~== "<p class=COLeadline>") headingGroup)
 
 
 sectionNameFromParagraph :: [Tag Text] -> Text
 sectionNameFromParagraph = 
-  fixUnicodeChars . normalizeWhiteSpace . strip . innerText . (dropWhile (~/= ("</a>" :: String)))
+  fixUnicodeChars . normalizeWhiteSpace . strip . innerText . (dropWhile (~/= "</a>"))
 
 
 headingGroups :: [Tag Text] -> [[Tag Text]]
 headingGroups tags = 
-  partitions (~== ("<p class=COHead2>" :: String)) tags
+  partitions (~== "<p class=COHead2>") tags
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
@@ -122,4 +122,4 @@ chapterTitleParser = do
 
 isSimpleSubChapter :: [Tag Text] -> Bool
 isSimpleSubChapter headingGroup =
-  null (partitions (~== ("<p class=COHead4>" :: String)) headingGroup)
+  null (partitions (~== "<p class=COHead4>") headingGroup)
