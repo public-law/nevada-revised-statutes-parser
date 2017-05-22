@@ -49,9 +49,12 @@ parseSectionsFromHeadingGroup headingGroup =
 parseSectionFromHeadingParagraph :: [Tag Text] -> Section
 parseSectionFromHeadingParagraph paragraph =
   Section {
-    sectionName   = fixUnicodeChars $ normalizeWhiteSpace $ innerText $ (dropWhile (~/= ("</a>" :: String))) paragraph,
-    sectionNumber = (!! 1) $ words $ fixUnicodeChars $ normalizeWhiteSpace $ innerText $ paragraph
+    sectionName   = name,
+    sectionNumber = number
   }
+  where
+    number = (!! 1) $ words $ fixUnicodeChars $ normalizeWhiteSpace $ innerText $ paragraph
+    name   = fixUnicodeChars $ normalizeWhiteSpace $ innerText $ dropWhile (~/= ("</a>" :: String)) paragraph
 
 
 parseSubSubChapters :: [Tag Text] -> [SubSubChapter]
