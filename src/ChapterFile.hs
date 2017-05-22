@@ -41,7 +41,8 @@ newSubChapter dom headingGroup =
 
 parseSectionsFromHeadingGroup :: [Tag Text] -> [Tag Text] -> [Section]
 parseSectionsFromHeadingGroup dom headingGroup =
-  fmap (parseSectionFromHeadingParagraph dom) (partitions (~== "<p class=COLeadline>") headingGroup)
+  -- Filter out empty COLeadline P's.
+  fmap (parseSectionFromHeadingParagraph dom) (filter (\tags -> length tags > 4) (partitions (~== "<p class=COLeadline>") headingGroup))
 
 
 parseSectionFromHeadingParagraph :: [Tag Text] -> [Tag Text] -> Section
