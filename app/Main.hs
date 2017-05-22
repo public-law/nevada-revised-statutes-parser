@@ -11,5 +11,4 @@ import          ChapterFile
 main :: IO ()
 main = do
     html <- readFileAsUtf8 (fixture "nrs-432b.html") "LATIN1"
-    let chapter = parseChapter html
-    B.putStr $ encodePretty chapter
+    B.putStr $ encodePretty $ parseChapter html

@@ -57,6 +57,13 @@ parseSectionFromHeadingParagraph dom paragraph =
     body   = parseSectionBody number dom
 
 
+parseNumberFromRawNumberText :: Text -> Text
+parseNumberFromRawNumberText numberText =
+  case words numberText of
+    (_:x:_) -> x
+    _       -> error "Expected " ++ numberText ++ pack " to have at least two words"
+
+
 parseSubSubChapters :: [Tag Text] ->[Tag Text] -> [SubSubChapter]
 parseSubSubChapters dom headingGroup =
   fmap (parseSubSubChapter dom) (subSubChapterHeadingGroups headingGroup)
