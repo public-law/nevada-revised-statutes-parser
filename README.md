@@ -25,10 +25,7 @@ Parser for the Nevada Revised Statutes
                         "sectionNumber": "432B.020",
                         "sectionName": "“Abuse or neglect of a child” defined.",
                         "sectionBody": "<p class=SectBody><span class=\"Section\">432B.020</span>..."
-                    },
-
-                    # ...
-                    
+                    }
                 ]
             }
         }
