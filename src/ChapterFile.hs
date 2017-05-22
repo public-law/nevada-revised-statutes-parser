@@ -3,11 +3,11 @@ module ChapterFile where
 import           BasicPrelude
 import qualified Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
 import           Data.Char               (isSpace)
-import           Data.Text               hiding (dropWhile, filter, null, takeWhile)
+import           Data.Text               (pack)
 import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
-import           HtmlUtil                (titleText)
+import           HtmlUtil                (shaveBackTagsToLastClosingP, titleText)
 import           TextUtil                (normalizeWhiteSpace, normalizedInnerText, titleize)
 import           Models
 
@@ -131,8 +131,9 @@ parseSectionBody :: Text -> [Tag Text] -> Text
 parseSectionBody number dom = 
   sectionText
   where sectionGroups   = partitions (~== "<span class=Section") dom
-        rawSectionGroup = takeWhile (~/= "<p class=SectBody>") $ (!! 0) $ filter (isSectionBodyNumber number) sectionGroups 
+        rawSectionGroup = shaveBackTagsToLastClosingP $ (!! 0) $ filter (isSectionBodyNumber number) sectionGroups 
         sectionText     = normalizeWhiteSpace $ pack "<p class=SectBody>" ++ (renderTags rawSectionGroup)
+
 
 isSectionBodyNumber :: Text -> [Tag Text] -> Bool
 isSectionBodyNumber number dom =

@@ -1,7 +1,7 @@
 module HtmlUtil  where
 
 import           BasicPrelude
-import           Text.HTML.TagSoup (Tag, partitions, (~==), innerText)
+import           Text.HTML.TagSoup (innerText, Tag, partitions, (~==), (~/=))
 
 
 
@@ -21,3 +21,8 @@ findFirst searchTerm html =
 findAll ∷ String → [Tag Text] → [[Tag Text]]
 findAll searchTerm =
   partitions (~== searchTerm)
+
+
+shaveBackTagsToLastClosingP :: [Tag Text] -> [Tag Text]
+shaveBackTagsToLastClosingP input =
+  reverse $ dropWhile (~/= "</p>") $ reverse input
