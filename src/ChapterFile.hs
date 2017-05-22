@@ -1,11 +1,9 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module ChapterFile where
 
 import           BasicPrelude
 import qualified Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
 import           Data.Char               (isSpace)
-import           Data.Text               (strip)
+import           Data.Text               hiding (dropWhile, null, takeWhile)
 import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
@@ -25,7 +23,7 @@ parseChapter chapterHtml =
   in Chapter {
     chapterName   = name,
     chapterNumber = number,
-    chapterUrl    = "https://www.leg.state.nv.us/nrs/NRS-" ++ number ++ ".html",
+    chapterUrl    =  (pack "https://www.leg.state.nv.us/nrs/NRS-") ++ number ++ (pack ".html"),
     subChapters   = subChaps
   }
 
@@ -43,7 +41,7 @@ newSubChapter headingGroup =
 
 parseSectionsFromHeadingGroup :: [Tag Text] -> [Section]
 parseSectionsFromHeadingGroup headingGroup =
-  map parseSectionFromHeadingParagraph (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
+  fmap parseSectionFromHeadingParagraph (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
 
 
 parseSectionFromHeadingParagraph :: [Tag Text] -> Section
@@ -54,12 +52,12 @@ parseSectionFromHeadingParagraph paragraph =
   }
   where
     name   = fixUnicodeChars $ normalizeWhiteSpace $ innerText $ dropWhile (~/= ("</a>" :: String)) paragraph
-    number = (!! 1) $ words $ fixUnicodeChars $ normalizeWhiteSpace $ innerText $ paragraph
+    number = (!! 1) $ words  $ normalizeWhiteSpace $ innerText $ takeWhile (~/= ("</a>" :: String)) paragraph
 
 
 parseSubSubChapters :: [Tag Text] -> [SubSubChapter]
 parseSubSubChapters headingGroup =
-  map parseSubSubChapter (subSubChapterHeadingGroups headingGroup)
+  fmap parseSubSubChapter (subSubChapterHeadingGroups headingGroup)
 
 
 subSubChapterHeadingGroups :: [Tag Text] -> [[Tag Text]]
@@ -79,7 +77,7 @@ parseSubSubChapter subSubChapterHeadingGroup =
 
 subchapterNames :: [Tag Text] -> [Text]
 subchapterNames tags =
-  map subChapterNameFromGroup (headingGroups tags)
+  fmap subChapterNameFromGroup (headingGroups tags)
 
 
 subChapterNameFromGroup :: [Tag Text] -> Text
@@ -89,7 +87,7 @@ subChapterNameFromGroup =
 
 sectionNamesFromGroup :: [Tag Text] -> [Text]
 sectionNamesFromGroup headingGroup =
-  map sectionNameFromParagraph (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
+  fmap sectionNameFromParagraph (partitions (~== ("<p class=COLeadline>" :: String)) headingGroup)
 
 
 sectionNameFromParagraph :: [Tag Text] -> Text
