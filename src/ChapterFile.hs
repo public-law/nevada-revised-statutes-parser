@@ -16,16 +16,16 @@ type Html = Text
 
 parseChapter :: Html -> Chapter
 parseChapter chapterHtml =
-  let tags           = parseTags chapterHtml
-      rawTitle       = titleText tags
-      (number, name) = parseChapterFileTitle rawTitle
-      subChaps       = fmap newSubChapter (headingGroups tags)
-  in Chapter {
+  Chapter {
     chapterName   = name,
     chapterNumber = number,
-    chapterUrl    =  (pack "https://www.leg.state.nv.us/nrs/NRS-") ++ number ++ (pack ".html"),
+    chapterUrl    = (pack "https://www.leg.state.nv.us/nrs/NRS-") ++ number ++ (pack ".html"),
     subChapters   = subChaps
   }
+  where tags           = parseTags chapterHtml
+        rawTitle       = titleText tags
+        (number, name) = parseChapterFileTitle rawTitle
+        subChaps       = fmap newSubChapter (headingGroups tags)
 
 
 newSubChapter :: [Tag Text] -> SubChapter
