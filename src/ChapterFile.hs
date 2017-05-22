@@ -3,7 +3,7 @@ module ChapterFile where
 import           BasicPrelude
 import qualified Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
 import           Data.Char               (isSpace)
-import           Data.Text               hiding (dropWhile, null, takeWhile)
+import           Data.Text               hiding (dropWhile, filter, null, takeWhile)
 import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
@@ -129,10 +129,10 @@ isSimpleSubChapter headingGroup =
 
 parseSectionBody :: Text -> [Tag Text] -> Text
 parseSectionBody number dom = 
-  renderTags sectionGroup
-  where sectionGroups = partitions (~== "<span class=Section") dom
-        sectionGroup  = (!! 0) $ BasicPrelude.filter (isSectionBodyNumber number) sectionGroups 
-
+  sectionGroup
+  where sectionGroups   = partitions (~== "<span class=Section") dom
+        rawSectionGroup = takeWhile (~/= "<p class=SectBody>") $ (!! 0) $ filter (isSectionBodyNumber number) sectionGroups 
+        sectionGroup    = pack "<p class=SectBody>" ++ (renderTags rawSectionGroup)
 
 isSectionBodyNumber :: Text -> [Tag Text] -> Bool
 isSectionBodyNumber number dom =
