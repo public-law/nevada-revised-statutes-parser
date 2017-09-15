@@ -5,6 +5,7 @@ import           Text.HTML.TagSoup (innerText, Tag, partitions, (~==), (~/=))
 
 
 
+-- Return the text content of an HTML title.
 titleText :: [Tag Text] -> Text
 titleText tags = innerText $ [(findFirst "<title>" tags) !! 1]
 

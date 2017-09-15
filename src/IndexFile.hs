@@ -18,6 +18,7 @@ import           Models
 
 
 type Html = Text
+type Node = [Tag Text]
 
 
 titles :: Html → [Title]
@@ -27,14 +28,14 @@ titles indexHtml =
   in fmap newTitle tuples
 
 
-contentRows :: Html → [[Tag Text]]
+contentRows :: Html → [Node]
 contentRows indexHtml =
-  let tags       = parseTags indexHtml
-      table      = findFirst "<table class=MsoNormalTable" tags
+  let tags  = parseTags indexHtml
+      table = findFirst "<table class=MsoNormalTable" tags
   in findAll "<tr>" table
 
 
-newTitle :: [[[Tag Text]]] -> Title
+newTitle :: [[Node]] -> Title
 newTitle tuple =
   let titleRow       = head (head tuple)
       chapterRows    = head $ tail tuple
@@ -44,18 +45,15 @@ newTitle tuple =
   in Title { titleName = titleize name, titleNumber = number, chapters = parsedChapters }
 
 
-newChapter :: [Tag Text] → Chapter
+newChapter :: Node → Chapter
 newChapter row =
   Chapter {
-    chapterName   = name,
-    chapterNumber = number,
-    chapterUrl    = url,
+    chapterName   = last columns & innerText & strip,
+    chapterNumber = head columns & innerText & strip & words & last,
+    chapterUrl    = findFirst "<a>" row & head & fromAttrib "href",
     subChapters   = []
   }
   where columns = findAll "<td>" row
-        number  = head columns & innerText & strip & words & last
-        name    = last columns & innerText & strip
-        url     = findFirst "<a>" row & head & fromAttrib "href"
 
 
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
@@ -71,13 +69,13 @@ parseRawTitle input =
     Right b -> b
 
 
-rowTuples :: [[Tag Text]] → [[[[Tag Text]]]]
+rowTuples :: [Node] → [[[Node]]]
 rowTuples rows =
   split (whenElt isTitleRow) rows
     & tail
     & chunksOf 2
 
 
-isTitleRow :: [Tag Text] → Bool
+isTitleRow :: Node → Bool
 isTitleRow html =
   length (findAll "<td>" html) == 1
