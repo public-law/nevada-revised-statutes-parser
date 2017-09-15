@@ -30,8 +30,8 @@ titles indexHtml =
 
 contentRows :: Html → [Node]
 contentRows indexHtml =
-  let tags       = parseTags indexHtml
-      table      = findFirst "<table class=MsoNormalTable" tags
+  let tags  = parseTags indexHtml
+      table = findFirst "<table class=MsoNormalTable" tags
   in findAll "<tr>" table
 
 
