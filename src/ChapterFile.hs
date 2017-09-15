@@ -14,12 +14,19 @@ import           Models
 
 type Html = Text
 
+chapterUrlPrefix = pack "https://www.leg.state.nv.us/nrs/NRS-"
+
+
+--
+-- TODO: Any way to shorten this file?
+--
+
 parseChapter :: Html -> Chapter
 parseChapter chapterHtml =
   Chapter {
     chapterName   = name,
     chapterNumber = number,
-    chapterUrl    = (pack "https://www.leg.state.nv.us/nrs/NRS-") ++ number ++ (pack ".html"),
+    chapterUrl    = chapterUrlPrefix ++ number ++ (pack ".html"),
     subChapters   = subChaps
   }
   where tags           = parseTags chapterHtml
