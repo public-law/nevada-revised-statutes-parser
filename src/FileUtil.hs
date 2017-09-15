@@ -1,20 +1,18 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module FileUtil where
 
-import           BasicPrelude
-import           Data.Text (pack)
-import           System.Process
-
+import BasicPrelude
+import Data.Text (pack)
+import System.Process
 import System.IO (withFile, IOMode(ReadMode))
 import Data.ByteString (hGetContents)
 import Data.Text.Encoding (decodeLatin1)
 
 
-
+-- Does not work when invoked from the fish shell.
+-- Not sure why not.
 readFileLatin1 :: FilePath -> IO Text
 readFileLatin1 pathname =
-    fmap decodeLatin1 (withFile pathname ReadMode hGetContents)
+  fmap decodeLatin1 (withFile pathname ReadMode hGetContents)
 
 
 -- Accepts encodings such as LATIN1.
@@ -26,6 +24,7 @@ readFileAsUtf8 pathname sourceEncoding = do
   return $ pack stdout'
 
 
+-- Compute a full fixture path
 fixture :: String -> String
 fixture filename =
   "test/fixtures/" ++ filename

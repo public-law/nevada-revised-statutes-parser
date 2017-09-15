@@ -7,6 +7,8 @@ import          BasicPrelude
 import          Data.Text                     (pack)
 import          Test.Hspec
 import          Text.HTML.TagSoup
+
+-- What exactly is this?
 -- import          Text.InterpolatedString.Perl6 (q)
 
 import          Models
@@ -18,7 +20,7 @@ spec :: SpecWith ()
 spec = parallel $ do
 
   describe "parseChapter" $ do
-  
+
     it "gets the chapter name" $ do
       html ← chapter_432b_html
       chapterName (parseChapter html) `shouldBe` "Protection of Children from Abuse and Neglect"
@@ -33,7 +35,7 @@ spec = parallel $ do
       html ← chapter_432b_html
       chapterUrl (parseChapter html) `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
 
-    
+
     it "gets the sub-chapter names" $ do
       html ← chapter_432b_html
       let subchapters = subChapters ( parseChapter html )
@@ -108,19 +110,19 @@ spec = parallel $ do
 
 
   describe "isSimpleSubChapter" $ do
-    
+
     it "correctly identifies a simple sub-chapter" $ do
       html <- chapter_432b_html
-      let generalProvisions = (!! 0) $ headingGroups $ parseTags html 
+      let generalProvisions = (!! 0) $ headingGroups $ parseTags html
       isSimpleSubChapter generalProvisions `shouldBe` True
 
     it "correctly identifies a complex sub-chapter" $ do
       html <- chapter_432b_html
-      let administration = (!! 1) $ headingGroups $ parseTags html 
+      let administration = (!! 1) $ headingGroups $ parseTags html
       isSimpleSubChapter administration `shouldBe` False
 
   describe "sectionBody" $ do
-    
+
     it "returns the complete HTML - 1" $ do
       html <- chapter_432b_html
       let dom = parseTags html
@@ -145,5 +147,5 @@ main =
 
 
 chapter_432b_html :: IO Text
-chapter_432b_html = 
+chapter_432b_html =
   readFileLatin1 (fixture "nrs-432b.html")
