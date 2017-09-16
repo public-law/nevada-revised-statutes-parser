@@ -16,6 +16,5 @@ spec = parallel $ do
     it "handles all uppercase" $ do
       titleize "PROTECTION OF CHILDREN" `shouldBe` "Protection of Children"
 
-    -- it "handles Unicode double quotes" $ do
-    --   pendingWith "Don't know how to do this"
-    --   titleize "“ABUSE OR NEGLECT” DEFINED." `shouldBe` "“Abuse or Neglect” Defined."
+    it "handles Unicode double quotes" $ do
+      titleize "“ABUSE OR NEGLECT” DEFINED." `shouldBe` "“Abuse or Neglect” Defined."
