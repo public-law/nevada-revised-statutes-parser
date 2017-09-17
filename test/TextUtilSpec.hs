@@ -14,13 +14,13 @@ spec = parallel $ do
     describe "shouldCapitalize" $ do
 
         it "handles a typical article" $
-            shouldCapitalize "a" `shouldBe` True
+            shouldCapitalize "a" `shouldBe` False
 
-        it "knows a word not to capitalize" $
-            shouldCapitalize "dog" `shouldBe` False
+        it "handles a normal word" $
+            shouldCapitalize "dog" `shouldBe` True
 
         it "handles uppercase input" $
-            shouldCapitalize "THE" `shouldBe` True
+            shouldCapitalize "THE" `shouldBe` False
 
 
     describe "titleizeWord" $ do

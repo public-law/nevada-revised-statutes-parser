@@ -9,16 +9,14 @@ import          Data.Text.Titlecase             (titlecase)
 import          Data.Text.Titlecase.Internal    (unTitlecase)
 import          Text.HTML.TagSoup
 
-notCapitalized :: [Text]
-notCapitalized  = ["a", "an", "and", "at", "but", "by", "for", "in", "nor", "of", "on", "or", "out", "so", "the", "to", "up", "yet"]
 
-initialisms :: [Text]
-initialisms  = ["ATM"]
+dontCapitalize :: [Text]
+dontCapitalize  = ["a", "an", "and", "at", "but", "by", "for", "in", "nor", "of", "on", "or", "out", "so", "the", "to", "up", "yet"]
 
 
 shouldCapitalize :: Text -> Bool
 shouldCapitalize word = 
-    elem (toLower word) notCapitalized
+    notElem (toLower word) dontCapitalize
 
 
 titleize :: Text -> Text
