@@ -20,4 +20,11 @@ spec = parallel $ do
       titleize "protection of children" `shouldBe` "Protection of Children"
   
     it "handles Unicode double quotes" $ do
+      pending
       titleize "“ABUSE OR NEGLECT” DEFINED." `shouldBe` "“Abuse or Neglect” Defined."
+
+
+  describe "titleizeWord" $
+
+    it "handles a single punctuation character prefix" $
+      titleizeWord "!snurk" `shouldBe` "!Snurk"
