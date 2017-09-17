@@ -17,7 +17,9 @@ dontCapitalize  = ["a", "an", "and", "at", "but", "by", "for", "from", "in", "no
 titleize :: Text -> Text
 titleize phrase =
     let (x:xs) = words phrase
-    in  unwords $ (titleizeWord x) : (fmap conditionallyTitleizeWord xs)
+        firstWord = titleizeWord x
+        remainingWords = fmap conditionallyTitleizeWord xs
+    in  unwords (firstWord : remainingWords)
 
 
 shouldCapitalize :: Text -> Bool
