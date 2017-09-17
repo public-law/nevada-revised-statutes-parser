@@ -5,21 +5,21 @@ module TextUtilSpec where
 import           BasicPrelude
 import           Test.Hspec
 
-import           TextUtil       (shouldCapitalize, titleize, titleizeWord)
+import           TextUtil       (isUsuallyUncapitalized, titleize, titleizeWord)
 
 
 spec :: SpecWith ()
 spec = parallel $ do
 
-    describe "shouldCapitalize" $ do
+    describe "isUsuallyUncapitalized" $ do
         it "handles a typical article" $
-            shouldCapitalize "a" `shouldBe` False
+            isUsuallyUncapitalized "a" `shouldBe` True
 
         it "handles a normal word" $
-            shouldCapitalize "dog" `shouldBe` True
+            isUsuallyUncapitalized "dog" `shouldBe` False
 
         it "handles uppercase input" $
-            shouldCapitalize "THE" `shouldBe` False
+            isUsuallyUncapitalized "THE" `shouldBe` True
 
 
     describe "titleizeWord" $ do

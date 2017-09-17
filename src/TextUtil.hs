@@ -8,8 +8,8 @@ import          Data.Text                       (replace, span, toLower, toTitle
 import          Text.HTML.TagSoup
 
 
-wordsNeverToCapitalize :: [Text]
-wordsNeverToCapitalize  = ["a", "an", "and", "at", "but", "by", "for", "from", "in", "nor", "of", "on", "or", "out", "so", "the", "to", "up", "yet"]
+minorWords :: [Text]
+minorWords  = ["a", "an", "and", "at", "but", "by", "for", "from", "in", "nor", "of", "on", "or", "out", "so", "the", "to", "up", "yet"]
 
 
 titleize :: Text -> Text
@@ -22,9 +22,9 @@ titleize phrase =
 
 conditionallyTitleizeWord :: Text -> Text
 conditionallyTitleizeWord word =
-    if shouldCapitalize word
-        then titleizeWord word
-        else toLower word
+    if isUsuallyUncapitalized word
+        then toLower word
+        else titleizeWord word
 
 
 titleizeWord :: Text -> Text
@@ -33,9 +33,9 @@ titleizeWord word =
     in punctuation ++ (toTitle remainder)
 
 
-shouldCapitalize :: Text -> Bool
-shouldCapitalize word = 
-    notElem (toLower word) wordsNeverToCapitalize
+isUsuallyUncapitalized :: Text -> Bool
+isUsuallyUncapitalized word = 
+    elem (toLower word) minorWords
 
 
 isHyphen :: Char -> Bool
