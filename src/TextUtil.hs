@@ -22,11 +22,6 @@ titleize phrase =
           remainingWords = map conditionallyTitleizeWord xs
 
 
-shouldCapitalize :: Text -> Bool
-shouldCapitalize word = 
-    notElem (toLower word) wordsNeverToCapitalize
-
-
 conditionallyTitleizeWord :: Text -> Text
 conditionallyTitleizeWord word =
     if shouldCapitalize word
@@ -38,6 +33,11 @@ titleizeWord :: Text -> Text
 titleizeWord word = 
     let (symbols, remainder) = Data.Text.span (not . isAlpha) word
     in symbols ++ (upcaseFirst remainder)
+
+
+shouldCapitalize :: Text -> Bool
+shouldCapitalize word = 
+    notElem (toLower word) wordsNeverToCapitalize
 
 
 upcaseFirst :: Text -> Text
