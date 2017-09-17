@@ -14,6 +14,7 @@ import           Models
 
 type Html = Text
 
+chapterUrlPrefix :: Text
 chapterUrlPrefix = pack "https://www.leg.state.nv.us/nrs/NRS-"
 
 

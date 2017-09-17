@@ -3,14 +3,39 @@
 module TextUtil where
 
 import          BasicPrelude
-import          Data.Text                       (replace, toLower)
-import          Data.Text.Titlecase             (titlecase)
-import          Data.Text.Titlecase.Internal    (unTitlecase)
+import          Data.Char                       (isAlpha)
+import          Data.Text                       (replace, span, toLower, toTitle, unwords, words)
 import          Text.HTML.TagSoup
 
 
+minorWords :: [Text]
+minorWords  = ["a", "an", "and", "at", "but", "by", "for", "from", "in", "nor", "of", "on", "or", "out", "so", "the", "to", "up", "yet"]
+
+
 titleize :: Text -> Text
-titleize = unTitlecase . titlecase . toLower
+titleize phrase =
+    unwords (firstWord : remainingWords)
+    where (x:xs) = words phrase
+          firstWord      = titleizeWord x
+          remainingWords = map conditionallyTitleizeWord xs
+
+
+conditionallyTitleizeWord :: Text -> Text
+conditionallyTitleizeWord word =
+    if isUsuallyUncapitalized word
+        then toLower word
+        else titleizeWord word
+
+
+titleizeWord :: Text -> Text
+titleizeWord word = 
+    let (punctuation, remainder) = Data.Text.span (not . isAlpha) word
+    in punctuation ++ (toTitle remainder)
+
+
+isUsuallyUncapitalized :: Text -> Bool
+isUsuallyUncapitalized word = 
+    elem (toLower word) minorWords
 
 
 isHyphen :: Char -> Bool
