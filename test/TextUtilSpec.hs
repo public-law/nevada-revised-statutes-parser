@@ -5,7 +5,7 @@ module TextUtilSpec where
 import           BasicPrelude
 import           Test.Hspec
 
-import           TextUtil
+import           TextUtil       (titleize, titleizeWord)
 
 
 spec :: SpecWith ()
@@ -24,7 +24,11 @@ spec = parallel $ do
       titleize "“ABUSE OR NEGLECT” DEFINED." `shouldBe` "“Abuse or Neglect” Defined."
 
 
-  describe "titleizeWord" $
+  describe "titleizeWord" $ do
 
     it "handles a single punctuation character prefix" $
       titleizeWord "!snurk" `shouldBe` "!Snurk"
+
+    it "handles a word with no punctuation" $
+      titleizeWord "snurk" `shouldBe` "Snurk"
+    
