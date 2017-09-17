@@ -14,14 +14,22 @@ dontCapitalize :: [Text]
 dontCapitalize  = ["a", "an", "and", "at", "but", "by", "for", "in", "nor", "of", "on", "or", "out", "so", "the", "to", "up", "yet"]
 
 
+titleize :: Text -> Text
+titleize phrase =
+    let (x:xs) = words phrase
+    in  unwords $ (titleizeWord x) : (fmap conditionallyTitleizeWord xs)
+
+
 shouldCapitalize :: Text -> Bool
 shouldCapitalize word = 
     notElem (toLower word) dontCapitalize
 
 
-titleize :: Text -> Text
-titleize phrase =
-    unwords $ fmap titleizeWord (words phrase)
+conditionallyTitleizeWord :: Text -> Text
+conditionallyTitleizeWord word =
+    if shouldCapitalize word
+        then titleizeWord word
+        else toLower word
 
 
 titleizeWord :: Text -> Text

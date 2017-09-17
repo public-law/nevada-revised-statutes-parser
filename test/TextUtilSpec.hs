@@ -12,7 +12,6 @@ spec :: SpecWith ()
 spec = parallel $ do
 
     describe "shouldCapitalize" $ do
-
         it "handles a typical article" $
             shouldCapitalize "a" `shouldBe` False
 
@@ -24,7 +23,6 @@ spec = parallel $ do
 
 
     describe "titleizeWord" $ do
-
         it "handles a single punctuation character prefix" $
             titleizeWord "!snurk" `shouldBe` "!Snurk"
 
@@ -36,15 +34,11 @@ spec = parallel $ do
 
 
     describe "titleize" $ do
-
         it "handles all uppercase" $ do
-            pending
             titleize "PROTECTION OF CHILDREN" `shouldBe` "Protection of Children"
 
         it "handles all lowercase" $ do
-            pending
             titleize "protection of children" `shouldBe` "Protection of Children"
 
         it "handles Unicode double quotes" $ do
-            pending
             titleize "“ABUSE OR NEGLECT” DEFINED." `shouldBe` "“Abuse or Neglect” Defined."
