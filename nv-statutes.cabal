@@ -2,7 +2,7 @@ name:                nv-statutes
 version:             0.1.0.0
 synopsis:            Scraper and parser for the Nevada Revised Statutes
 description:         Please see README.md
-homepage:            https://github.com/dogweather/nv-statutes#readme
+homepage:            https://github.com/dogweather/nevada-revised-statutes-parser#readme
 license:             BSD3
 license-file:        LICENSE
 author:              Robb Shecter
@@ -40,7 +40,6 @@ library
                      , tagsoup
                      , text
                      , time
-                     , titlecase
 
 
 test-suite nv-statutes-test
@@ -74,4 +73,4 @@ executable nv-statutes-exe
 
 source-repository head
   type:     git
-  location: https://github.com/dogweather/nv-statutes
+  location: https://github.com/dogweather/nevada-revised-statutes-parser
