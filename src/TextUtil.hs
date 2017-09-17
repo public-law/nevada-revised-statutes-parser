@@ -10,21 +10,21 @@ import          Data.Text.Titlecase.Internal    (unTitlecase)
 import          Text.HTML.TagSoup
 
 
-dontCapitalize :: [Text]
-dontCapitalize  = ["a", "an", "and", "at", "but", "by", "for", "from", "in", "nor", "of", "on", "or", "out", "so", "the", "to", "up", "yet"]
+wordsNeverToCapitalize :: [Text]
+wordsNeverToCapitalize  = ["a", "an", "and", "at", "but", "by", "for", "from", "in", "nor", "of", "on", "or", "out", "so", "the", "to", "up", "yet"]
 
 
 titleize :: Text -> Text
 titleize phrase =
-    let (x:xs) = words phrase
-        firstWord = titleizeWord x
-        remainingWords = fmap conditionallyTitleizeWord xs
-    in  unwords (firstWord : remainingWords)
+    unwords (firstWord : remainingWords)
+    where (x:xs) = words phrase
+          firstWord      = titleizeWord x
+          remainingWords = map conditionallyTitleizeWord xs
 
 
 shouldCapitalize :: Text -> Bool
 shouldCapitalize word = 
-    notElem (toLower word) dontCapitalize
+    notElem (toLower word) wordsNeverToCapitalize
 
 
 conditionallyTitleizeWord :: Text -> Text
