@@ -4,9 +4,7 @@ module TextUtil where
 
 import          BasicPrelude
 import          Data.Char                       (isAlpha)
-import          Data.Text                       (replace, span, toLower, unwords, words)
-import          Data.Text.Titlecase             (titlecase)
-import          Data.Text.Titlecase.Internal    (unTitlecase)
+import          Data.Text                       (replace, span, toLower, toTitle, unwords, words)
 import          Text.HTML.TagSoup
 
 
@@ -31,8 +29,8 @@ conditionallyTitleizeWord word =
 
 titleizeWord :: Text -> Text
 titleizeWord word = 
-    let (symbols, remainder) = Data.Text.span (not . isAlpha) word
-    in symbols ++ (upcaseFirst remainder)
+    let (punctuation, remainder) = Data.Text.span (not . isAlpha) word
+    in punctuation ++ (toTitle remainder)
 
 
 shouldCapitalize :: Text -> Bool
@@ -40,10 +38,6 @@ shouldCapitalize word =
     notElem (toLower word) wordsNeverToCapitalize
 
 
-upcaseFirst :: Text -> Text
-upcaseFirst = unTitlecase . titlecase . toLower
-
-        
 isHyphen :: Char -> Bool
 isHyphen '-' = True
 isHyphen  _  = False
