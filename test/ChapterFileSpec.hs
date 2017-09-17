@@ -22,7 +22,6 @@ spec = parallel $ do
   describe "parseChapter" $ do
 
     it "gets the chapter name" $ do
-      pending
       html ← chapter_432b_html
       chapterName (parseChapter html) `shouldBe` "Protection of Children from Abuse and Neglect"
 
@@ -38,7 +37,6 @@ spec = parallel $ do
 
 
     it "gets the sub-chapter names" $ do
-      pending
       html ← chapter_432b_html
       let subchapters = subChapters ( parseChapter html )
 

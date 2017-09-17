@@ -11,7 +11,7 @@ import          Text.HTML.TagSoup
 
 
 dontCapitalize :: [Text]
-dontCapitalize  = ["a", "an", "and", "at", "but", "by", "for", "in", "nor", "of", "on", "or", "out", "so", "the", "to", "up", "yet"]
+dontCapitalize  = ["a", "an", "and", "at", "but", "by", "for", "from", "in", "nor", "of", "on", "or", "out", "so", "the", "to", "up", "yet"]
 
 
 titleize :: Text -> Text
