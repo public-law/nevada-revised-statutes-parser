@@ -16,8 +16,7 @@
 #  name: custom-snapshot
 #  location: "./custom-snapshot.yaml"
 #
-#  Should I update this? When should I? (RS)
-resolver: lts-8.6
+resolver: nightly-2017-09-18
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
