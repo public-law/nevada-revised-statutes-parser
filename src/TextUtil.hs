@@ -2,10 +2,10 @@
 
 module TextUtil where
 
-import          BasicPrelude
-import          Data.Char                       (isAlpha)
-import          Data.Text                       (replace, span, toLower, toTitle, unwords, words)
-import          Text.HTML.TagSoup
+import           BasicPrelude
+import           Data.Char         (isAlpha)
+import qualified Data.Text         as T
+import           Text.HTML.TagSoup
 
 
 minorWords :: [Text]
@@ -23,19 +23,19 @@ titleize phrase =
 conditionallyTitleizeWord :: Text -> Text
 conditionallyTitleizeWord word =
     if isUsuallyUncapitalized word
-        then toLower word
+        then T.toLower word
         else titleizeWord word
 
 
 titleizeWord :: Text -> Text
-titleizeWord word = 
-    let (punctuation, remainder) = Data.Text.span (not . isAlpha) word
-    in punctuation ++ (toTitle remainder)
+titleizeWord word =
+    let (punctuation, remainder) = T.span (not . isAlpha) word
+    in punctuation ++ (T.toTitle remainder)
 
 
 isUsuallyUncapitalized :: Text -> Bool
-isUsuallyUncapitalized word = 
-    elem (toLower word) minorWords
+isUsuallyUncapitalized word =
+    elem (T.toLower word) minorWords
 
 
 isHyphen :: Char -> Bool
@@ -52,4 +52,4 @@ normalizeWhiteSpace = unwords . words
 
 
 fixUnicodeChars :: Text -> Text
-fixUnicodeChars = (replace "\147" "\8220") . (replace "\148" "\8221")
+fixUnicodeChars = (T.replace "\147" "\8220") . (T.replace "\148" "\8221")

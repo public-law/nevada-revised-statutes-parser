@@ -1,21 +1,22 @@
 module ChapterFile where
 
 import           BasicPrelude
-import qualified Data.Attoparsec.Text    (parseOnly, Parser, takeText, takeWhile)
-import           Data.Char               (isSpace)
-import           Data.Text               (pack, unpack)
+import qualified Data.Attoparsec.Text (Parser, parseOnly, takeText, takeWhile)
+import           Data.Char            (isSpace)
+import qualified Data.Text            as T
 import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
-import           HtmlUtil                (shaveBackTagsToLastClosingP, titleText)
-import           TextUtil                (normalizeWhiteSpace, normalizedInnerText, titleize)
+import           HtmlUtil             (shaveBackTagsToLastClosingP, titleText)
 import           Models
+import           TextUtil             (normalizeWhiteSpace, normalizedInnerText,
+                                       titleize)
 
 
 type Html = Text
 
 chapterUrlPrefix :: Text
-chapterUrlPrefix = pack "https://www.leg.state.nv.us/nrs/NRS-"
+chapterUrlPrefix = T.pack "https://www.leg.state.nv.us/nrs/NRS-"
 
 
 --
@@ -27,7 +28,7 @@ parseChapter chapterHtml =
   Chapter {
     chapterName   = name,
     chapterNumber = number,
-    chapterUrl    = chapterUrlPrefix ++ number ++ (pack ".html"),
+    chapterUrl    = chapterUrlPrefix ++ number ++ (T.pack ".html"),
     subChapters   = subChaps
   }
   where tags           = parseTags chapterHtml
@@ -74,7 +75,7 @@ parseNumberFromRawNumberText :: Text -> Text -> Text
 parseNumberFromRawNumberText numberText name =
   case words numberText of
     (_:x:_) -> x
-    _       -> error ("Expected section \"" ++ (unpack name) ++ "\" raw number \"" ++ (unpack numberText) ++ "\" to have at least two words")
+    _       -> error ("Expected section \"" ++ (T.unpack name) ++ "\" raw number \"" ++ (T.unpack numberText) ++ "\" to have at least two words")
 
 
 parseSubSubChapters :: [Tag Text] ->[Tag Text] -> [SubSubChapter]
@@ -103,7 +104,7 @@ subchapterNames tags =
 
 
 subChapterNameFromGroup :: [Tag Text] -> Text
-subChapterNameFromGroup = 
+subChapterNameFromGroup =
   titleize . fromTagText . (!! 1)
 
 
@@ -113,12 +114,12 @@ sectionNamesFromGroup headingGroup =
 
 
 sectionNameFromParagraph :: [Tag Text] -> Text
-sectionNameFromParagraph = 
+sectionNameFromParagraph =
   normalizedInnerText . (dropWhile (~/= "</a>"))
 
 
 headingGroups :: [Tag Text] -> [[Tag Text]]
-headingGroups tags = 
+headingGroups tags =
   partitions (~== "<p class=COHead2>") tags
 
 
@@ -129,7 +130,7 @@ parseChapterFileTitle input =
   case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
     Left e  -> error e
     Right b -> b
-        
+
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
@@ -148,18 +149,18 @@ isSimpleSubChapter headingGroup =
 
 
 parseSectionBody :: Text -> [Tag Text] -> Text
-parseSectionBody number dom = 
+parseSectionBody number dom =
   sectionText
   where sectionGroups   = partitions (~== "<span class=Section") dom
-        rawSectionGroup = shaveBackTagsToLastClosingP $ (!! 0) $ filter (isSectionBodyNumber number) sectionGroups 
-        sectionText     = normalizeWhiteSpace $ pack "<p class=SectBody>" ++ (renderTags rawSectionGroup)
+        rawSectionGroup = shaveBackTagsToLastClosingP $ (!! 0) $ filter (isSectionBodyNumber number) sectionGroups
+        sectionText     = normalizeWhiteSpace $ T.pack "<p class=SectBody>" ++ (renderTags rawSectionGroup)
 
 
 isSectionBodyNumber :: Text -> [Tag Text] -> Bool
 isSectionBodyNumber number dom =
   parseSectionBodyNumber dom == number
-  
+
 
 parseSectionBodyNumber :: [Tag Text] -> Text
-parseSectionBodyNumber dom = 
+parseSectionBodyNumber dom =
   innerText $ takeWhile (~/= "</span>") dom
