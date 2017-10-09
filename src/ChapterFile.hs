@@ -9,7 +9,9 @@ import           Text.Parser.Char
 
 import           HtmlUtil             (shaveBackTagsToLastClosingP, titleText)
 import           Models.Chapter
+import           Models.Section
 import           Models.SubChapter
+import           Models.SubSubChapter
 import           TextUtil             (normalizeWhiteSpace, normalizedInnerText,
                                        titleize)
 
