@@ -5,7 +5,8 @@ module IndexFileSpec where
 import           BasicPrelude
 import           Test.Hspec
 
-import           Models
+import          Models.Chapter
+import          Models.Title
 import           FileUtil     (fixture)
 import           IndexFile    (titles)
 

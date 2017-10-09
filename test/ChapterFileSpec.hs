@@ -11,7 +11,11 @@ import           Text.HTML.TagSoup
 -- What exactly is this?
 -- import          Text.InterpolatedString.Perl6 (q)
 
-import          Models
+import          Models.Chapter
+import          Models.Section
+import          Models.SubChapter
+import          Models.SubSubChapter
+
 import          ChapterFile
 import          FileUtil
 
