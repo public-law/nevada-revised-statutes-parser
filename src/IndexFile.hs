@@ -13,8 +13,8 @@ import           Text.Parser.Combinators
 import           Text.Parser.Token
 
 import           HtmlUtil                (findAll, findFirst)
-import           Models.Chapter
-import           Models.Title            
+import           Models.Chapter          as Chapter
+import           Models.Title            as Title
 import           TextUtil                (titleize)
 
 
@@ -43,13 +43,13 @@ newTitle tuple =
         parsedChapters = fmap newChapter chapterRows
         title          = innerText $ findFirst "<b>" titleRow
         (number, rawName) = parseRawTitle title
-    in Title { name = titleize rawName, titleNumber = number, chapters = parsedChapters }
+    in Title { Title.name = titleize rawName, titleNumber = number, chapters = parsedChapters }
 
 
 newChapter :: Node → Chapter
 newChapter row =
     Chapter {
-        chapterName   = last columns & innerText & T.strip,
+        Chapter.name   = last columns & innerText & T.strip,
         chapterNumber = head columns & innerText & T.strip & words & last,
         chapterUrl    = findFirst "<a>" row & head & fromAttrib "href",
         subChapters   = []

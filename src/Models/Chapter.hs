@@ -11,7 +11,7 @@ import           Models.SubChapter
 
 data Chapter =
   Chapter {
-    chapterName   ∷ Text,
+    name   ∷ Text,
     chapterNumber ∷ Text,
     chapterUrl    ∷ Text,
     subChapters   ∷ [SubChapter]

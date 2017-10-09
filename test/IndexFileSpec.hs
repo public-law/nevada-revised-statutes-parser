@@ -5,10 +5,10 @@ module IndexFileSpec where
 import           BasicPrelude
 import           Test.Hspec
 
-import          Models.Chapter
-import          Models.Title
-import           FileUtil     (fixture)
-import           IndexFile    (titles)
+import           FileUtil       (fixture)
+import           IndexFile      (titles)
+import           Models.Chapter as Chapter
+import           Models.Title   as Title
 
 
 spec :: SpecWith ()
@@ -23,7 +23,7 @@ spec = parallel $ do
 
     it "gets a title's name" $ do
       judicialDept <- firstTitle
-      name judicialDept `shouldBe` "State Judicial Department"
+      Title.name judicialDept `shouldBe` "State Judicial Department"
 
 
     it "gets a title's number" $ do
@@ -36,17 +36,17 @@ spec = parallel $ do
       length (chapters judicialDept) `shouldNotBe` 0
       let chapter1 = head $ chapters judicialDept
 
-      chapterName   chapter1 `shouldBe` "Judicial Department Generally"
+      Chapter.name   chapter1 `shouldBe` "Judicial Department Generally"
       chapterNumber chapter1 `shouldBe` "1"
       chapterUrl    chapter1 `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
 
 
     it "gets one that is further in" $ do
       publicWelfare <- title38
-      name publicWelfare `shouldBe` "Public Welfare"
+      Title.name publicWelfare `shouldBe` "Public Welfare"
 
       let chapter432b = last $ chapters publicWelfare
-      chapterName chapter432b `shouldBe` "Protection of Children From Abuse and Neglect"
+      Chapter.name chapter432b `shouldBe` "Protection of Children From Abuse and Neglect"
 
 
 --

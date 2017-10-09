@@ -29,15 +29,15 @@ chapterUrlPrefix = T.pack "https://www.leg.state.nv.us/nrs/NRS-"
 parseChapter :: Html -> Chapter
 parseChapter chapterHtml =
   Chapter {
-    chapterName   = name,
+    name          = rawName,
     chapterNumber = number,
     chapterUrl    = chapterUrlPrefix ++ number ++ (T.pack ".html"),
     subChapters   = subChaps
   }
-  where tags           = parseTags chapterHtml
-        rawTitle       = titleText tags
-        (number, name) = parseChapterFileTitle rawTitle
-        subChaps       = fmap (newSubChapter tags) (headingGroups tags)
+  where tags              = parseTags chapterHtml
+        rawTitle          = titleText tags
+        (number, rawName) = parseChapterFileTitle rawTitle
+        subChaps          = fmap (newSubChapter tags) (headingGroups tags)
 
 
 newSubChapter :: [Tag Text] -> [Tag Text] -> SubChapter
@@ -64,21 +64,21 @@ headingParagraphsWithContent headingGroup = filter (\tags -> length tags > 4) (p
 parseSectionFromHeadingParagraph :: [Tag Text] -> [Tag Text] -> Section
 parseSectionFromHeadingParagraph dom paragraph =
   Section {
-    sectionName   = name,
+    sectionName   = secName,
     sectionNumber = number,
     sectionBody   = body
   }
   where
-    name   = normalizedInnerText $ dropWhile (~/= "</a>") paragraph
+    secName   = normalizedInnerText $ dropWhile (~/= "</a>") paragraph
     number = parseNumberFromRawNumberText (normalizedInnerText $ takeWhile (~/= "</a>") paragraph) (renderTags paragraph)
     body   = parseSectionBody number dom
 
 
 parseNumberFromRawNumberText :: Text -> Text -> Text
-parseNumberFromRawNumberText numberText name =
+parseNumberFromRawNumberText numberText secName =
   case words numberText of
     (_:x:_) -> x
-    _       -> error ("Expected section \"" ++ (T.unpack name) ++ "\" raw number \"" ++ (T.unpack numberText) ++ "\" to have at least two words")
+    _       -> error ("Expected section \"" ++ (T.unpack secName) ++ "\" raw number \"" ++ (T.unpack numberText) ++ "\" to have at least two words")
 
 
 parseSubSubChapters :: [Tag Text] ->[Tag Text] -> [SubSubChapter]
@@ -94,15 +94,15 @@ subSubChapterHeadingGroups headingGroup =
 parseSubSubChapter :: [Tag Text] ->[Tag Text] -> SubSubChapter
 parseSubSubChapter dom subSubChapterHeadingGroup =
   SubSubChapter {
-    subSubChapterName     = name,
+    subSubChapterName     = newName,
     subSubChapterSections = parseSectionsFromHeadingGroup dom subSubChapterHeadingGroup
   }
   where
-    name = (normalizeWhiteSpace . (!!0) . lines . innerText) subSubChapterHeadingGroup
+    newName = (normalizeWhiteSpace . (!!0) . lines . innerText) subSubChapterHeadingGroup
 
 
-subchapterNames :: [Tag Text] -> [Text]
-subchapterNames tags =
+subnames :: [Tag Text] -> [Text]
+subnames tags =
   fmap subChapterNameFromGroup (headingGroups tags)
 
 

@@ -27,7 +27,7 @@ spec = parallel $ do
 
     it "gets the chapter name" $ do
       html ← chapter_432b_html
-      chapterName (parseChapter html) `shouldBe` "Protection of Children from Abuse and Neglect"
+      name (parseChapter html) `shouldBe` "Protection of Children from Abuse and Neglect"
 
 
     it "gets the chapter number" $ do
