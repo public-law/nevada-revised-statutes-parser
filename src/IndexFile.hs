@@ -42,16 +42,16 @@ newTitle tuple =
         chapterRows    = head $ tail tuple
         parsedChapters = fmap newChapter chapterRows
         title          = innerText $ findFirst "<b>" titleRow
-        (number, rawName) = parseRawTitle title
-    in Title { Title.name = titleize rawName, titleNumber = number, chapters = parsedChapters }
+        (rawNumber, rawName) = parseRawTitle title
+    in Title { Title.name = titleize rawName, Title.number = rawNumber, chapters = parsedChapters }
 
 
 newChapter :: Node → Chapter
 newChapter row =
     Chapter {
         Chapter.name   = last columns & innerText & T.strip,
-        chapterNumber = head columns & innerText & T.strip & words & last,
-        chapterUrl    = findFirst "<a>" row & head & fromAttrib "href",
+        Chapter.number = head columns & innerText & T.strip & words & last,
+        url    = findFirst "<a>" row & head & fromAttrib "href",
         subChapters   = []
     }
     where columns = findAll "<td>" row

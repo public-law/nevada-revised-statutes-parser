@@ -28,7 +28,7 @@ spec = parallel $ do
 
     it "gets a title's number" $ do
       judicialDept <- firstTitle
-      titleNumber judicialDept `shouldBe` 1
+      Title.number judicialDept `shouldBe` 1
 
 
     it "reads a chapter correctly" $ do
@@ -37,8 +37,8 @@ spec = parallel $ do
       let chapter1 = head $ chapters judicialDept
 
       Chapter.name   chapter1 `shouldBe` "Judicial Department Generally"
-      chapterNumber chapter1 `shouldBe` "1"
-      chapterUrl    chapter1 `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
+      Chapter.number chapter1 `shouldBe` "1"
+      Chapter.url    chapter1 `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
 
 
     it "gets one that is further in" $ do

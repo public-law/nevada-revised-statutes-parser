@@ -9,9 +9,9 @@ import           GHC.Generics (Generic)
 
 data Section =
   Section {
-    sectionName   ∷ Text,
-    sectionNumber ∷ Text,
-    sectionBody   ∷ Text
+    name   ∷ Text,
+    number ∷ Text,
+    body   ∷ Text
 } deriving (Generic, Show)
 
 instance ToJSON Section
