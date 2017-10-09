@@ -42,8 +42,8 @@ newTitle tuple =
         chapterRows    = head $ tail tuple
         parsedChapters = fmap newChapter chapterRows
         title          = innerText $ findFirst "<b>" titleRow
-        (number, name) = parseRawTitle title
-    in Title { titleName = titleize name, titleNumber = number, chapters = parsedChapters }
+        (number, rawName) = parseRawTitle title
+    in Title { name = titleize rawName, titleNumber = number, chapters = parsedChapters }
 
 
 newChapter :: Node → Chapter
