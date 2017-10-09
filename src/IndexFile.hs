@@ -13,7 +13,8 @@ import           Text.Parser.Combinators
 import           Text.Parser.Token
 
 import           HtmlUtil                (findAll, findFirst)
-import           Models
+import           Models.Chapter
+import           Models.Title            
 import           TextUtil                (titleize)
 
 

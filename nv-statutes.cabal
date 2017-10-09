@@ -18,7 +18,10 @@ library
                      , ChapterFile
                      , FileUtil
                      , HtmlUtil
-                     , Models
+                     , Models.Chapter
+                     , Models.Section
+                     , Models.SubChapter
+                     , Models.SubSubChapter
                      , Models.Title
                      , TextUtil
                      , Year

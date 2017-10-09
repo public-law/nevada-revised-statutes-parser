@@ -8,7 +8,8 @@ import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
 import           HtmlUtil             (shaveBackTagsToLastClosingP, titleText)
-import           Models
+import           Models.Chapter
+import           Models.SubChapter
 import           TextUtil             (normalizeWhiteSpace, normalizedInnerText,
                                        titleize)
 

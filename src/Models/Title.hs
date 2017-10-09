@@ -12,8 +12,8 @@ import           Models.Chapter
 -- The top-level organizational unit in the Nevada Revised Statutes
 data Title =
   Title {
-    name   ∷ Text,
-    number ∷ Integer,
+    titleName   ∷ Text,
+    titleNumber ∷ Integer,
     chapters    ∷ [Chapter]
 } deriving (Generic, Show)
 
