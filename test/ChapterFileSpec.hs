@@ -1,6 +1,5 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 {-# LANGUAGE OverloadedStrings    #-}
-{-# LANGUAGE QuasiQuotes          #-}
 
 module ChapterFileSpec where
 
@@ -62,7 +61,7 @@ spec = parallel $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters ( parseChapter html )
       case children generalProvisions of
-        SubChapterSections xs -> Section.name (xs !! 0) `shouldBe` "Definitions."
+        SubChapterSections xs -> Section.name (head xs) `shouldBe` "Definitions."
         SubSubChapters _      -> error "Got sub-sub chapters but expected Sections"
 
 
@@ -93,7 +92,7 @@ spec = parallel $ do
       html <- chapter_432b_html
       let administration = (!!1) $ subChapters $ parseChapter html
       case children administration of
-        SubSubChapters xs    -> (SubSubChapter.name (xs !! 0)) `shouldBe` "General Provisions"
+        SubSubChapters xs    -> SubSubChapter.name (head xs) `shouldBe` "General Provisions"
         SubChapterSections _ -> error "Got sections but expected sub-sub-chapters"
 
 
@@ -101,7 +100,7 @@ spec = parallel $ do
       html <- chapter_432b_html
       let administration = (!!1) $ subChapters $ parseChapter html
       case children administration of
-        SubSubChapters xs    -> (SubSubChapter.name (xs !! 2)) `shouldBe` "Grants to Agency Which Provides Child Welfare Services"
+        SubSubChapters xs    -> SubSubChapter.name (xs !! 2) `shouldBe` "Grants to Agency Which Provides Child Welfare Services"
         SubChapterSections _ -> error "Got sections but expected sub-sub-chapters"
 
 
@@ -109,7 +108,7 @@ spec = parallel $ do
       html <- chapter_432b_html
       let administration    = (!!1) $ subChapters $ parseChapter html
       case children administration of
-        SubSubChapters xs    -> (Section.name $ (!! 0) $ SubSubChapter.sections $ (xs !! 0)) `shouldBe` "Duties of Division of Child and Family Services."
+        SubSubChapters xs    -> Section.name ((!! 0) $ SubSubChapter.sections (head xs)) `shouldBe` "Duties of Division of Child and Family Services."
         SubChapterSections _ -> error "Got sections but expected sub-sub-chapters"
 
 
