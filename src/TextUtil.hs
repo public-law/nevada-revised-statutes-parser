@@ -30,12 +30,12 @@ conditionallyTitleizeWord word =
 titleizeWord :: Text -> Text
 titleizeWord word =
     let (punctuation, remainder) = T.span (not . isAlpha) word
-    in punctuation ++ (T.toTitle remainder)
+    in punctuation ++ T.toTitle remainder
 
 
 isUsuallyUncapitalized :: Text -> Bool
 isUsuallyUncapitalized word =
-    elem (T.toLower word) minorWords
+    T.toLower word `elem` minorWords
 
 
 isHyphen :: Char -> Bool
@@ -52,4 +52,4 @@ normalizeWhiteSpace = unwords . words
 
 
 fixUnicodeChars :: Text -> Text
-fixUnicodeChars = (T.replace "\147" "\8220") . (T.replace "\148" "\8221")
+fixUnicodeChars = T.replace "\147" "\8220" . T.replace "\148" "\8221"

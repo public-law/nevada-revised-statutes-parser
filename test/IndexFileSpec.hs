@@ -12,7 +12,7 @@ import           Models.Title   as Title
 
 
 spec :: SpecWith ()
-spec = parallel $ do
+spec = parallel $
 
   describe "titles" $ do
 

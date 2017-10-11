@@ -7,7 +7,7 @@ import           Text.HTML.TagSoup (Tag, innerText, partitions, (~/=), (~==))
 
 -- Return the text content of an HTML title.
 titleText :: [Tag Text] -> Text
-titleText tags = innerText $ [(findFirst "<title>" tags) !! 1]
+titleText tags = innerText [findFirst "<title>" tags !! 1]
 
 
 -- Return the first occurrence of an HTML tag within the given
