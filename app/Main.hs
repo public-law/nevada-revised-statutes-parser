@@ -1,14 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import          BasicPrelude
-import          Data.Aeson.Encode.Pretty (encodePretty)
+import           BasicPrelude
+import           Data.Aeson.Encode.Pretty (encodePretty)
 import qualified Data.ByteString.Lazy     as B
+import           Data.Eq.Unicode
 
-import          FileUtil
-import          ChapterFile
+import           ChapterFile
+import           FileUtil
 
 
 main :: IO ()
 main = do
-    html <- readFileLatin1 (fixture "nrs-432b.html")
+    args ← getArgs
+    when (length args ≠ 1)
+      (fail "Usage: parse-nevada [directory]")
+    let sourceDir = head args
+
+    html ← readFileLatin1 (fixture "nrs-432b.html")
     B.putStr $ encodePretty $ parseChapter html
