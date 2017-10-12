@@ -16,9 +16,11 @@ main :: IO ()
 main = do
     args ← System.Environment.getArgs
     when (length args ≠ 1)
-        (fail "Usage: parse-nevada [filename]")
+        (fail "Usage: parse-nevada [directory]")
 
-    let nevadaJson = head args & parseFiles & encodePretty
+    let nevadaJson = head args
+                        & parseFiles
+                        & encodePretty
     B.putStr nevadaJson
 
 
