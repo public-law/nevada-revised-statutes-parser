@@ -22,8 +22,8 @@ type Html = Text
 type Node = [Tag Text]
 
 
-titles :: Html → [Title]
-titles indexHtml =
+parseTitles :: Html → [Title]
+parseTitles indexHtml =
     let rows = contentRows indexHtml
         tuples = rowTuples rows
     in fmap newTitle tuples

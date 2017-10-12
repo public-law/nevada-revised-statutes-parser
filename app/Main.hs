@@ -6,6 +6,7 @@ import           ChapterFile
 import           Data.Aeson.Encode.Pretty (encodePretty)
 import qualified Data.ByteString.Lazy     as B
 import           Data.Eq.Unicode
+import qualified Data.Text                as T
 import           FileUtil
 import           System.Environment       (getArgs)
 
@@ -16,7 +17,9 @@ main = do
     when (length args ≠ 1)
         (fail "Usage: parse-nevada [filename]")
 
-    let sourceDir = head args
+    let nevadaJson = parseFiles $ head args
+    B.putStr $ encodePretty nevadaJson
 
-    html ← readFileLatin1 (fixture "nrs-432b.html")
-    B.putStr $ encodePretty $ parseChapter html
+
+parseFiles :: String -> Text
+parseFiles sourceDir = "{nothing: 5}"
