@@ -70,10 +70,12 @@ executable nv-statutes-exe
   default-extensions:  NoImplicitPrelude, UnicodeSyntax, DuplicateRecordFields
   build-depends:       basic-prelude
                        , aeson-pretty
+                       , base
                        , base-unicode-symbols
                        , bytestring
                        , hspec
                        , nv-statutes
+                       , text
 
 
 source-repository head
