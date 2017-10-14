@@ -1,0 +1,8 @@
+sudo: false
+
+language: ghc
+
+ghc:
+  - 7.8
+  - 7.6
+  - 7.4
