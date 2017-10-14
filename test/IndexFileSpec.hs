@@ -6,7 +6,7 @@ import           BasicPrelude
 import           Test.Hspec
 
 import           FileUtil       (fixture)
-import           IndexFile      (titles)
+import           IndexFile      (parseTitles)
 import           Models.Chapter as Chapter
 import           Models.Title   as Title
 
@@ -14,11 +14,11 @@ import           Models.Title   as Title
 spec :: SpecWith ()
 spec = parallel $
 
-  describe "titles" $ do
+  describe "parseTitles" $ do
 
     it "finds the correct number of titles" $ do
       html <- nrsIndexHtml
-      length (titles html) `shouldBe` 59
+      length (parseTitles html) `shouldBe` 59
 
 
     it "gets a title's name" $ do
@@ -60,13 +60,13 @@ main =
 firstTitle :: IO Title
 firstTitle = do
   html ← nrsIndexHtml
-  return (head (titles html))
+  return (head (parseTitles html))
 
 
 title38 :: IO Title
 title38 = do
   html ← nrsIndexHtml
-  return $ titles html !! 37
+  return $ parseTitles html !! 37
 
 
 nrsIndexHtml :: IO Text

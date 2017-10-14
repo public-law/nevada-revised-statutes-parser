@@ -19,11 +19,15 @@ library
                      , FileUtil
                      , HtmlUtil
                      , Models.Chapter
+                     , Models.NRS
                      , Models.Section
                      , Models.SubChapter
                      , Models.SubSubChapter
                      , Models.Title
+                     , Models.Tree
+                     , NRSParser
                      , TextUtil
+                     , TreeParser
                      , Year
   hs-source-dirs:      src
   default-language:    Haskell2010
@@ -70,9 +74,14 @@ executable nv-statutes-exe
   default-extensions:  NoImplicitPrelude, UnicodeSyntax, DuplicateRecordFields
   build-depends:       basic-prelude
                        , aeson-pretty
+                       , base
+                       , base-unicode-symbols
                        , bytestring
                        , hspec
                        , nv-statutes
+                       , text
+                       , time
+
 
 
 source-repository head
