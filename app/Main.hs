@@ -2,7 +2,7 @@
 {-# LANGUAGE UnicodeSyntax     #-}
 
 import           BasicPrelude
-import           Data.Aeson.Encode.Pretty (encodePretty)
+import qualified Data.Aeson.Encode.Pretty as Aeson (encodePretty)
 import qualified Data.ByteString.Lazy     as B
 import           Data.Eq.Unicode
 import           Data.Function            ((&))
@@ -23,7 +23,8 @@ main = do
     today ← todaysDate
     let nevadaJson = head args
                         & parseFiles today
-                        & encodePretty
+                        & Aeson.encodePretty
+
     B.putStr nevadaJson
 
 
