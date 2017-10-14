@@ -80,6 +80,8 @@ executable nv-statutes-exe
                        , hspec
                        , nv-statutes
                        , text
+                       , time
+
 
 
 source-repository head
