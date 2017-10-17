@@ -76,7 +76,7 @@ parseNumberFromRawNumberText :: Text -> Text -> Text
 parseNumberFromRawNumberText numberText secName =
   case words numberText of
     (_:x:_) -> x
-    _       -> error ("Expected section \"" ++ (T.unpack secName) ++ "\" raw number \"" ++ T.unpack numberText ++ "\" to have at least two words")
+    _       -> error ("Expected section \"" ++ T.unpack secName ++ "\" raw number \"" ++ T.unpack numberText ++ "\" to have at least two words")
 
 
 parseSubSubChapters :: [Tag Text] ->[Tag Text] -> [SubSubChapter]
