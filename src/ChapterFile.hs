@@ -31,7 +31,7 @@ parseChapter chapterHtml =
   Chapter {
     Chapter.name = rawName,
     Chapter.number = rawNumber,
-    url    = chapterUrlPrefix ++ rawNumber ++ (T.pack ".html"),
+    url    = chapterUrlPrefix ++ rawNumber ++ T.pack ".html",
     subChapters   = subChaps
   }
   where tags              = parseTags chapterHtml
@@ -76,7 +76,7 @@ parseNumberFromRawNumberText :: Text -> Text -> Text
 parseNumberFromRawNumberText numberText secName =
   case words numberText of
     (_:x:_) -> x
-    _       -> error ("Expected section \"" ++ (T.unpack secName) ++ "\" raw number \"" ++ (T.unpack numberText) ++ "\" to have at least two words")
+    _       -> error ("Expected section \"" ++ (T.unpack secName) ++ "\" raw number \"" ++ T.unpack numberText ++ "\" to have at least two words")
 
 
 parseSubSubChapters :: [Tag Text] ->[Tag Text] -> [SubSubChapter]
@@ -86,7 +86,7 @@ parseSubSubChapters dom headingGroup =
 
 subSubChapterHeadingGroups :: [Tag Text] -> [[Tag Text]]
 subSubChapterHeadingGroups headingGroup =
-  (partitions (~== "<p class=COHead4>") headingGroup)
+  partitions (~== "<p class=COHead4>") headingGroup
 
 
 parseSubSubChapter :: [Tag Text] ->[Tag Text] -> SubSubChapter
@@ -116,7 +116,7 @@ sectionNamesFromGroup headingGroup =
 
 sectionNameFromParagraph :: [Tag Text] -> Text
 sectionNameFromParagraph =
-  normalizedInnerText . (dropWhile (~/= "</a>"))
+  normalizedInnerText . dropWhile (~/= "</a>")
 
 
 headingGroups :: [Tag Text] -> [[Tag Text]]
@@ -128,7 +128,7 @@ headingGroups tags =
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
 parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input =
-  case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
+  case Data.Attoparsec.Text.parseOnly chapterTitleParser input of
     Left e  -> error e
     Right b -> b
 
@@ -141,7 +141,7 @@ chapterTitleParser = do
   num    <- Data.Attoparsec.Text.takeWhile (not . isSpace)
   _      <- string " - "
   title  <- Data.Attoparsec.Text.takeText
-  return $ (num, titleize title)
+  return (num, titleize title)
 
 
 isSimpleSubChapter :: [Tag Text] -> Bool
@@ -154,7 +154,7 @@ parseSectionBody secNumber dom =
   sectionText
   where sectionGroups   = partitions (~== "<span class=Section") dom
         rawSectionGroup = shaveBackTagsToLastClosingP $ (!! 0) $ filter (isSectionBodyNumber secNumber) sectionGroups
-        sectionText     = normalizeWhiteSpace $ T.pack "<p class=SectBody>" ++ (renderTags rawSectionGroup)
+        sectionText     = normalizeWhiteSpace $ T.pack "<p class=SectBody>" ++ renderTags rawSectionGroup
 
 
 isSectionBodyNumber :: Text -> [Tag Text] -> Bool
