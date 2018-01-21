@@ -16,7 +16,7 @@ import           FileUtil
 main :: IO ()
 main = do
     today ← todaysDate
-    let source_dir = NewFilename "/tmp/www.leg.state.nv.us/"
+    let source_dir = "/tmp/www.leg.state.nv.us/"
 
     let nevadaJson = source_dir
                         & parseFiles today
@@ -34,7 +34,7 @@ parseFiles today sourceDir  =
 -- Return the index filename and a list of chapter filenames.
 filesInDirectory :: Filename -> (Filename, [Filename])
 filesInDirectory _sourceDir =
-    (NewFilename "nrs.html", map NewFilename ["nrs-001.html", "nrs-432b.html"])
+    ("nrs.html", ["nrs-001.html", "nrs-432b.html"])
 
 
 todaysDate :: IO Day
