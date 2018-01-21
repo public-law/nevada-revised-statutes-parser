@@ -8,6 +8,7 @@ import qualified Data.Text         as T
 import           Text.HTML.TagSoup
 
 
+-- Words which are not usually capitalized in titles.
 minorWords :: [Text]
 minorWords  = ["a", "an", "and", "at", "but", "by", "for", "from", "in", "nor", "of", "on", "or", "out", "so", "the", "to", "up", "yet"]
 
@@ -20,6 +21,8 @@ titleize phrase =
           remainingWords = map conditionallyTitleizeWord xs
 
 
+-- Titleize the word only if it's usually capitalized. Else,
+-- return it in lower case.
 conditionallyTitleizeWord :: Text -> Text
 conditionallyTitleizeWord word =
     if isUsuallyUncapitalized word
@@ -27,6 +30,8 @@ conditionallyTitleizeWord word =
         else titleizeWord word
 
 
+-- Titleize the word without being fooled by leading punctuation.
+-- I.e., Convert the first alpha character to upper case.
 titleizeWord :: Text -> Text
 titleizeWord word =
     let (punctuation, remainder) = T.span (not . isAlpha) word
