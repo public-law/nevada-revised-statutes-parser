@@ -4,24 +4,20 @@
 import           BasicPrelude
 import qualified Data.Aeson.Encode.Pretty as Aeson (encodePretty)
 import qualified Data.ByteString.Lazy     as B
-import           Data.Eq.Unicode
 import           Data.Function            ((&))
 import qualified Data.Text                as T
 import           Data.Time                (Day, getZonedTime, localDay,
                                            zonedTimeToLocalTime)
 import           Models.NRS
 import           NRSParser
-import           System.Environment       (getArgs)
 
 
 main :: IO ()
 main = do
-    args ← System.Environment.getArgs
-    when (length args ≠ 1)
-        (fail "Usage: parse-nevada [directory]")
-
     today ← todaysDate
-    let nevadaJson = head args
+    let dir = "/tmp/www.leg.state.nv.us/"
+
+    let nevadaJson = dir
                         & parseFiles today
                         & Aeson.encodePretty
 

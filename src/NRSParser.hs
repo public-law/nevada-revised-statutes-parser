@@ -12,6 +12,6 @@ parseNRS :: Text -> [Text] -> Day -> NRS
 parseNRS indexFile chapterFiles currentDate =
     NRS {
         statuteTree  = Tree { },
-        nominalDate  = toYear 2017,
+        nominalDate  = toYear 2018,
         dateAccessed = currentDate
     }
