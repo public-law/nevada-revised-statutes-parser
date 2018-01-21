@@ -28,3 +28,6 @@ readFileAsUtf8 pathname sourceEncoding = do
 fixture :: String -> String
 fixture filename =
     "test/fixtures/" ++ filename
+
+
+newtype Filename = NewFilename Text deriving ( Show )

@@ -10,12 +10,13 @@ import           Data.Time                (Day, getZonedTime, localDay,
                                            zonedTimeToLocalTime)
 import           Models.NRS
 import           NRSParser
+import           FileUtil
 
 
 main :: IO ()
 main = do
     today ← todaysDate
-    let source_dir = "/tmp/www.leg.state.nv.us/"
+    let source_dir = FileUtil.NewFilename "/tmp/www.leg.state.nv.us/"
 
     let nevadaJson = source_dir
                         & parseFiles today
@@ -24,14 +25,14 @@ main = do
     B.putStr nevadaJson
 
 
-parseFiles :: Day -> String -> NRS
+parseFiles :: Day -> Filename -> NRS
 parseFiles today sourceDir  =
-    let (indexFile, chapterFiles) = filesInDirectory $ T.pack sourceDir
+    let (indexFile, chapterFiles) = filesInDirectory sourceDir
     in parseNRS indexFile chapterFiles today
 
 
 -- Return the index filename and a list of chapter filenames.
-filesInDirectory :: Text -> (Text, [Text])
+filesInDirectory :: Filename -> (Text, [Text])
 filesInDirectory _sourceDir =
     ("nrs.html", ["nrs-001.html", "nrs-432b.html"])
 
