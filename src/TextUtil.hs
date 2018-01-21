@@ -8,11 +8,6 @@ import qualified Data.Text         as T
 import           Text.HTML.TagSoup
 
 
--- Words which are not usually capitalized in titles.
-minorWords :: [Text]
-minorWords  = ["a", "an", "and", "at", "but", "by", "for", "from", "in", "nor", "of", "on", "or", "out", "so", "the", "to", "up", "yet"]
-
-
 titleize :: Text -> Text
 titleize phrase =
     unwords (firstWord : remainingWords)
@@ -42,6 +37,30 @@ isUsuallyUncapitalized :: Text -> Bool
 isUsuallyUncapitalized word =
     T.toLower word `elem` minorWords
 
+
+-- Words which are not usually capitalized in titles.
+minorWords :: [Text]
+minorWords =
+  [ "a"
+  , "an"
+  , "and"
+  , "at"
+  , "but"
+  , "by"
+  , "for"
+  , "from"
+  , "in"
+  , "nor"
+  , "of"
+  , "on"
+  , "or"
+  , "out"
+  , "so"
+  , "the"
+  , "to"
+  , "up"
+  , "yet"
+  ]
 
 isHyphen :: Char -> Bool
 isHyphen '-' = True
