@@ -7,8 +7,9 @@ import           Data.Time
 import           Models.NRS
 import           Models.Tree
 import           Year         (toYear)
+import          FileUtil        (Filename)
 
-parseNRS :: Text -> [Text] -> Day -> NRS
+parseNRS :: Filename -> [Filename] -> Day -> NRS
 parseNRS indexFile chapterFiles currentDate =
     NRS {
         statuteTree  = Tree { },
