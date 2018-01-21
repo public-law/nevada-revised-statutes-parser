@@ -15,9 +15,9 @@ import           NRSParser
 main :: IO ()
 main = do
     today ← todaysDate
-    let dir = "/tmp/www.leg.state.nv.us/"
+    let source_dir = "/tmp/www.leg.state.nv.us/"
 
-    let nevadaJson = dir
+    let nevadaJson = source_dir
                         & parseFiles today
                         & Aeson.encodePretty
 
@@ -30,9 +30,9 @@ parseFiles today sourceDir  =
     in parseNRS indexFile chapterFiles today
 
 
+-- Return the index filename and a list of chapter filenames.
 filesInDirectory :: Text -> (Text, [Text])
 filesInDirectory _sourceDir =
-    -- Return the index filename and a list of chapter filenames.
     ("nrs.html", ["nrs-001.html", "nrs-432b.html"])
 
 
