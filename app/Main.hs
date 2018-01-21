@@ -30,7 +30,7 @@ parseFiles today sourceDir  =
     in parseNRS indexFile chapterFiles today
 
 
--- Return the index filename and a list of chapter filenames.
+-- Return the index file and a list of chapters.
 filesInDirectory :: Filename -> (Filename, [Filename])
 filesInDirectory _sourceDir =
     ("nrs.html", ["nrs-001.html", "nrs-432b.html"])
