@@ -5,7 +5,6 @@ import           BasicPrelude
 import qualified Data.Aeson.Encode.Pretty as Aeson (encodePretty)
 import qualified Data.ByteString.Lazy     as B
 import           Data.Function            ((&))
-import qualified Data.Text                as T
 import           Data.Time                (Day, getZonedTime, localDay,
                                            zonedTimeToLocalTime)
 import           Models.NRS
