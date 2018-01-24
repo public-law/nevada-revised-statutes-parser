@@ -30,8 +30,9 @@ shaveBackTagsToLastClosingP input =
     reverse $ dropWhile (~/= "</p>") $ reverse input
 
 
+--
 -- HTML New Type
-
+--
 newtype Html = NewHtml Text 
     deriving ( IsString, Show )
 

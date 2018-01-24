@@ -6,6 +6,7 @@ import           BasicPrelude
 import           Test.Hspec
 
 import           FileUtil       (fixture)
+import           HtmlUtil
 import           IndexFile      (parseTitles)
 import           Models.Chapter as Chapter
 import           Models.Title   as Title
@@ -69,7 +70,7 @@ title38 = do
   return $ parseTitles html !! 37
 
 
-nrsIndexHtml :: IO Text
+nrsIndexHtml :: IO Html
 nrsIndexHtml =
-  readFile (fixture "nrs.html")
+  fmap NewHtml $ readFile (fixture "nrs.html")
 
