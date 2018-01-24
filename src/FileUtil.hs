@@ -19,7 +19,7 @@ readFileLatin1 pathname =
 
 -- Accepts encodings such as LATIN1.
 -- Not currently in use.
-readFileAsUtf8 :: String -> String -> IO Text
+readFileAsUtf8 :: FilePath -> String -> IO Text
 readFileAsUtf8 pathname sourceEncoding = do
     let stdin' = ""
     stdout' <- readProcess "iconv" ["-f", sourceEncoding, "-t", "utf-8", pathname] stdin'
@@ -27,7 +27,7 @@ readFileAsUtf8 pathname sourceEncoding = do
 
 
 -- Compute a full fixture path
-fixture :: String -> String
+fixture :: FilePath -> FilePath
 fixture filename =
     "test/fixtures/" ++ filename
 
