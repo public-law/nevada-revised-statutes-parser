@@ -4,9 +4,10 @@ module TreeParser where
 
 import           BasicPrelude
 import           Models.Tree
+import           FileUtil     (Filename)
 
 
-parseTree :: Text -> [Text] -> Tree
+parseTree :: Filename -> [Filename] -> Tree
 parseTree indexFile chapterFiles =
     Tree {
 
