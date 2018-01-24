@@ -72,5 +72,4 @@ title38 = do
 
 nrsIndexHtml :: IO Html
 nrsIndexHtml =
-  fmap NewHtml $ readFile (fixture "nrs.html")
-
+  NewHtml <$> readFile (fixture "nrs.html")
