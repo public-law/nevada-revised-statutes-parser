@@ -1,8 +1,9 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
 module HtmlUtil  where
 
 import           BasicPrelude
 import           Text.HTML.TagSoup (Tag, innerText, partitions, (~/=), (~==))
-
 
 
 -- Return the text content of an HTML title.
@@ -27,3 +28,12 @@ findAll searchTerm =
 shaveBackTagsToLastClosingP :: [Tag Text] -> [Tag Text]
 shaveBackTagsToLastClosingP input =
     reverse $ dropWhile (~/= "</p>") $ reverse input
+
+
+-- HTML New Type
+
+newtype Html = NewHtml Text 
+    deriving ( IsString, Show )
+
+toText :: Html -> Text
+toText (NewHtml t) = t
