@@ -84,6 +84,7 @@ executable nv-statutes-exe
                        , nv-statutes
                        , text
                        , time
+                       , unordered-containers
 
 
 

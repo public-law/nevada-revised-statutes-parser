@@ -2,13 +2,14 @@
 
 module NRSParser where
 
+import           BasicPrelude
 import           Data.Time
 import           HtmlUtil   (Html)
 import           Models.NRS
 import           TreeParser (parseTree)
 import           Year       (toYear)
 
-parseNRS :: Html -> [Html] -> Day -> NRS
+parseNRS :: Html -> HashMap FilePath Html -> Day -> NRS
 parseNRS indexFile chapterFiles currentDate =
     NRS {
         statuteTree  = parseTree indexFile chapterFiles,
