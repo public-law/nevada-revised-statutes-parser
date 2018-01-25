@@ -40,6 +40,7 @@ library
                      , base-unicode-symbols
                      , basic-prelude
                      , bytestring
+                     , directory
                      , hspec
                      , parsers
                      , process
@@ -58,6 +59,7 @@ test-suite nv-statutes-test
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
   default-language:    Haskell2010
   build-depends:       basic-prelude
+                       , directory
                        , hspec
                        , interpolatedstring-perl6
                        , nv-statutes
@@ -77,6 +79,7 @@ executable nv-statutes-exe
                        , base
                        , base-unicode-symbols
                        , bytestring
+                       , directory
                        , hspec
                        , nv-statutes
                        , text
