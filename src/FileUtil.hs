@@ -7,7 +7,7 @@ import           Data.ByteString    (hGetContents)
 import qualified Data.Text          as T
 import           Data.Text.Encoding (decodeLatin1)
 import           System.IO          (IOMode (ReadMode), withFile)
-import           System.Process     
+import           System.Process
 
 
 -- Does not work when invoked from the fish shell.
@@ -32,5 +32,5 @@ fixture filename =
     "test/fixtures/" ++ filename
 
 
-newtype Filename = NewFilename Text 
+newtype Filename = NewFilename Text
     deriving ( IsString, Show )

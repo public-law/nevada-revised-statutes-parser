@@ -2,14 +2,12 @@
 
 module TreeParser(parseTree) where
 
-import           FileUtil       (Filename)
+import           HtmlUtil       (Html)
 import           Models.Chapter
 import           Models.Tree
 
 
--- This is all going to change with Html coming down,
--- not filenames.
-parseTree :: Filename -> [Filename] -> Tree
+parseTree :: Html -> [Html] -> Tree
 parseTree indexFile chapterFiles =
     Tree {
         -- chapter0 = parseChapterZero chapterFiles,

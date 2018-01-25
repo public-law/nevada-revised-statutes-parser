@@ -3,7 +3,12 @@
 module HtmlUtil  where
 
 import           BasicPrelude
+import           FileUtil          (Filename)
 import           Text.HTML.TagSoup (Tag, innerText, partitions, (~/=), (~==))
+
+
+readHtmlFile :: Filename -> IO Html
+readHtmlFile file = NewHtml <$> readFile (show file)
 
 
 -- Return the text content of an HTML title.
