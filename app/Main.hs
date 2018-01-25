@@ -7,20 +7,18 @@ import qualified Data.ByteString.Lazy     as B
 import           Data.Function            ((&))
 import           Data.Time                (Day, getZonedTime, localDay,
                                            zonedTimeToLocalTime)
+import           FileUtil
 import           Models.NRS
 import           NRSParser
-import           FileUtil
 
 
 main :: IO ()
 main = do
     today ← todaysDate
     let source_dir = "/tmp/www.leg.state.nv.us/"
-
     let nevadaJson = source_dir
                         & parseFiles today
                         & Aeson.encodePretty
-
     B.putStr nevadaJson
 
 

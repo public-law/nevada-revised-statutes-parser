@@ -60,13 +60,13 @@ main =
 
 firstTitle :: IO Title
 firstTitle = do
-  html ← nrsIndexHtml
+  html <- nrsIndexHtml
   return (head (parseTitles html))
 
 
 title38 :: IO Title
 title38 = do
-  html ← nrsIndexHtml
+  html <- nrsIndexHtml
   return $ parseTitles html !! 37
 
 

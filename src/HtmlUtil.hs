@@ -33,7 +33,7 @@ shaveBackTagsToLastClosingP input =
 --
 -- HTML New Type
 --
-newtype Html = NewHtml Text 
+newtype Html = NewHtml Text
     deriving ( IsString, Show )
 
 toText :: Html -> Text

@@ -2,13 +2,11 @@
 
 module NRSParser where
 
-import           BasicPrelude
 import           Data.Time
+import           FileUtil   (Filename)
 import           Models.NRS
-import           Models.Tree
-import           Year         (toYear)
-import          FileUtil        (Filename)
-import TreeParser (parseTree)
+import           TreeParser (parseTree)
+import           Year       (toYear)
 
 parseNRS :: Filename -> [Filename] -> Day -> NRS
 parseNRS indexFile chapterFiles currentDate =
