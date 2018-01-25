@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module TreeParser where
+module TreeParser(parseTree) where
 
 import           BasicPrelude
 import           Models.Tree
