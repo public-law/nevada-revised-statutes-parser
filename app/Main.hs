@@ -15,7 +15,7 @@ import           NRSParser
 main :: IO ()
 main = do
     today ← todaysDate
-    let source_dir = "/tmp/www.leg.state.nv.us/"
+    let source_dir = "/tmp/www.leg.state.nv.us/NRS"
     let nevadaJson = source_dir
                         & parseFiles today
                         & Aeson.encodePretty
@@ -36,3 +36,7 @@ filesInDirectory _sourceDir =
 
 todaysDate :: IO Day
 todaysDate = fmap (localDay . zonedTimeToLocalTime) getZonedTime
+
+
+chapterZeroFilename :: Filename
+chapterZeroFilename = "NRS-000.html"
