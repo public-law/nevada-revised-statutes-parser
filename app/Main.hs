@@ -29,10 +29,13 @@ parseFiles sourceDir = do
     return $ parseNRS indexHtml chaptersHtml today
 
 
--- Return the index file and a list of chapters.
+-- Return the abs paths to the index file and a list of chapters.
 filesInDirectory :: Filename -> (Filename, [Filename])
 filesInDirectory _sourceDir =
-    ("nrs.html", ["nrs-001.html", "nrs-432b.html"])
+    ("/tmp/www.leg.state.nv.us/NRS/index.html",
+      ["/tmp/www.leg.state.nv.us/NRS/nrs-001.html",
+       "/tmp/www.leg.state.nv.us/NRS/nrs-432b.html"
+      ])
 
 
 todaysDate :: IO Day
