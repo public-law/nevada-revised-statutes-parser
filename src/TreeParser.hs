@@ -29,6 +29,6 @@ chapterZero chapterMap =
 
 
 chapterZeroPathname :: RelativePath
-chapterZeroPathname = toRelativePath "NRS-000.html"
+chapterZeroPathname = (./) "NRS-000.html"
 
 -- everythingButZero

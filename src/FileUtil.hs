@@ -54,6 +54,9 @@ toAbsolutePath :: FilePath -> AbsolutePath
 toAbsolutePath p | isAbsolute p = MakeAbsolutePath p
                  | otherwise = error "Not an absolute path"
 
+(//) :: FilePath -> AbsolutePath
+(//) = toAbsolutePath
+
 toFilePath :: AbsolutePath -> FilePath
 toFilePath (MakeAbsolutePath p) = p
 
@@ -64,3 +67,6 @@ newtype RelativePath = MakeRelativePath FilePath
 toRelativePath :: FilePath -> RelativePath
 toRelativePath p | isRelative p = MakeRelativePath p
                  | otherwise = error "Not a relative path"
+
+(./) :: FilePath -> RelativePath
+(./) = toRelativePath
