@@ -15,8 +15,7 @@ import           System.Process
 listFilesInDirectory :: FilePath -> IO [FilePath]
 listFilesInDirectory dir = do
     rawList <- Dir.listDirectory dir
-    let absolutePaths = map (dir </>) rawList
-    filterM Dir.doesFileExist absolutePaths
+    filterM Dir.doesFileExist (map (dir </>) rawList)
 
 
 -- Does not work when invoked from the fish shell.
