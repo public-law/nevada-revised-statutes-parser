@@ -23,8 +23,12 @@ parseTree _indexFile chapterMap =
 
 chapterZero :: ChapterMap -> Chapter
 chapterZero chapterMap =
-    case HM.lookup "NRS-000.html" chapterMap of
+    case HM.lookup chapterZeroPathname chapterMap of
         Just html -> parseChapter $ toText html
-        Nothing   -> error $ "Chapter Zero not found in " ++ (show $ HM.keys chapterMap)
+        Nothing   -> error $ "Chapter Zero " ++ (show chapterZeroPathname) ++ " not found in " ++ (show $ head $ HM.keys chapterMap)
+
+
+chapterZeroPathname :: RelativePath
+chapterZeroPathname = toRelativePath "NRS-000.html"
 
 -- everythingButZero
