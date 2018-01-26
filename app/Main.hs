@@ -6,8 +6,8 @@ import qualified Data.ByteString.Lazy     as B
 import qualified Data.HashMap.Lazy        as HM
 import           Data.Time                (Day, getZonedTime, localDay,
                                            zonedTimeToLocalTime)
-import qualified System.Directory         as Sys
 
+import           FileUtil                 (listFilesInDirectory)
 import           HtmlUtil
 import           Models.NRS
 import           NRSParser
@@ -23,7 +23,7 @@ main = do
 parseFiles :: FilePath -> IO NRS
 parseFiles source = do
     let indexFile = source </> "index.html"
-    chapterFilenames <- Sys.listDirectory sourceDir
+    chapterFilenames <- listFilesInDirectory sourceDir
     today            <- todaysDate
     indexHtml        <- readHtmlFile indexFile
     chaptersHtml     <- mapM readHtmlFile chapterFilenames
