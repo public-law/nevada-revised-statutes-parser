@@ -6,8 +6,17 @@ import           BasicPrelude
 import           Data.ByteString    (hGetContents)
 import qualified Data.Text          as T
 import           Data.Text.Encoding (decodeLatin1)
+import qualified System.Directory   as Sys
 import           System.IO          (IOMode (ReadMode), withFile)
 import           System.Process
+
+
+
+listFilesInDirectory :: FilePath -> IO [FilePath]
+listFilesInDirectory dir = do
+    rawList <- Sys.listDirectory dir
+    fileList <- filterM Sys.doesFileExist rawList
+    return fileList
 
 
 -- Does not work when invoked from the fish shell.
