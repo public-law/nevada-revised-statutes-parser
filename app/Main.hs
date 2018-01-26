@@ -7,7 +7,7 @@ import qualified Data.HashMap.Lazy        as HM
 import           Data.Time                (Day, getZonedTime, localDay,
                                            zonedTimeToLocalTime)
 
-import           FileUtil                 (listFilesInDirectory, toRelativePath)
+import           FileUtil                 (listFilesInDirectory, toAbsolutePath,  toRelativePath)
 import           HtmlUtil
 import           Models.NRS
 import           NRSParser
@@ -23,9 +23,9 @@ main = do
 
 parseFiles :: FilePath -> IO NRS
 parseFiles source = do
-    let indexFile = source </> "index.html"
+    let indexFile = toAbsolutePath $ source </> "index.html"
     chapterFilenames <- listFilesInDirectory sourceDir
-    let relativeChapterFilenames = map (toRelativePath . takeFileName) chapterFilenames
+    let relativeChapterFilenames = map (toRelativePath . takeFileName . show) chapterFilenames
     today            <- todaysDate
     indexHtml        <- readHtmlFile indexFile
     chaptersHtml     <- mapM readHtmlFile chapterFilenames
