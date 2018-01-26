@@ -13,10 +13,11 @@ import           System.Process
 
 
 
-listFilesInDirectory :: FilePath -> IO [FilePath]
+listFilesInDirectory :: FilePath -> IO [AbsolutePath]
 listFilesInDirectory dir = do
     rawList <- Dir.listDirectory dir
-    filterM Dir.doesFileExist (map (dir </>) rawList)
+    paths   <- filterM Dir.doesFileExist (map (dir </>) rawList)
+    return $ map toAbsolutePath paths
 
 
 readFileLatin1 :: FilePath -> IO Text
@@ -47,7 +48,7 @@ newtype Filename = NewFilename Text
 --
 
 newtype AbsolutePath = MakeAbsolutePath FilePath
-    deriving ( IsString, Show )
+    deriving ( Eq, Hashable, IsString, Show )
 
 toAbsolutePath :: FilePath -> AbsolutePath
 toAbsolutePath p | isRelative p = MakeAbsolutePath p
@@ -55,7 +56,7 @@ toAbsolutePath p | isRelative p = MakeAbsolutePath p
 
 
 newtype RelativePath = MakeRelativePath FilePath
-    deriving ( IsString, Show )
+    deriving ( Eq, Hashable, IsString, Show )
 
 toRelativePath :: FilePath -> RelativePath
 toRelativePath p | isRelative p = MakeRelativePath p
