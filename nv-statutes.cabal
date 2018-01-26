@@ -41,6 +41,7 @@ library
                      , basic-prelude
                      , bytestring
                      , directory
+                     , filepath
                      , hspec
                      , parsers
                      , process
@@ -61,6 +62,7 @@ test-suite nv-statutes-test
   default-language:    Haskell2010
   build-depends:       basic-prelude
                        , directory
+                       , filepath
                        , hspec
                        , interpolatedstring-perl6
                        , nv-statutes
@@ -82,6 +84,7 @@ executable nv-statutes-exe
                        , base-unicode-symbols
                        , bytestring
                        , directory
+                       , filepath
                        , hspec
                        , nv-statutes
                        , text

@@ -7,6 +7,7 @@ import           Data.ByteString    (hGetContents)
 import qualified Data.Text          as T
 import           Data.Text.Encoding (decodeLatin1)
 import qualified System.Directory   as Dir
+import           System.FilePath    (isRelative)
 import           System.IO          (IOMode (ReadMode), withFile)
 import           System.Process
 
@@ -40,3 +41,22 @@ fixture filename =
 
 newtype Filename = NewFilename Text
     deriving ( IsString, Show )
+
+--
+-- AbsolutePath and RelativePath
+--
+
+newtype AbsolutePath = MakeAbsolutePath FilePath
+    deriving ( IsString, Show )
+
+toAbsolutePath :: FilePath -> AbsolutePath
+toAbsolutePath p | isRelative p = MakeAbsolutePath p
+                 | otherwise = error "Not a relative path"
+
+
+newtype RelativePath = MakeRelativePath FilePath
+    deriving ( IsString, Show )
+
+toRelativePath :: FilePath -> RelativePath
+toRelativePath p | isRelative p = MakeRelativePath p
+                 | otherwise = error "Not a relative path"
