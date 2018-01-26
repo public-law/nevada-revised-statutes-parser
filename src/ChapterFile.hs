@@ -129,7 +129,7 @@ headingGroups tags =
 parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input =
   case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
-    Left e  -> error e
+    Left e  -> error $ "Could not parse chapter file title '" ++ (show input)  ++  "'\n" ++ e
     Right b -> b
 
 
