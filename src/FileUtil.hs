@@ -18,8 +18,6 @@ listFilesInDirectory dir = do
     filterM Dir.doesFileExist (map (dir </>) rawList)
 
 
--- Does not work when invoked from the fish shell.
--- Not sure why not.
 readFileLatin1 :: FilePath -> IO Text
 readFileLatin1 pathname =
     fmap decodeLatin1 (withFile pathname ReadMode hGetContents)

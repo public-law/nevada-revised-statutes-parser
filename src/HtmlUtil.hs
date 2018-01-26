@@ -5,9 +5,11 @@ module HtmlUtil  where
 import           BasicPrelude
 import           Text.HTML.TagSoup (Tag, innerText, partitions, (~/=), (~==))
 
+import           FileUtil          (readFileLatin1)
+
 
 readHtmlFile :: FilePath -> IO Html
-readHtmlFile file = NewHtml <$> readFile file
+readHtmlFile file = NewHtml <$> (readFileLatin1 file)
 
 
 -- Return the text content of an HTML title.
