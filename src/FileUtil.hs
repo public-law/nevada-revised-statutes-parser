@@ -13,10 +13,10 @@ import           System.Process
 
 
 
-listFilesInDirectory :: FilePath -> IO [AbsolutePath]
+listFilesInDirectory :: AbsolutePath -> IO [AbsolutePath]
 listFilesInDirectory dir = do
-    rawList <- Dir.listDirectory dir
-    paths   <- filterM Dir.doesFileExist (map (dir </>) rawList)
+    rawList <- Dir.listDirectory $ toFilePath dir
+    paths   <- filterM Dir.doesFileExist (map ((toFilePath dir) </>) rawList)
     return $ map toAbsolutePath paths
 
 

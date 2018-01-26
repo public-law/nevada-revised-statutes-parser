@@ -7,7 +7,7 @@ import qualified Data.HashMap.Lazy        as HM
 import           Data.Time                (Day, getZonedTime, localDay,
                                            zonedTimeToLocalTime)
 
-import           FileUtil                 (listFilesInDirectory, toAbsolutePath, toRelativePath, toFilePath)
+import           FileUtil                 (AbsolutePath, listFilesInDirectory, toAbsolutePath, toRelativePath, toFilePath)
 import           HtmlUtil
 import           Models.NRS
 import           NRSParser
@@ -21,10 +21,10 @@ main = do
     B.putStr nevadaJson
 
 
-parseFiles :: FilePath -> IO NRS
-parseFiles source = do
-    let indexFile = toAbsolutePath $ source </> "index.html"
-    chapterFilenames <- listFilesInDirectory sourceDir
+parseFiles :: AbsolutePath -> IO NRS
+parseFiles dir = do
+    let indexFile = toAbsolutePath $ (toFilePath dir) </> "index.html"
+    chapterFilenames <- listFilesInDirectory dir
     let relativeChapterFilenames = map (toRelativePath . takeFileName . toFilePath) chapterFilenames
     today            <- todaysDate
     indexHtml        <- readHtmlFile indexFile
@@ -37,5 +37,5 @@ todaysDate :: IO Day
 todaysDate = fmap (localDay . zonedTimeToLocalTime) getZonedTime
 
 
-sourceDir :: FilePath
-sourceDir = "/tmp/www.leg.state.nv.us/NRS"
+sourceDir :: AbsolutePath
+sourceDir = toAbsolutePath "/tmp/www.leg.state.nv.us/NRS"
