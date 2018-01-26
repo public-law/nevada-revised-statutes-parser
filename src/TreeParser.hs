@@ -5,10 +5,10 @@ module TreeParser(parseTree) where
 import           BasicPrelude
 import qualified Data.HashMap.Lazy as HM
 
-import           HtmlUtil       (Html, toText)
+import           ChapterFile       (parseChapter)
+import           HtmlUtil          (Html, toText)
 import           Models.Chapter
 import           Models.Tree
-import           ChapterFile    (parseChapter)
 
 type ChapterMap = HashMap FilePath Html
 
@@ -22,8 +22,8 @@ parseTree _indexFile chapterMap =
 
 chapterZero :: ChapterMap -> Chapter
 chapterZero chapterMap =
-    case HM.lookup "NRS-000.html" chapterMap of
+    case HM.lookup "/tmp/www.leg.state.nv.us/NRS/NRS-000.html" chapterMap of
         Just html -> parseChapter $ toText html
-        Nothing   -> error "Chapter Zero not found"
+        Nothing   -> error $ "Chapter Zero not found in " ++ (show $ HM.keys chapterMap)
 
 -- everythingButZero
