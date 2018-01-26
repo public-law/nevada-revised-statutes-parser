@@ -25,3 +25,5 @@ chapterZero chapterMap =
     case HM.lookup "NRS-000.html" chapterMap of
         Just html -> parseChapter $ toText html
         Nothing   -> error "Chapter Zero not found"
+
+-- everythingButZero

@@ -16,7 +16,6 @@ main :: IO ()
 main = do
     nrs <- parseFiles sourceDir
     let nevadaJson = Aeson.encodePretty nrs
-
     B.putStr nevadaJson
 
 
