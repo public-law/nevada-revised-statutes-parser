@@ -40,9 +40,6 @@ fixture filename =
     "test/fixtures/" ++ filename
 
 
-newtype Filename = NewFilename Text
-    deriving ( IsString, Show )
-
 --
 -- AbsolutePath and RelativePath
 --

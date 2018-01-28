@@ -3,11 +3,15 @@ module ChapterFile where
 import           BasicPrelude
 import qualified Data.Attoparsec.Text (Parser, parseOnly, takeText, takeWhile)
 import           Data.Char            (isSpace)
+import qualified Data.HashMap.Lazy    as HM
 import qualified Data.Text            as T
 import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
-import           HtmlUtil             (shaveBackTagsToLastClosingP, titleText)
+
+import           FileUtil             (RelativePath, toRelativePath)
+import           HtmlUtil             (Html, shaveBackTagsToLastClosingP,
+                                       titleText, toText)
 import           Models.Chapter       as Chapter
 import           Models.Section       as Section
 import           Models.SubChapter    as SubChapter
@@ -15,7 +19,13 @@ import           Models.SubSubChapter as SubSubChapter
 import           TextUtil             (normalizeWhiteSpace, normalizedInnerText,
                                        titleize)
 
-type Html = Text
+
+--
+-- TODO: Any way to shorten this file?
+--
+
+
+type ChapterMap = HashMap RelativePath Html
 
 chapterUrlPrefix :: Text
 chapterUrlPrefix = T.pack "https://www.leg.state.nv.us/nrs/NRS-"
@@ -23,9 +33,20 @@ chapterUrlPrefix = T.pack "https://www.leg.state.nv.us/nrs/NRS-"
 chapterZeroTitle :: Text
 chapterZeroTitle = T.pack "NRS: PRELIMINARY CHAPTER - GENERAL PROVISIONS"
 
---
--- TODO: Any way to shorten this file?
---
+
+fillInEmptyChapter :: ChapterMap -> Chapter -> Chapter
+fillInEmptyChapter chapterMap emptyChapter  =
+    let key       = chapterNumberToFilename (Chapter.number emptyChapter)
+        maybeHtml = HM.lookup key chapterMap
+    in case maybeHtml of
+        Just html -> parseChapter html
+        Nothing   -> error $ "Chapter " ++ (show key) ++ " not found in " ++ (show $ head $ HM.keys chapterMap)
+
+
+chapterNumberToFilename :: Text -> RelativePath
+chapterNumberToFilename chapterNumber =
+    toRelativePath $ "NRS-" ++ (show chapterNumber) ++ ".html"
+
 parseChapter :: Html -> Chapter
 parseChapter chapterHtml =
     Chapter
@@ -35,7 +56,7 @@ parseChapter chapterHtml =
     , Chapter.subChapters = subChaps
     }
   where
-    tags = parseTags chapterHtml
+    tags = parseTags $ toText chapterHtml
     rawTitle = titleText tags
     (rawNumber, rawName) = parseChapterFileTitle rawTitle
     subChaps = fmap (newSubChapter tags) (headingGroups tags)

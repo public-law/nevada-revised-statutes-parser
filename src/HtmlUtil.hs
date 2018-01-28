@@ -42,5 +42,8 @@ shaveBackTagsToLastClosingP input =
 newtype Html = NewHtml Text
     deriving ( IsString, Show )
 
+makeHtml :: Text -> Html
+makeHtml text = NewHtml text
+
 toText :: Html -> Text
 toText (NewHtml t) = t
