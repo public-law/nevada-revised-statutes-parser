@@ -14,7 +14,10 @@ readHtmlFile file = NewHtml <$> (readFileLatin1 $ toFilePath file)
 
 -- Return the text content of an HTML title.
 titleText :: [Tag Text] -> Text
-titleText tags = innerText [findFirst "<title>" tags !! 1]
+titleText tags =
+    case findFirst "<title>" tags of
+        (_:y:_) -> innerText [y]
+        _       -> error $ "No <title> found in: " ++ (show tags)
 
 
 -- Return the first occurrence of an HTML tag within the given
@@ -23,7 +26,7 @@ findFirst ∷ String → [Tag Text] → [Tag Text]
 findFirst searchTerm tags =
     case findAll searchTerm tags of
         (x:_) -> x
-        _     -> error $ "Could not find the tag " ++ searchTerm ++ " in " ++ (show tags)
+        _     -> error $ "Could not find the tag " ++ searchTerm ++ " in: " ++ (show tags)
 
 
 -- Return all the occurrences of an HTML tag within the given
