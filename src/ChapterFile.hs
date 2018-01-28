@@ -182,6 +182,7 @@ parseChapterFileTitle input =
                      (show input) ++ "'\n" ++ e
                  Right b -> b
 
+
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
 chapterTitleParser :: Data.Attoparsec.Text.Parser (Text, Text)
@@ -192,23 +193,33 @@ chapterTitleParser = do
     title <- Data.Attoparsec.Text.takeText
     return $ (num, titleize title)
 
+
 isSimpleSubChapter :: [Tag Text] -> Bool
 isSimpleSubChapter headingGroup =
     null (partitions (~== "<p class=COHead4>") headingGroup)
 
+
 parseSectionBody :: Text -> [Tag Text] -> Text
 parseSectionBody secNumber dom = sectionText
   where
-    sectionGroups = partitions (~== "<span class=Section") dom
-    rawSectionGroup =
-        shaveBackTagsToLastClosingP $
-        (!! 0) $ filter (isSectionBodyNumber secNumber) sectionGroups
-    sectionText =
+    sectionGroups   = partitions (~== "<span class=Section") dom
+    rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
+    sectionText     =
         normalizeWhiteSpace $
         T.pack "<p class=SectBody>" ++ (renderTags rawSectionGroup)
+
 
 isSectionBodyNumber :: Text -> [Tag Text] -> Bool
 isSectionBodyNumber secNumber dom = parseSectionBodyNumber dom == secNumber
 
+
 parseSectionBodyNumber :: [Tag Text] -> Text
 parseSectionBodyNumber dom = innerText $ takeWhile (~/= "</span>") dom
+
+
+rawSectionGroupFromSectionGroups :: Text -> [[Tag Text]] -> [Tag Text]
+rawSectionGroupFromSectionGroups secNumber sectionGroups =
+    let bodyNumbers = filter (isSectionBodyNumber secNumber) sectionGroups
+        in case bodyNumbers of
+            (x:_) -> shaveBackTagsToLastClosingP x
+            _     -> error $ "Error in: " ++ (show bodyNumbers)
