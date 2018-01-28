@@ -7,6 +7,7 @@ import qualified Data.HashMap.Lazy    as HM
 import qualified Data.Text            as T
 import           Text.HTML.TagSoup
 import           Text.Parser.Char
+import           Text.Printf
 
 
 import           FileUtil             (RelativePath, toRelativePath, toString)
@@ -45,7 +46,10 @@ fillInEmptyChapter chapterMap emptyChapter  =
 
 chapterNumberToFilename :: Text -> RelativePath
 chapterNumberToFilename chapterNumber =
-    toRelativePath $ "NRS-" ++ T.unpack chapterNumber ++ ".html"
+    let num = printf "%03s" (T.unpack chapterNumber)
+    in
+        toRelativePath $ "NRS-" ++ num ++ ".html"
+
 
 parseChapter :: Html -> Chapter
 parseChapter chapterHtml =
