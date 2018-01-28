@@ -9,7 +9,7 @@ import           Text.HTML.TagSoup
 import           Text.Parser.Char
 
 
-import           FileUtil             (RelativePath, toRelativePath)
+import           FileUtil             (RelativePath, toRelativePath, toString)
 import           HtmlUtil             (Html, shaveBackTagsToLastClosingP,
                                        titleText, toText)
 import           Models.Chapter       as Chapter
@@ -40,7 +40,7 @@ fillInEmptyChapter chapterMap emptyChapter  =
         maybeHtml = HM.lookup key chapterMap
     in case maybeHtml of
         Just html -> parseChapter html
-        Nothing   -> error $ "Chapter " ++ (show key) ++ " not found in " ++ (show $ head $ HM.keys chapterMap)
+        Nothing   -> error $ "Chapter " ++ (toString key) ++ " not found in " ++ (show $ HM.keys chapterMap)
 
 
 chapterNumberToFilename :: Text -> RelativePath

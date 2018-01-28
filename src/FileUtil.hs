@@ -54,8 +54,10 @@ toAbsolutePath p | isAbsolute p = MakeAbsolutePath p
 (//) :: FilePath -> AbsolutePath
 (//) = toAbsolutePath
 
+-- TODO: Move to separate file so that RelativePath can also have
+-- a toFilePath.
 toFilePath :: AbsolutePath -> FilePath
-toFilePath (MakeAbsolutePath p) = p
+toFilePath (MakeAbsolutePath fp) = fp
 
 
 newtype RelativePath = MakeRelativePath FilePath
@@ -67,3 +69,6 @@ toRelativePath p | isRelative p = MakeRelativePath p
 
 (./) :: FilePath -> RelativePath
 (./) = toRelativePath
+
+toString :: RelativePath -> String
+toString (MakeRelativePath fp) = fp
