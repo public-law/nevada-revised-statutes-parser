@@ -29,7 +29,11 @@ import           TextUtil             (normalizeWhiteSpace, normalizedInnerText,
 type ChapterMap = HashMap RelativePath Html
 
 chaptersToSkip :: [Text]
-chaptersToSkip = map T.pack ["218E", "388C", "460"]
+chaptersToSkip = map T.pack ["218E"
+                            ,"388C"
+                            ,"460"
+                            ,"519A"
+                            ]
 
 chapterUrlPrefix :: Text
 chapterUrlPrefix = T.pack "https://www.leg.state.nv.us/nrs/NRS-"

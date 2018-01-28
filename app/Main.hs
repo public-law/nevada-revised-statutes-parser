@@ -40,7 +40,3 @@ todaysDate = fmap (localDay . zonedTimeToLocalTime) getZonedTime
 
 sourceDir :: AbsolutePath
 sourceDir = (//) "/tmp/www.leg.state.nv.us/NRS"
-
-
-filesToSkip :: [AbsolutePath]
-filesToSkip = [(//) $ (toFilePath sourceDir) </> "NRS-218E.html"]
