@@ -139,7 +139,9 @@ subnames :: [Tag Text] -> [Text]
 subnames tags = fmap subChapterNameFromGroup (headingGroups tags)
 
 subChapterNameFromGroup :: [Tag Text] -> Text
-subChapterNameFromGroup = titleize . fromTagText . (!! 1)
+subChapterNameFromGroup (_:y:_) = titleize $ fromTagText y
+subChapterNameFromGroup tags    = error $ "Could not get a chapter name from the group: " ++ (show tags)
+
 
 sectionNamesFromGroup :: [Tag Text] -> [Text]
 sectionNamesFromGroup headingGroup =
