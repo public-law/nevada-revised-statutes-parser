@@ -140,7 +140,7 @@ extractSubSubChapterName headingGroup =
     let linesOfText = lines $ innerText headingGroup
     in
         if length linesOfText >= 1
-            then normalizeWhiteSpace $ head linesOfText
+            then normalizeWhiteSpace $ linesOfText !! 0
             else error $ "Could not parse sub sub chapter name from: " ++ (show headingGroup)
 
 
