@@ -5,7 +5,7 @@ module TextUtilSpec where
 import           BasicPrelude
 import           Test.Hspec
 
-import           TextUtil       (isUsuallyUncapitalized, titleize, titleizeWord)
+import           TextUtil     (isUsuallyUncapitalized, titleize, titleizeWord)
 
 
 spec :: SpecWith ()

@@ -26,43 +26,46 @@ spec = parallel $ do
   describe "parseChapter" $ do
 
     it "gets the chapter name" $ do
-      html ← chapter_432b_html
-      Chapter.name (parseChapter html) `shouldBe` "Protection of Children from Abuse and Neglect"
+        html ← chapter_432b_html
+        Chapter.name (parseChapter html) `shouldBe` "Protection of Children from Abuse and Neglect"
 
+    it "gets the chapter name when it has embedded newline" $ do
+        html ← chapter_575_html
+        Chapter.name (parseChapter html) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
 
     it "gets the chapter number" $ do
-      html ← chapter_432b_html
-      Chapter.number (parseChapter html) `shouldBe` "432B"
+        html ← chapter_432b_html
+        Chapter.number (parseChapter html) `shouldBe` "432B"
 
 
     it "gets the chapter URL" $ do
-      html ← chapter_432b_html
-      url (parseChapter html) `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
+        html ← chapter_432b_html
+        url (parseChapter html) `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
 
 
     it "gets the sub-chapter names" $ do
-      html ← chapter_432b_html
-      let subchapters = subChapters ( parseChapter html )
+        html ← chapter_432b_html
+        let subchapters = subChapters ( parseChapter html )
 
-      SubChapter.name (subchapters !! 0) `shouldBe` "General Provisions"
-      SubChapter.name (subchapters !! 1) `shouldBe` "Administration"
-      SubChapter.name (subchapters !! 3) `shouldBe` "Protective Services and Custody"
+        SubChapter.name (subchapters !! 0) `shouldBe` "General Provisions"
+        SubChapter.name (subchapters !! 1) `shouldBe` "Administration"
+        SubChapter.name (subchapters !! 3) `shouldBe` "Protective Services and Custody"
 
 
     it "gets a simple sub-chapter's sections" $ do
-      html <- chapter_432b_html
-      let generalProvisions = head $ subChapters ( parseChapter html )
-      case children generalProvisions of
-        SubChapterSections xs -> length xs `shouldBe` 31
-        SubSubChapters _      -> error "Got sub-sub chapters but expected Sections"
+        html <- chapter_432b_html
+        let generalProvisions = head $ subChapters ( parseChapter html )
+        case children generalProvisions of
+            SubChapterSections xs -> length xs `shouldBe` 31
+            SubSubChapters _      -> error "Got sub-sub chapters but expected Sections"
 
 
     it "gets the sub-chapter's section names right - 1" $ do
-      html <- chapter_432b_html
-      let generalProvisions = head $ subChapters ( parseChapter html )
-      case children generalProvisions of
-        SubChapterSections xs -> Section.name (head xs) `shouldBe` "Definitions."
-        SubSubChapters _      -> error "Got sub-sub chapters but expected Sections"
+        html <- chapter_432b_html
+        let generalProvisions = head $ subChapters ( parseChapter html )
+        case children generalProvisions of
+            SubChapterSections xs -> Section.name (head xs) `shouldBe` "Definitions."
+            SubSubChapters _      -> error "Got sub-sub chapters but expected Sections"
 
 
     it "gets the sub-chapter's section names right - 2" $ do
@@ -152,4 +155,8 @@ main =
 
 chapter_432b_html :: IO Text
 chapter_432b_html =
-  readFileLatin1 (fixture "nrs-432b.html")
+    readFileLatin1 (fixture "nrs-432b.html")
+
+chapter_575_html :: IO Text
+chapter_575_html =
+    readFileLatin1 (fixture "nrs-575.html")
