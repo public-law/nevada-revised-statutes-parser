@@ -20,8 +20,10 @@ titleText tags = innerText [findFirst "<title>" tags !! 1]
 -- Return the first occurrence of an HTML tag within the given
 -- HTML chunk.
 findFirst ∷ String → [Tag Text] → [Tag Text]
-findFirst searchTerm html =
-    head $ findAll searchTerm html
+findFirst searchTerm tags =
+    case findAll searchTerm tags of
+        (x:_) -> x
+        _     -> error $ "Could not find the tag " ++ searchTerm ++ " in " ++ (show tags)
 
 
 -- Return all the occurrences of an HTML tag within the given
