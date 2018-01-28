@@ -21,6 +21,9 @@ type Html = Text
 chapterUrlPrefix :: Text
 chapterUrlPrefix = T.pack "https://www.leg.state.nv.us/nrs/NRS-"
 
+chapterZeroTitle :: Text
+chapterZeroTitle = T.pack "NRS: PRELIMINARY CHAPTER - GENERAL PROVISIONS"
+
 
 --
 -- TODO: Any way to shorten this file?
@@ -129,8 +132,8 @@ headingGroups tags =
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
 parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input =
-  if input == T.pack "NRS: PRELIMINARY CHAPTER - GENERAL PROVISIONS"
-    then (T.pack "0", T.pack "PRELIMINARY CHAPTER - GENERAL PROVISIONS")
+  if input == chapterZeroTitle
+    then (T.pack "0", T.pack "Preliminary Chapter – General Provisions")
     else
       case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
         Left e  -> error $ "Could not parse chapter file title '" ++ (show input)  ++  "'\n" ++ e
