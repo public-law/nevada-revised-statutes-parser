@@ -40,12 +40,12 @@ fillInEmptyChapter chapterMap emptyChapter  =
         maybeHtml = HM.lookup key chapterMap
     in case maybeHtml of
         Just html -> parseChapter html
-        Nothing   -> error $ "Chapter " ++ (toString key) ++ " not found in " ++ (show $ HM.keys chapterMap)
+        Nothing   -> error $ "Chapter " ++ (toString key) ++ " not found."
 
 
 chapterNumberToFilename :: Text -> RelativePath
 chapterNumberToFilename chapterNumber =
-    toRelativePath $ "NRS-" ++ (show chapterNumber) ++ ".html"
+    toRelativePath $ "NRS-" ++ T.unpack chapterNumber ++ ".html"
 
 parseChapter :: Html -> Chapter
 parseChapter chapterHtml =

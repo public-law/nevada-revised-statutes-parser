@@ -30,8 +30,8 @@ parseFiles dir = do
     today            <- todaysDate
     indexHtml        <- readHtmlFile indexFile
     chaptersHtml     <- mapM readHtmlFile chapterFilenames
-    let chaptersMap  = HM.fromList $ zip relativeChapterFilenames chaptersHtml
-    return $ parseNRS indexHtml chaptersMap today
+    let chapterMap   = HM.fromList $ zip relativeChapterFilenames chaptersHtml
+    return $ parseNRS indexHtml chapterMap today
 
 
 todaysDate :: IO Day
