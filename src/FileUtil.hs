@@ -25,7 +25,7 @@ readFileLatin1 pathname =
     fmap decodeLatin1 (withFile pathname ReadMode hGetContents)
 
 
--- Accepts encodings such as LATIN1.
+-- Accepts encodings such as "LATIN1".
 -- Not currently in use.
 readFileAsUtf8 :: FilePath -> String -> IO Text
 readFileAsUtf8 pathname sourceEncoding = do

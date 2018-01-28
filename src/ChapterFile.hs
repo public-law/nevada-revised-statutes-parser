@@ -125,12 +125,16 @@ headingGroups tags =
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
+--    or:  "NRS: PRELIMINARY CHAPTER - GENERAL PROVISIONS"
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
 parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input =
-  case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
-    Left e  -> error $ "Could not parse chapter file title '" ++ (show input)  ++  "'\n" ++ e
-    Right b -> b
+  if input == T.pack "NRS: PRELIMINARY CHAPTER - GENERAL PROVISIONS"
+    then (T.pack "0", T.pack "PRELIMINARY CHAPTER - GENERAL PROVISIONS")
+    else
+      case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
+        Left e  -> error $ "Could not parse chapter file title '" ++ (show input)  ++  "'\n" ++ e
+        Right b -> b
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
