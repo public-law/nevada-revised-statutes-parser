@@ -28,6 +28,9 @@ import           TextUtil             (normalizeWhiteSpace, normalizedInnerText,
 
 type ChapterMap = HashMap RelativePath Html
 
+chaptersToSkip :: [Text]
+chaptersToSkip = map T.pack ["218E", "388C", "460"]
+
 chapterUrlPrefix :: Text
 chapterUrlPrefix = T.pack "https://www.leg.state.nv.us/nrs/NRS-"
 
@@ -39,9 +42,12 @@ fillInEmptyChapter :: ChapterMap -> Chapter -> Chapter
 fillInEmptyChapter chapterMap emptyChapter  =
     let key       = chapterNumberToFilename (Chapter.number emptyChapter)
         maybeHtml = HM.lookup key chapterMap
-    in case maybeHtml of
+    in
+      if not $ (Chapter.number emptyChapter) `elem` chaptersToSkip
+      then case maybeHtml of
         Just html -> parseChapter html
         Nothing   -> error $ "Chapter " ++ (toString key) ++ " not found."
+      else emptyChapter
 
 
 chapterNumberToFilename :: Text -> RelativePath
@@ -68,6 +74,7 @@ parseChapter chapterHtml =
     (rawNumber, rawName) = parseChapterFileTitle rawTitle
     subChaps = fmap (newSubChapter tags) (headingGroups tags)
 
+
 newSubChapter :: [Tag Text] -> [Tag Text] -> SubChapter
 newSubChapter dom headingGroup =
     SubChapter
@@ -79,11 +86,13 @@ newSubChapter dom headingGroup =
               else SubSubChapters $ parseSubSubChapters dom headingGroup
     }
 
+
 parseSectionsFromHeadingGroup :: [Tag Text] -> [Tag Text] -> [Section]
 parseSectionsFromHeadingGroup dom headingGroup =
     fmap
         (parseSectionFromHeadingParagraph dom)
         (headingParagraphsWithContent headingGroup)
+
 
 -- Some COLeadline P's have no content; they're just used for vertical spacing.
 headingParagraphsWithContent :: [Tag Text] -> [[Tag Text]]
@@ -91,6 +100,7 @@ headingParagraphsWithContent headingGroup =
     filter
         (\tags -> length tags > 4)
         (partitions (~== "<p class=COLeadline>") headingGroup)
+
 
 parseSectionFromHeadingParagraph :: [Tag Text] -> [Tag Text] -> Section
 parseSectionFromHeadingParagraph dom paragraph =
@@ -103,6 +113,7 @@ parseSectionFromHeadingParagraph dom paragraph =
             (normalizedInnerText $ takeWhile (~/= "</a>") paragraph)
             (renderTags paragraph)
     secBody = parseSectionBody secNumber dom
+
 
 parseNumberFromRawNumberText :: Text -> Text -> Text
 parseNumberFromRawNumberText numberText secName =
