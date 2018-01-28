@@ -13,11 +13,8 @@ readHtmlFile file = NewHtml <$> (readFileLatin1 $ toFilePath file)
 
 
 -- Return the text content of an HTML title.
--- TODO: Make safe by using pattern matching.
 titleText :: [Tag Text] -> Text
-titleText tags
-    | (length (findFirst "<title>" tags) >= 2) = innerText [findFirst "<title>" tags !! 1]
-    | otherwise                                = error $ "Not a title: " ++ (show tags)
+titleText tags = innerText [findFirst "<title>" tags !! 1]
 
 
 -- Return the first occurrence of an HTML tag within the given
