@@ -3,6 +3,7 @@
 .vscode
 output.json
 *#
+tmp
 
 # Created by https://www.gitignore.io/api/osx,haskell
 
