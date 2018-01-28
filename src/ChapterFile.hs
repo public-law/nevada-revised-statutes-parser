@@ -2,7 +2,7 @@ module ChapterFile where
 
 import           BasicPrelude
 import qualified Data.Attoparsec.Text (Parser, parseOnly, takeText, takeWhile)
-import           Data.Char            (isSpace)
+import           Data.Char            (isAlpha, isSpace)
 import qualified Data.HashMap.Lazy    as HM
 import qualified Data.Text            as T
 import           Text.HTML.TagSoup
@@ -46,9 +46,12 @@ fillInEmptyChapter chapterMap emptyChapter  =
 
 chapterNumberToFilename :: Text -> RelativePath
 chapterNumberToFilename chapterNumber =
-    let num = printf "%03s" (T.unpack chapterNumber)
+    let num = T.unpack chapterNumber
+        format
+            | isAlpha (last num) = "%04s"
+            | otherwise          = "%03s"
     in
-        toRelativePath $ "NRS-" ++ num ++ ".html"
+        toRelativePath $ "NRS-" ++ printf format num ++ ".html"
 
 
 parseChapter :: Html -> Chapter
