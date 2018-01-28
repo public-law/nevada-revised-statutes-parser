@@ -29,9 +29,9 @@ spec = parallel $ do
         html ← chapter_432b_html
         Chapter.name (parseChapter html) `shouldBe` "Protection of Children from Abuse and Neglect"
 
-    it "gets the chapter name when it has embedded newline" $ do
-        html ← chapter_575_html
-        Chapter.name (parseChapter html) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
+    -- it "gets the chapter name when it has embedded newline" $ do
+    --     html ← chapter_575_html
+    --     Chapter.name (parseChapter html) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
 
     it "gets the chapter number" $ do
         html ← chapter_432b_html

@@ -12,6 +12,7 @@ import           Text.Parser.Char
 import           Text.Parser.Combinators
 import           Text.Parser.Token
 
+import           FileUtil                (RelativePath)
 import           HtmlUtil
 import           Models.Chapter          as Chapter
 import           Models.Title            as Title
@@ -19,6 +20,12 @@ import           TextUtil                (titleize)
 
 
 type Node = [Tag Text]
+type ChapterMap = HashMap RelativePath Html
+
+
+parseTitlesAndChapters :: Html -> ChapterMap -> [Title]
+parseTitlesAndChapters indexHtml _chapters =
+    parseTitles indexHtml
 
 
 parseTitles :: Html → [Title]
