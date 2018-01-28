@@ -12,8 +12,8 @@ import           Models.Title
 
 data Tree =
     Tree {
-    chapter0   ∷ Chapter,
-    treeTitles ∷ [Title]
+    chapter0 ∷ Chapter,
+    titles   ∷ [Title]
   } deriving (Generic, Show)
 
 instance ToJSON Tree

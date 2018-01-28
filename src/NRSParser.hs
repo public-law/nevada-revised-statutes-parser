@@ -2,16 +2,17 @@
 
 module NRSParser where
 
-import           BasicPrelude
+import           ChapterFile (ChapterMap)
 import           Data.Time
+import           HtmlUtil    (Html)
 import           Models.NRS
-import           Models.Tree
-import           Year         (toYear)
+import           TreeParser  (parseTree)
+import           Year        (toYear)
 
-parseNRS :: Text -> [Text] -> Day -> NRS
-parseNRS indexFile chapterFiles currentDate =
+parseNRS :: Html -> ChapterMap -> Day -> NRS
+parseNRS indexFile chapterMap currentDate =
     NRS {
-        statuteTree  = Tree { },
-        nominalDate  = toYear 2017,
+        statuteTree  = parseTree indexFile chapterMap,
+        nominalDate  = toYear 2018,
         dateAccessed = currentDate
     }

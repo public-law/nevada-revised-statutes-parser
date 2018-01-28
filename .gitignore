@@ -2,6 +2,8 @@
 *.iml
 .vscode
 output.json
+*#
+tmp
 
 # Created by https://www.gitignore.io/api/osx,haskell
 
@@ -53,3 +55,4 @@ cabal.project.local
 .HTF/
 
 # End of https://www.gitignore.io/api/osx,haskell
+nrs.json

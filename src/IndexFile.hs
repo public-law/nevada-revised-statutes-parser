@@ -12,14 +12,30 @@ import           Text.Parser.Char
 import           Text.Parser.Combinators
 import           Text.Parser.Token
 
-import           HtmlUtil                (findAll, findFirst)
+import           ChapterFile             (ChapterMap, fillInEmptyChapter)
+import           HtmlUtil
 import           Models.Chapter          as Chapter
 import           Models.Title            as Title
 import           TextUtil                (titleize)
 
 
-type Html = Text
 type Node = [Tag Text]
+
+
+parseTitlesAndChapters :: Html -> ChapterMap -> [Title]
+parseTitlesAndChapters indexHtml chapterMap =
+    let emptyTitles = parseTitles indexHtml
+    in
+        map (fillInEmptyTitle chapterMap) emptyTitles
+
+
+fillInEmptyTitle :: ChapterMap -> Title -> Title
+fillInEmptyTitle chapterMap emptyTitle =
+    Title {
+        name     = Title.name emptyTitle,
+        number   = Title.number emptyTitle,
+        chapters = map (fillInEmptyChapter chapterMap) (chapters emptyTitle)
+    }
 
 
 parseTitles :: Html → [Title]
@@ -31,7 +47,7 @@ parseTitles indexHtml =
 
 contentRows :: Html → [Node]
 contentRows indexHtml =
-    let tags  = parseTags indexHtml
+    let tags  = parseTags $ toText indexHtml
         table = findFirst "<table class=MsoNormalTable" tags
     in findAll "<tr>" table
 
