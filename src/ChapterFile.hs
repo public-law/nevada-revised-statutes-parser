@@ -221,4 +221,4 @@ rawSectionGroupFromSectionGroups secNumber sectionGroups =
     let bodyNumbers = filter (isSectionBodyNumber secNumber) sectionGroups
         in case bodyNumbers of
             (x:_) -> shaveBackTagsToLastClosingP x
-            _     -> error $ "Error in: " ++ (show bodyNumbers)
+            _     -> error $ "Error, could not find section body number " ++ (T.unpack secNumber) ++ " in section groups: " ++ (show sectionGroups)
