@@ -115,28 +115,38 @@ parseNumberFromRawNumberText numberText secName =
                  "\" raw number \"" ++
                  (T.unpack numberText) ++ "\" to have at least two words")
 
+
 parseSubSubChapters :: [Tag Text] -> [Tag Text] -> [SubSubChapter]
 parseSubSubChapters dom headingGroup =
     fmap (parseSubSubChapter dom) (subSubChapterHeadingGroups headingGroup)
+
 
 subSubChapterHeadingGroups :: [Tag Text] -> [[Tag Text]]
 subSubChapterHeadingGroups headingGroup =
     (partitions (~== "<p class=COHead4>") headingGroup)
 
+
 parseSubSubChapter :: [Tag Text] -> [Tag Text] -> SubSubChapter
 parseSubSubChapter dom subSubChapterHeadingGroup =
     SubSubChapter
-    { SubSubChapter.name = newName
-    , SubSubChapter.sections =
-          parseSectionsFromHeadingGroup dom subSubChapterHeadingGroup
+    {
+        SubSubChapter.name     = extractSubSubChapterName subSubChapterHeadingGroup,
+        SubSubChapter.sections = parseSectionsFromHeadingGroup dom subSubChapterHeadingGroup
     }
-  where
-    newName =
-        (normalizeWhiteSpace . (!! 0) . lines . innerText)
-            subSubChapterHeadingGroup
+
+
+extractSubSubChapterName :: [Tag Text] -> Text
+extractSubSubChapterName headingGroup =
+    let linesOfText = lines $ innerText headingGroup
+    in
+        if length linesOfText >= 1
+            then normalizeWhiteSpace $ head linesOfText
+            else error $ "Could not parse sub sub chapter name from: " ++ (show headingGroup)
+
 
 subnames :: [Tag Text] -> [Text]
 subnames tags = fmap subChapterNameFromGroup (headingGroups tags)
+
 
 subChapterNameFromGroup :: [Tag Text] -> Text
 subChapterNameFromGroup (_:y:_) = titleize $ fromTagText y
@@ -149,11 +159,14 @@ sectionNamesFromGroup headingGroup =
         sectionNameFromParagraph
         (partitions (~== "<p class=COLeadline>") headingGroup)
 
+
 sectionNameFromParagraph :: [Tag Text] -> Text
 sectionNameFromParagraph = normalizedInnerText . (dropWhile (~/= "</a>"))
 
+
 headingGroups :: [Tag Text] -> [[Tag Text]]
 headingGroups tags = partitions (~== "<p class=COHead2>") tags
+
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
 --    or:  "NRS: PRELIMINARY CHAPTER - GENERAL PROVISIONS"
