@@ -20,5 +20,7 @@ Parser for the Nevada Revised Statutes
                         "name": "Judicial Department Generally",
                         "number": "1",
                         "subChapters": [
-                            { ...
+                            {
 ```
+
+etc.
