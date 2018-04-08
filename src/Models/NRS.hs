@@ -14,7 +14,7 @@ import           Year
 data NRS =
     NRS {
     statuteTree  ∷ Tree,
-    nominalDate  ∷ Year,
+    nominalDate  ∷ Year,  -- The "date" of this edition
     dateAccessed ∷ Day
   } deriving (Generic, Show)
 
