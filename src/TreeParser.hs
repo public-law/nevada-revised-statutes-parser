@@ -6,7 +6,7 @@ import           BasicPrelude
 import qualified Data.HashMap.Lazy as HM
 
 import           ChapterFile       (ChapterMap, parseChapter)
-import           FileUtil
+import           Config
 import           HtmlUtil          (Html)
 import           IndexFile         (parseTitlesAndChapters)
 import           Models.Chapter
@@ -30,8 +30,3 @@ parseChapterZero chapterMap =
 
 allButChapterZero :: ChapterMap -> ChapterMap
 allButChapterZero = HM.delete chapterZeroPathname
-
-
-chapterZeroPathname :: RelativePath
-chapterZeroPathname = (./) "NRS-000.html"
-
