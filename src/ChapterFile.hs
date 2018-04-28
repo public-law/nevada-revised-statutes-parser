@@ -10,6 +10,7 @@ import           Text.Parser.Char
 import           Text.Printf
 
 
+import           Config
 import           FileUtil             (RelativePath, toRelativePath, toString)
 import           HtmlUtil             (Html, shaveBackTagsToLastClosingP,
                                        titleText, toText)
@@ -27,19 +28,6 @@ import           TextUtil             (normalizeWhiteSpace, normalizedInnerText,
 
 
 type ChapterMap = HashMap RelativePath Html
-
-chaptersToSkip :: [Text]
-chaptersToSkip = map T.pack ["218E"
-                            ,"388C"
-                            ,"460"
-                            ,"519A"
-                            ]
-
-chapterUrlPrefix :: Text
-chapterUrlPrefix = T.pack "https://www.leg.state.nv.us/nrs/NRS-"
-
-chapterZeroTitle :: Text
-chapterZeroTitle = T.pack "NRS: PRELIMINARY CHAPTER - GENERAL PROVISIONS"
 
 
 fillInEmptyChapter :: ChapterMap -> Chapter -> Chapter
