@@ -17,8 +17,7 @@ import           Models.SubChapter    as SubChapter
 import           Models.SubSubChapter as SubSubChapter
 
 import           ChapterFile
-import           FileUtil
-import           HtmlUtil             (Html, makeHtml, toText)
+import           HtmlUtil
 
 
 spec :: SpecWith ()
@@ -155,11 +154,10 @@ main =
 
 
 chapter_432b_html :: IO Html
-chapter_432b_html = do
-    text <- readFileLatin1 (fixture "nrs-432b.html")
-    return $ makeHtml text
+chapter_432b_html = html_fixture "nrs-432b.html"
+
 
 chapter_575_html :: IO Html
-chapter_575_html = do
-    text <- readFileLatin1 (fixture "nrs-575.html")
-    return $ makeHtml text
+chapter_575_html = html_fixture "nrs-575.html"
+
+

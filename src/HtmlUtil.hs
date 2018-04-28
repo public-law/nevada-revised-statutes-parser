@@ -5,7 +5,14 @@ module HtmlUtil  where
 import           BasicPrelude
 import           Text.HTML.TagSoup (Tag, innerText, partitions, (~/=), (~==))
 
-import           FileUtil          (AbsolutePath, readFileLatin1, toFilePath)
+import           FileUtil          (AbsolutePath, readFileLatin1, toFilePath, fixture)
+
+
+html_fixture :: FilePath -> IO Html
+html_fixture fname = do
+    text <- readFileLatin1 (fixture fname)
+    return $ makeHtml text
+
 
 
 readHtmlFile :: AbsolutePath -> IO Html

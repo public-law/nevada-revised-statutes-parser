@@ -34,6 +34,7 @@ readFileAsUtf8 pathname sourceEncoding = do
     return $ T.pack stdout'
 
 
+
 -- Compute a full fixture path
 fixture :: FilePath -> FilePath
 fixture filename =
