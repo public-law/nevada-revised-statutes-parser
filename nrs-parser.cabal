@@ -1,4 +1,4 @@
-name:                nv-statutes
+name:                nrs-parser
 version:             0.1.0.0
 synopsis:            Scraper and parser for the Nevada Revised Statutes
 description:         Please see README.md
@@ -14,7 +14,7 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 
-test-suite nv-statutes-test
+test-suite nrs-parser-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test, src
   main-is:             Spec.hs
@@ -39,10 +39,29 @@ test-suite nv-statutes-test
                      , text
                      , time
                      , unordered-containers
-  other-modules:       ChapterFileSpec, IndexFileSpec, TextUtilSpec
+  other-modules:       ChapterFileSpec
+                     , IndexFileSpec
+                     , TextUtilSpec
+                     , IndexFile
+                     , ChapterFile
+                     , Config
+                     , FileUtil
+                     , HtmlUtil
+                     , Models.Chapter
+                     , Models.NRS
+                     , Models.Section
+                     , Models.SubChapter
+                     , Models.SubSubChapter
+                     , Models.Title
+                     , Models.Tree
+                     , NRSParser
+                     , TextUtil
+                     , TreeParser
+                     , Year
 
 
-executable nv-statutes-exe
+
+executable nrs-parser-exe
   hs-source-dirs:      app, src
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
@@ -66,50 +85,26 @@ executable nv-statutes-exe
                      , text
                      , time
                      , unordered-containers
+  other-modules:       IndexFile
+                     , ChapterFile
+                     , Config
+                     , FileUtil
+                     , HtmlUtil
+                     , Models.Chapter
+                     , Models.NRS
+                     , Models.Section
+                     , Models.SubChapter
+                     , Models.SubSubChapter
+                     , Models.Title
+                     , Models.Tree
+                     , NRSParser
+                     , TextUtil
+                     , TreeParser
+                     , Year
+
 
 
 source-repository head
   type:     git
   location: https://github.com/public-law/nevada-revised-statutes-parser
 
-
-
--- library
---   exposed-modules:     IndexFile
---                      , ChapterFile
---                      , Config
---                      , FileUtil
---                      , HtmlUtil
---                      , Models.Chapter
---                      , Models.NRS
---                      , Models.Section
---                      , Models.SubChapter
---                      , Models.SubSubChapter
---                      , Models.Title
---                      , Models.Tree
---                      , NRSParser
---                      , TextUtil
---                      , TreeParser
---                      , Year
---   hs-source-dirs:      src
---   default-language:    Haskell2010
---   ghc-options:         -Wall
---   default-extensions:  NoImplicitPrelude, UnicodeSyntax, DuplicateRecordFields
---   build-depends:       base >= 4.7 && < 5
---                      , aeson
---                      , aeson-pretty
---                      , attoparsec
---                      , base-unicode-symbols
---                      , basic-prelude
---                      , bytestring
---                      , directory
---                      , filepath
---                      , hspec
---                      , parsers
---                      , process
---                      , split
---                      , string-conversions
---                      , tagsoup
---                      , text
---                      , time
---                      , unordered-containers
