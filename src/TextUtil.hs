@@ -62,6 +62,7 @@ minorWords =
   , "yet"
   ]
 
+
 isHyphen :: Char -> Bool
 isHyphen '-' = True
 isHyphen  _  = False
