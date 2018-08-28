@@ -11,9 +11,9 @@ import           Text.HTML.TagSoup
 titleize :: Text -> Text
 titleize phrase =
     unwords (firstWord : remainingWords)
-    where (x:xs) = words phrase
+    where (x:xs)         = words phrase
           firstWord      = titleizeWord x
-          remainingWords = map conditionallyTitleizeWord xs
+          remainingWords = conditionallyTitleizeWord <$> xs
 
 
 -- Titleize the word only if it's usually capitalized. Else,

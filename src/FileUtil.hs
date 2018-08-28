@@ -17,7 +17,7 @@ listFilesInDirectory :: AbsolutePath -> IO [AbsolutePath]
 listFilesInDirectory dir = do
     rawList <- Dir.listDirectory $ toFilePath dir
     paths   <- filterM Dir.doesFileExist (map ((toFilePath dir) </>) rawList)
-    return $ map toAbsolutePath paths
+    return $ toAbsolutePath <$> paths
 
 
 readFileLatin1 :: FilePath -> IO Text
