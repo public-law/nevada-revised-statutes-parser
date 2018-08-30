@@ -1,107 +1,75 @@
+cabal-version:       2.2
 name:                nrs-parser
 version:             0.1.0.0
 synopsis:            Scraper and parser for the Nevada Revised Statutes
 description:         Please see README.md
 homepage:            https://github.com/public-law/nevada-revised-statutes-parser#readme
-license:             BSD3
-license-file:        LICENSE
 author:              Robb Shecter
 maintainer:          robb@public.law
 copyright:           All rights reserved
 category:            Web
 build-type:          Simple
 extra-source-files:  README.md
-cabal-version:       >=1.10
+
+common options
+  default-extensions:  NoImplicitPrelude, UnicodeSyntax, DuplicateRecordFields
+  default-language:    Haskell2010
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
+
+common deps
+  build-depends:
+    base >= 4.7 && < 5,
+    aeson,
+    aeson-pretty,
+    attoparsec,
+    base-unicode-symbols,
+    basic-prelude,
+    bytestring,
+    directory,
+    filepath,
+    parsers,
+    process,
+    split,
+    string-conversions,
+    tagsoup,
+    text,
+    time,
+    unordered-containers
+  other-modules:
+    ChapterFile,
+    Config,
+    FileUtil,
+    IndexFile,
+    HtmlUtil,
+    Models.Chapter,
+    Models.NRS,
+    Models.Section,
+    Models.SubChapter,
+    Models.SubSubChapter,
+    Models.Title,
+    Models.Tree,
+    NRSParser,
+    TextUtil,
+    TreeParser,
+    Year
+
 
 
 test-suite nrs-parser-test
+  import:              deps, options
   type:                exitcode-stdio-1.0
   hs-source-dirs:      src, test
   main-is:             Spec.hs
-  default-extensions:  NoImplicitPrelude, UnicodeSyntax, DuplicateRecordFields
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
-  default-language:    Haskell2010
-  build-depends:       base >= 4.7 && < 5
-                     , aeson
-                     , aeson-pretty
-                     , attoparsec
-                     , base-unicode-symbols
-                     , basic-prelude
-                     , bytestring
-                     , directory
-                     , filepath
-                     , hspec
-                     , parsers
-                     , process
-                     , split
-                     , string-conversions
-                     , tagsoup
-                     , text
-                     , time
-                     , unordered-containers
+  build-depends:       hspec
   other-modules:       ChapterFileSpec
                      , IndexFileSpec
                      , TextUtilSpec
-                     , IndexFile
-                     , ChapterFile
-                     , Config
-                     , FileUtil
-                     , HtmlUtil
-                     , Models.Chapter
-                     , Models.NRS
-                     , Models.Section
-                     , Models.SubChapter
-                     , Models.SubSubChapter
-                     , Models.Title
-                     , Models.Tree
-                     , NRSParser
-                     , TextUtil
-                     , TreeParser
-                     , Year
-
 
 
 executable nrs-parser-exe
+  import:              deps, options
   hs-source-dirs:      src, app
   main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
-  default-language:    Haskell2010
-  default-extensions:  NoImplicitPrelude, UnicodeSyntax, DuplicateRecordFields
-  build-depends:       base >= 4.7 && < 5
-                     , aeson
-                     , aeson-pretty
-                     , attoparsec
-                     , base-unicode-symbols
-                     , basic-prelude
-                     , bytestring
-                     , directory
-                     , filepath
-                     , hspec
-                     , parsers
-                     , process
-                     , split
-                     , string-conversions
-                     , tagsoup
-                     , text
-                     , time
-                     , unordered-containers
-  other-modules:       IndexFile
-                     , ChapterFile
-                     , Config
-                     , FileUtil
-                     , HtmlUtil
-                     , Models.Chapter
-                     , Models.NRS
-                     , Models.Section
-                     , Models.SubChapter
-                     , Models.SubSubChapter
-                     , Models.Title
-                     , Models.Tree
-                     , NRSParser
-                     , TextUtil
-                     , TreeParser
-                     , Year
-
 
 
 source-repository head
