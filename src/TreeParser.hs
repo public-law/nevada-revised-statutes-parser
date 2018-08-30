@@ -2,13 +2,15 @@
 
 module TreeParser(parseTree) where
 
-import           BasicPrelude
+import           BasicPrelude      (Maybe (Just, Nothing), error, head, show,
+                                    ($), (++))
 import qualified Data.HashMap.Lazy as HM
 
 import           ChapterFile       (ChapterMap, parseChapter)
-import           Config
 import           HtmlUtil          (Html)
 import           IndexFile         (parseTitlesAndChapters)
+
+import           Config
 import           Models.Chapter
 import           Models.Tree
 
