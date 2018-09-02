@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module Models.NRS where
 
 import           BasicPrelude (Show)

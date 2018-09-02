@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module Models.SubSubChapter where
 
 import           BasicPrelude
