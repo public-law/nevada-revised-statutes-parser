@@ -1,5 +1,3 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-
 module HtmlUtil  where
 
 import           BasicPrelude
