@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module TextUtilSpec where
 
 import           BasicPrelude

@@ -29,6 +29,15 @@ import           TextUtil             (normalizeWhiteSpace, normalizedInnerText,
 
 type ChapterMap = HashMap RelativePath Html
 
+closingA :: String
+closingA = "</a>"
+
+leadlineP :: String
+leadlineP = "<p class=COLeadline>"
+
+heading4P :: String
+heading4P = "<p class=COHead4>"
+
 
 fillInEmptyChapter :: ChapterMap -> Chapter -> Chapter
 fillInEmptyChapter chapterMap emptyChapter  =
@@ -91,7 +100,7 @@ headingParagraphsWithContent :: [Tag Text] -> [[Tag Text]]
 headingParagraphsWithContent headingGroup =
     filter
         (\tags -> length tags > 4)
-        (partitions (~== "<p class=COLeadline>") headingGroup)
+        (partitions (~== leadlineP) headingGroup)
 
 
 parseSectionFromHeadingParagraph :: [Tag Text] -> [Tag Text] -> Section
@@ -99,10 +108,10 @@ parseSectionFromHeadingParagraph dom paragraph =
     Section
     {Section.name = secName, Section.number = secNumber, Section.body = secBody}
   where
-    secName = normalizedInnerText $ dropWhile (~/= "</a>") paragraph
+    secName = normalizedInnerText $ dropWhile (~/= closingA) paragraph
     secNumber =
         parseNumberFromRawNumberText
-            (normalizedInnerText $ takeWhile (~/= "</a>") paragraph)
+            (normalizedInnerText $ takeWhile (~/= closingA) paragraph)
             (renderTags paragraph)
     secBody = parseSectionBody secNumber dom
 
@@ -126,7 +135,7 @@ parseSubSubChapters dom headingGroup =
 
 subSubChapterHeadingGroups :: [Tag Text] -> [[Tag Text]]
 subSubChapterHeadingGroups headingGroup =
-    (partitions (~== "<p class=COHead4>") headingGroup)
+    (partitions (~== heading4P) headingGroup)
 
 
 parseSubSubChapter :: [Tag Text] -> [Tag Text] -> SubSubChapter
@@ -159,15 +168,15 @@ sectionNamesFromGroup :: [Tag Text] -> [Text]
 sectionNamesFromGroup headingGroup =
     fmap
         sectionNameFromParagraph
-        (partitions (~== "<p class=COLeadline>") headingGroup)
+        (partitions (~== leadlineP) headingGroup)
 
 
 sectionNameFromParagraph :: [Tag Text] -> Text
-sectionNameFromParagraph = normalizedInnerText . (dropWhile (~/= "</a>"))
+sectionNameFromParagraph = normalizedInnerText . (dropWhile (~/= closingA))
 
 
 headingGroups :: [Tag Text] -> [[Tag Text]]
-headingGroups tags = partitions (~== "<p class=COHead2>") tags
+headingGroups tags = partitions (~== ("<p class=COHead2>"::String)) tags
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
@@ -198,13 +207,13 @@ chapterTitleParser = do
 
 isSimpleSubChapter :: [Tag Text] -> Bool
 isSimpleSubChapter headingGroup =
-    null (partitions (~== "<p class=COHead4>") headingGroup)
+    null (partitions (~== heading4P) headingGroup)
 
 
 parseSectionBody :: Text -> [Tag Text] -> Text
 parseSectionBody secNumber dom = sectionText
   where
-    sectionGroups   = partitions (~== "<span class=Section") dom
+    sectionGroups   = partitions (~== ("<span class=Section"::String)) dom
     rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
     sectionText     =
         normalizeWhiteSpace $
@@ -216,7 +225,7 @@ isSectionBodyNumber secNumber dom = parseSectionBodyNumber dom == secNumber
 
 
 parseSectionBodyNumber :: [Tag Text] -> Text
-parseSectionBodyNumber dom = innerText $ takeWhile (~/= "</span>") dom
+parseSectionBodyNumber dom = innerText $ takeWhile (~/= ("</span>"::String)) dom
 
 
 rawSectionGroupFromSectionGroups :: Text -> [[Tag Text]] -> [Tag Text]

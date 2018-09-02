@@ -1,5 +1,5 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
-{-# LANGUAGE OverloadedStrings    #-}
+
 
 module ChapterFileSpec where
 

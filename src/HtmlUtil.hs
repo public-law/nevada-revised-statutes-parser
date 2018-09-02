@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module HtmlUtil  where
 
 import           BasicPrelude

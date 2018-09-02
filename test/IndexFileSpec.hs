@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module IndexFileSpec where
 
 import           BasicPrelude

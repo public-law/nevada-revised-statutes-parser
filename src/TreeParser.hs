@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module TreeParser(parseTree) where
 
 import           BasicPrelude      (Maybe (Just, Nothing), error, head, show,
