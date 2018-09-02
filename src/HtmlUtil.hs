@@ -1,6 +1,9 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module HtmlUtil  where
 
 import           BasicPrelude
+import qualified Data.Text as T
 import           Text.HTML.TagSoup (Tag, innerText, partitions, (~/=), (~==))
 
 import           FileUtil          (AbsolutePath, readFileLatin1, toFilePath, fixture)
@@ -27,23 +30,23 @@ titleText tags =
 
 -- Return the first occurrence of an HTML tag within the given
 -- HTML chunk.
-findFirst ∷ String → [Tag Text] → [Tag Text]
+findFirst ∷ Text → [Tag Text] → [Tag Text]
 findFirst searchTerm tags =
     case findAll searchTerm tags of
         (x:_) -> x
-        _     -> error $ "Could not find the tag " ++ searchTerm ++ " in: " ++ (show tags)
+        _     -> error $ "Could not find the tag " ++ (T.unpack searchTerm) ++ " in: " ++ (show tags)
 
 
 -- Return all the occurrences of an HTML tag within the given
 -- HTML chunk.
-findAll ∷ String → [Tag Text] → [[Tag Text]]
+findAll ∷ Text → [Tag Text] → [[Tag Text]]
 findAll searchTerm =
-    partitions (~== searchTerm)
+    partitions (~== (T.unpack searchTerm))
 
 
 shaveBackTagsToLastClosingP :: [Tag Text] -> [Tag Text]
 shaveBackTagsToLastClosingP input =
-    reverse $ dropWhile (~/= "</p>") $ reverse input
+    reverse $ dropWhile (~/= ("</p>" :: String)) $ reverse input
 
 
 --
