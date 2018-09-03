@@ -11,7 +11,7 @@ import           Text.Printf
 
 
 import           Config
-import           FileUtil             (RelativePath, toRelativePath, toString)
+import           FileUtil             (RelativePath, toRelativePath)
 import           HtmlUtil             (Html, shaveBackTagsToLastClosingP,
                                        titleText, toText)
 import           Models.Chapter       as Chapter
@@ -47,7 +47,7 @@ fillInEmptyChapter chapterMap emptyChapter  =
       if not $ (Chapter.number emptyChapter) `elem` chaptersToSkip
       then case maybeHtml of
         Just html -> parseChapter html
-        Nothing   -> error $ "Chapter " ++ (toString key) ++ " not found."
+        Nothing   -> error $ "Chapter " ++ (show key) ++ " not found."
       else emptyChapter
 
 

@@ -68,6 +68,3 @@ toRelativePath p | isRelative p = MakeRelativePath p
 
 (./) :: FilePath -> RelativePath
 (./) = toRelativePath
-
-toString :: RelativePath -> String
-toString (MakeRelativePath fp) = fp
