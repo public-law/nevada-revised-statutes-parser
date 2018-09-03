@@ -1,6 +1,6 @@
 module FileUtil where
 
-import           BasicPrelude       (IO, FilePath, Text, String, Eq, Hashable, IsString, Show, ($), filterM, fmap, return, (</>), (<$>), (++), otherwise)
+import           BasicPrelude       (IO, FilePath, Text, Eq, Hashable, IsString, Show, ($), filterM, fmap, return, (</>), (<$>), (++), otherwise)
 import qualified BasicPrelude       as BasicPrelude
 import           Data.ByteString    (hGetContents)
 import qualified Data.Text          as T
@@ -8,7 +8,6 @@ import           Data.Text.Encoding (decodeLatin1)
 import qualified System.Directory   as Dir
 import           System.FilePath    (isAbsolute, isRelative)
 import           System.IO          (IOMode (ReadMode), withFile)
-import           System.Process
 
 
 error :: Text -> a
@@ -25,15 +24,6 @@ listFilesInDirectory dir = do
 readFileLatin1 :: FilePath -> IO Text
 readFileLatin1 pathname =
     fmap decodeLatin1 (withFile pathname ReadMode hGetContents)
-
-
--- Accepts encodings such as "LATIN1".
--- Not currently in use.
-readFileAsUtf8 :: FilePath -> String -> IO Text
-readFileAsUtf8 pathname sourceEncoding = do
-    let stdin' = ""
-    stdout' <- readProcess "iconv" ["-f", sourceEncoding, "-t", "utf-8", pathname] stdin'
-    return $ T.pack stdout'
 
 
 
