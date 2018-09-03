@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module TextUtil where
 
 import           BasicPrelude
@@ -9,10 +7,15 @@ import           Text.HTML.TagSoup
 
 
 titleize :: Text -> Text
-titleize phrase =
-    unwords (firstWord : remainingWords)
-    where (x:xs)         = words phrase
-          firstWord      = titleizeWord x
+titleize =
+    unwords . titleizeWords . words
+
+
+titleizeWords :: [Text] -> [Text]
+titleizeWords [] = []
+titleizeWords (x:xs) =
+    (firstWord:remainingWords)
+    where firstWord = titleizeWord x
           remainingWords = conditionallyTitleizeWord <$> xs
 
 

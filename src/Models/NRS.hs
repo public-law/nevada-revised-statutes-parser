@@ -1,8 +1,6 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module Models.NRS where
 
-import           BasicPrelude
+import           BasicPrelude (Show)
 import           Data.Aeson   (ToJSON)
 import           Data.Time    (Day)
 import           GHC.Generics (Generic)

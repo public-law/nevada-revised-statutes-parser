@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module IndexFile where
 
 import           BasicPrelude            hiding (takeWhile)

@@ -1,8 +1,7 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module Year (Year, toYear, fromYear) where
 
-import           BasicPrelude
+import           BasicPrelude (Integer, Show, error, otherwise, show, ($), (++),
+                               (<), (>))
 import           Data.Aeson   (ToJSON)
 import           GHC.Generics (Generic)
 

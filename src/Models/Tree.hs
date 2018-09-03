@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module Models.Tree where
 
 import           BasicPrelude

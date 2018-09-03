@@ -1,8 +1,6 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module Models.Chapter where
 
-import           BasicPrelude
+import           BasicPrelude      (Show, Text)
 import           Data.Aeson        (ToJSON)
 import           GHC.Generics      (Generic)
 
