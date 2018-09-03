@@ -23,4 +23,4 @@ install:
   - travis_wait stack --no-terminal --install-ghc setup
 
 script:
-  - stack test
+  - stack test --fast
