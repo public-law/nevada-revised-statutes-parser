@@ -27,6 +27,7 @@ common deps
     bytestring,
     directory,
     filepath,
+    hspec,
     parsers,
     process,
     split,
@@ -60,7 +61,6 @@ test-suite nrs-parser-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      src, test
   main-is:             Spec.hs
-  build-depends:       hspec
   other-modules:       ChapterFileSpec
                      , IndexFileSpec
                      , TextUtilSpec

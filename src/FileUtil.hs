@@ -1,35 +1,31 @@
 module FileUtil where
 
-import           BasicPrelude
+import           BasicPrelude       (Eq, FilePath, Hashable, IO, IsString, Show,
+                                     Text, filterM, fmap, otherwise, return,
+                                     ($), (++), (<$>), (</>), (.))
+import qualified BasicPrelude       as BasicPrelude
 import           Data.ByteString    (hGetContents)
 import qualified Data.Text          as T
 import           Data.Text.Encoding (decodeLatin1)
 import qualified System.Directory   as Dir
 import           System.FilePath    (isAbsolute, isRelative)
 import           System.IO          (IOMode (ReadMode), withFile)
-import           System.Process
 
+
+error :: Text -> a
+error = BasicPrelude.error . T.unpack
 
 
 listFilesInDirectory :: AbsolutePath -> IO [AbsolutePath]
 listFilesInDirectory dir = do
     rawList <- Dir.listDirectory $ toFilePath dir
-    paths   <- filterM Dir.doesFileExist (map ((toFilePath dir) </>) rawList)
+    paths   <- filterM Dir.doesFileExist (fmap ((toFilePath dir) </>) rawList)
     return $ toAbsolutePath <$> paths
 
 
 readFileLatin1 :: FilePath -> IO Text
 readFileLatin1 pathname =
     fmap decodeLatin1 (withFile pathname ReadMode hGetContents)
-
-
--- Accepts encodings such as "LATIN1".
--- Not currently in use.
-readFileAsUtf8 :: FilePath -> String -> IO Text
-readFileAsUtf8 pathname sourceEncoding = do
-    let stdin' = ""
-    stdout' <- readProcess "iconv" ["-f", sourceEncoding, "-t", "utf-8", pathname] stdin'
-    return $ T.pack stdout'
 
 
 
@@ -68,6 +64,3 @@ toRelativePath p | isRelative p = MakeRelativePath p
 
 (./) :: FilePath -> RelativePath
 (./) = toRelativePath
-
-toString :: RelativePath -> String
-toString (MakeRelativePath fp) = fp

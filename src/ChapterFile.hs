@@ -11,9 +11,11 @@ import           Text.Printf
 
 
 import           Config
-import           FileUtil             (RelativePath, toRelativePath, toString)
-import           HtmlUtil             (Html, shaveBackTagsToLastClosingP,
-                                       titleText, toText)
+import           FileUtil             (RelativePath, toRelativePath)
+import qualified FileUtil             as Util
+import           HtmlUtil             (Html (NewHtml),
+                                       shaveBackTagsToLastClosingP, titleText,
+                                       toText)
 import           Models.Chapter       as Chapter
 import           Models.Section       as Section
 import           Models.SubChapter    as SubChapter
@@ -47,18 +49,17 @@ fillInEmptyChapter chapterMap emptyChapter  =
       if not $ (Chapter.number emptyChapter) `elem` chaptersToSkip
       then case maybeHtml of
         Just html -> parseChapter html
-        Nothing   -> error $ "Chapter " ++ (toString key) ++ " not found."
+        Nothing   -> error $ "Chapter " ++ (show key) ++ " not found."
       else emptyChapter
 
 
 chapterNumberToFilename :: Text -> RelativePath
 chapterNumberToFilename chapterNumber =
-    let num = T.unpack chapterNumber
-        format
-            | isAlpha (last num) = "%04s"
-            | otherwise          = "%03s"
+    let format
+            | isAlpha (T.last chapterNumber) = "%04s"
+            | otherwise = "%03s"
     in
-        toRelativePath $ "NRS-" ++ printf format num ++ ".html"
+        toRelativePath $ "NRS-" ++ printf format chapterNumber ++ ".html"
 
 
 parseChapter :: Html -> Chapter
@@ -66,7 +67,7 @@ parseChapter chapterHtml =
     Chapter
     { Chapter.name = rawName
     , Chapter.number = rawNumber
-    , Chapter.url = chapterUrlPrefix ++ rawNumber ++ (T.pack ".html")
+    , Chapter.url = chapterUrlPrefix ++ rawNumber ++ ".html"
     , Chapter.subChapters = subChaps
     }
   where
@@ -121,11 +122,10 @@ parseNumberFromRawNumberText numberText secName =
     case words numberText of
         (_:x:_) -> x
         _ ->
-            error
-                ("Expected section \"" ++
-                 (T.unpack secName) ++
-                 "\" raw number \"" ++
-                 (T.unpack numberText) ++ "\" to have at least two words")
+            Util.error $
+                "Expected section \"" ++ secName ++
+                "\" raw number \"" ++ numberText ++
+                "\" to have at least two words"
 
 
 parseSubSubChapters :: [Tag Text] -> [Tag Text] -> [SubSubChapter]
@@ -198,9 +198,9 @@ parseChapterFileTitle input =
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
 chapterTitleParser :: Data.Attoparsec.Text.Parser (Text, Text)
 chapterTitleParser = do
-    _ <- string "NRS: CHAPTER "
-    num <- Data.Attoparsec.Text.takeWhile (not . isSpace)
-    _ <- string " - "
+    _     <- string "NRS: CHAPTER "
+    num   <- Data.Attoparsec.Text.takeWhile (not . isSpace)
+    _     <- string " - "
     title <- Data.Attoparsec.Text.takeText
     return $ (num, titleize title)
 
@@ -210,14 +210,13 @@ isSimpleSubChapter headingGroup =
     null (partitions (~== heading4P) headingGroup)
 
 
-parseSectionBody :: Text -> [Tag Text] -> Text
+parseSectionBody :: Text -> [Tag Text] -> Html
 parseSectionBody secNumber dom = sectionText
   where
     sectionGroups   = partitions (~== ("<span class=Section"::String)) dom
     rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
     sectionText     =
-        normalizeWhiteSpace $
-        T.pack "<p class=SectBody>" ++ (renderTags rawSectionGroup)
+        NewHtml $ normalizeWhiteSpace $ "<p class=SectBody>" ++ (renderTags rawSectionGroup)
 
 
 isSectionBodyNumber :: Text -> [Tag Text] -> Bool
