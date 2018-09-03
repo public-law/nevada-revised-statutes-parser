@@ -1,6 +1,7 @@
 module FileUtil where
 
-import           BasicPrelude
+import           BasicPrelude       (IO, FilePath, Text, String, Eq, Hashable, IsString, Show, ($), filterM, fmap, return, (</>), (<$>), (++), otherwise)
+import qualified BasicPrelude       as BasicPrelude
 import           Data.ByteString    (hGetContents)
 import qualified Data.Text          as T
 import           Data.Text.Encoding (decodeLatin1)
@@ -10,11 +11,14 @@ import           System.IO          (IOMode (ReadMode), withFile)
 import           System.Process
 
 
+error :: Text -> a
+error message = BasicPrelude.error (T.unpack message)
+
 
 listFilesInDirectory :: AbsolutePath -> IO [AbsolutePath]
 listFilesInDirectory dir = do
     rawList <- Dir.listDirectory $ toFilePath dir
-    paths   <- filterM Dir.doesFileExist (map ((toFilePath dir) </>) rawList)
+    paths   <- filterM Dir.doesFileExist (fmap ((toFilePath dir) </>) rawList)
     return $ toAbsolutePath <$> paths
 
 
