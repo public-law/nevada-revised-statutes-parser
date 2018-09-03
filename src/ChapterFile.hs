@@ -215,8 +215,7 @@ parseSectionBody secNumber dom = sectionText
     sectionGroups   = partitions (~== ("<span class=Section"::String)) dom
     rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
     sectionText     =
-        normalizeWhiteSpace $
-        T.pack "<p class=SectBody>" ++ (renderTags rawSectionGroup)
+        normalizeWhiteSpace $ "<p class=SectBody>" ++ (renderTags rawSectionGroup)
 
 
 isSectionBodyNumber :: Text -> [Tag Text] -> Bool
