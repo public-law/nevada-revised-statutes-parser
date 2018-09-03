@@ -66,7 +66,7 @@ parseChapter chapterHtml =
     Chapter
     { Chapter.name = rawName
     , Chapter.number = rawNumber
-    , Chapter.url = chapterUrlPrefix ++ rawNumber ++ (T.pack ".html")
+    , Chapter.url = chapterUrlPrefix ++ rawNumber ++ ".html"
     , Chapter.subChapters = subChaps
     }
   where

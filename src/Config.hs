@@ -1,8 +1,8 @@
 module Config where
 
-import BasicPrelude
+import           BasicPrelude (Text)
 
-import FileUtil
+import           FileUtil
 
 
 chaptersToSkip = [
