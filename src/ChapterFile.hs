@@ -13,8 +13,9 @@ import           Text.Printf
 import           Config
 import           FileUtil             (RelativePath, toRelativePath)
 import qualified FileUtil             as Util
-import           HtmlUtil             (Html(NewHtml), shaveBackTagsToLastClosingP,
-                                       titleText, toText)
+import           HtmlUtil             (Html (NewHtml),
+                                       shaveBackTagsToLastClosingP, titleText,
+                                       toText)
 import           Models.Chapter       as Chapter
 import           Models.Section       as Section
 import           Models.SubChapter    as SubChapter
@@ -121,10 +122,10 @@ parseNumberFromRawNumberText numberText secName =
     case words numberText of
         (_:x:_) -> x
         _ ->
-            Util.error
-                ("Expected section \"" ++ secName ++
-                 "\" raw number \"" ++ numberText ++ 
-                 "\" to have at least two words")
+            Util.error $
+                "Expected section \"" ++ secName ++
+                "\" raw number \"" ++ numberText ++
+                "\" to have at least two words"
 
 
 parseSubSubChapters :: [Tag Text] -> [Tag Text] -> [SubSubChapter]
@@ -197,9 +198,9 @@ parseChapterFileTitle input =
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
 chapterTitleParser :: Data.Attoparsec.Text.Parser (Text, Text)
 chapterTitleParser = do
-    _ <- string "NRS: CHAPTER "
-    num <- Data.Attoparsec.Text.takeWhile (not . isSpace)
-    _ <- string " - "
+    _     <- string "NRS: CHAPTER "
+    num   <- Data.Attoparsec.Text.takeWhile (not . isSpace)
+    _     <- string " - "
     title <- Data.Attoparsec.Text.takeText
     return $ (num, titleize title)
 
