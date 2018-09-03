@@ -1,6 +1,8 @@
 module FileUtil where
 
-import           BasicPrelude       (IO, FilePath, Text, Eq, Hashable, IsString, Show, ($), filterM, fmap, return, (</>), (<$>), (++), otherwise)
+import           BasicPrelude       (Eq, FilePath, Hashable, IO, IsString, Show,
+                                     Text, filterM, fmap, otherwise, return,
+                                     ($), (++), (<$>), (</>), (.))
 import qualified BasicPrelude       as BasicPrelude
 import           Data.ByteString    (hGetContents)
 import qualified Data.Text          as T
@@ -11,7 +13,7 @@ import           System.IO          (IOMode (ReadMode), withFile)
 
 
 error :: Text -> a
-error message = BasicPrelude.error (T.unpack message)
+error = BasicPrelude.error . T.unpack
 
 
 listFilesInDirectory :: AbsolutePath -> IO [AbsolutePath]
