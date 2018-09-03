@@ -54,12 +54,11 @@ fillInEmptyChapter chapterMap emptyChapter  =
 
 chapterNumberToFilename :: Text -> RelativePath
 chapterNumberToFilename chapterNumber =
-    let num = T.unpack chapterNumber
-        format
-            | isAlpha (last num) = "%04s"
-            | otherwise          = "%03s"
+    let format
+            | isAlpha (T.last chapterNumber) = "%04s"
+            | otherwise = "%03s"
     in
-        toRelativePath $ "NRS-" ++ printf format num ++ ".html"
+        toRelativePath $ "NRS-" ++ printf format chapterNumber ++ ".html"
 
 
 parseChapter :: Html -> Chapter
