@@ -13,7 +13,7 @@ import           Text.Printf
 import           Config
 import           FileUtil             (RelativePath, toRelativePath)
 import qualified FileUtil             as Util
-import           HtmlUtil             (Html, shaveBackTagsToLastClosingP,
+import           HtmlUtil             (Html(NewHtml), shaveBackTagsToLastClosingP,
                                        titleText, toText)
 import           Models.Chapter       as Chapter
 import           Models.Section       as Section
@@ -209,13 +209,13 @@ isSimpleSubChapter headingGroup =
     null (partitions (~== heading4P) headingGroup)
 
 
-parseSectionBody :: Text -> [Tag Text] -> Text
+parseSectionBody :: Text -> [Tag Text] -> Html
 parseSectionBody secNumber dom = sectionText
   where
     sectionGroups   = partitions (~== ("<span class=Section"::String)) dom
     rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
     sectionText     =
-        normalizeWhiteSpace $ "<p class=SectBody>" ++ (renderTags rawSectionGroup)
+        NewHtml $ normalizeWhiteSpace $ "<p class=SectBody>" ++ (renderTags rawSectionGroup)
 
 
 isSectionBodyNumber :: Text -> [Tag Text] -> Bool

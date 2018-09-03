@@ -3,6 +3,8 @@ module HtmlUtil  where
 import           BasicPrelude
 import qualified Data.Text as T
 import           Text.HTML.TagSoup (Tag, innerText, partitions, (~/=), (~==))
+import           GHC.Generics (Generic)
+import           Data.Aeson   (ToJSON)
 
 import           FileUtil          (AbsolutePath, readFileLatin1, toFilePath, fixture)
 
@@ -51,7 +53,9 @@ shaveBackTagsToLastClosingP input =
 -- HTML New Type
 --
 newtype Html = NewHtml Text
-    deriving ( IsString, Show )
+    deriving ( Eq, Generic, IsString, Show )
+
+instance ToJSON Html
 
 makeHtml :: Text -> Html
 makeHtml text = NewHtml text
