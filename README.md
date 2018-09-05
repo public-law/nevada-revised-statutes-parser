@@ -28,7 +28,7 @@ etc.
 ----
 
 Archived Code Fragments
-=======================
+-----------------------
 
 ```haskell
 -- Accepts encodings such as "LATIN1".
@@ -43,6 +43,6 @@ readFileAsUtf8 pathname sourceEncoding = do
 ----
 
 Resources
-=========
+---------
 
 https://github.com/srid/slownews/blob/master/notes/haskell-port.md
