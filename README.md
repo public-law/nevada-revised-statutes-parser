@@ -36,3 +36,10 @@ readFileAsUtf8 pathname sourceEncoding = do
     stdout' <- readProcess "iconv" ["-f", sourceEncoding, "-t", "utf-8", pathname] stdin'
     return $ T.pack stdout'
 ```
+
+----
+
+Resources
+=========
+
+https://github.com/srid/slownews/blob/master/notes/haskell-port.md
