@@ -27,6 +27,9 @@ etc.
 
 ----
 
+Archived Code Fragments
+=======================
+
 ```haskell
 -- Accepts encodings such as "LATIN1".
 -- Not currently in use.
