@@ -187,11 +187,9 @@ parseChapterFileTitle input =
     if input == chapterZeroTitle
         then (T.pack "0", T.pack "Preliminary Chapter – General Provisions")
         else case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
-                 Left e ->
-                     error $
-                     "Could not parse chapter file title '" ++
-                     (show input) ++ "'\n" ++ e
-                 Right b -> b
+               Left e ->
+                 error $ [qq| Could not parse chapter file title $input $e|]
+               Right b -> b
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
