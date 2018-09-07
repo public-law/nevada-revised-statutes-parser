@@ -45,4 +45,5 @@ readFileAsUtf8 pathname sourceEncoding = do
 Resources
 ---------
 
-https://github.com/srid/slownews/blob/master/notes/haskell-port.md
+* https://github.com/srid/slownews/blob/master/notes/haskell-port.md
+* http://taylor.fausak.me/haskell-package-checklist/
