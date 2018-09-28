@@ -25,23 +25,6 @@ Parser for the Nevada Revised Statutes
 
 etc.
 
-----
-
-Archived Code Fragments
------------------------
-
-```haskell
--- Accepts encodings such as "LATIN1".
--- Not currently in use.
-readFileAsUtf8 :: FilePath -> String -> IO Text
-readFileAsUtf8 pathname sourceEncoding = do
-    let stdin' = ""
-    stdout' <- readProcess "iconv" ["-f", sourceEncoding, "-t", "utf-8", pathname] stdin'
-    return $ T.pack stdout'
-```
-
-----
-
 Resources
 ---------
 
