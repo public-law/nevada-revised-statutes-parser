@@ -1,20 +1,29 @@
 module IndexFile where
 
-import           BasicPrelude            hiding (takeWhile)
-import           Data.Attoparsec.Text    (parseOnly)
-import           Data.Function           ((&))
-import           Data.List.Split         (chunksOf, split, whenElt)
-import qualified Data.Text               as T
-import           Text.HTML.TagSoup       (Tag, fromAttrib, innerText, parseTags)
+import           BasicPrelude            hiding ( takeWhile )
+import           Data.Attoparsec.Text           ( parseOnly )
+import           Data.Function                  ( (&) )
+import           Data.List.Split                ( chunksOf
+                                                , split
+                                                , whenElt
+                                                )
+import qualified Data.Text                     as T
+import           Text.HTML.TagSoup              ( Tag
+                                                , fromAttrib
+                                                , innerText
+                                                , parseTags
+                                                )
 import           Text.Parser.Char
 import           Text.Parser.Combinators
 import           Text.Parser.Token
 
-import           ChapterFile             (ChapterMap, fillInEmptyChapter)
+import           ChapterFile                    ( ChapterMap
+                                                , fillInEmptyChapter
+                                                )
 import           HtmlUtil
-import           Models.Chapter          as Chapter
-import           Models.Title            as Title
-import           TextUtil                (titleize)
+import           Models.Chapter                as Chapter
+import           Models.Title                  as Title
+import           TextUtil                       ( titleize )
 
 
 type Node = [Tag Text]
@@ -23,50 +32,51 @@ type Node = [Tag Text]
 parseTitlesAndChapters :: Html -> ChapterMap -> [Title]
 parseTitlesAndChapters indexHtml chapterMap =
     let emptyTitles = parseTitles indexHtml
-    in
-        map (fillInEmptyTitle chapterMap) emptyTitles
+    in  map (fillInEmptyTitle chapterMap) emptyTitles
 
 
 fillInEmptyTitle :: ChapterMap -> Title -> Title
-fillInEmptyTitle chapterMap emptyTitle =
-    Title {
-        name     = Title.name emptyTitle,
-        number   = Title.number emptyTitle,
-        chapters = map (fillInEmptyChapter chapterMap) (chapters emptyTitle)
+fillInEmptyTitle chapterMap emptyTitle = Title
+    { name     = Title.name emptyTitle
+    , number   = Title.number emptyTitle
+    , chapters = map (fillInEmptyChapter chapterMap) (chapters emptyTitle)
     }
 
 
 parseTitles :: Html → [Title]
 parseTitles indexHtml =
-    let rows = contentRows indexHtml
+    let rows   = contentRows indexHtml
         tuples = rowTuples rows
-    in fmap newTitle tuples
+    in  fmap newTitle tuples
 
 
 contentRows :: Html → [Node]
 contentRows indexHtml =
     let tags  = parseTags $ toText indexHtml
         table = findFirst "<table class=MsoNormalTable" tags
-    in findAll "<tr>" table
+    in  findAll "<tr>" table
 
 
 newTitle :: [[Node]] -> Title
 newTitle tuple =
-    let titleRow       = head (head tuple)
-        chapterRows    = head $ tail tuple
-        parsedChapters = fmap newChapter chapterRows
-        title          = innerText $ findFirst "<b>" titleRow
+    let titleRow             = head (head tuple)
+        chapterRows          = head $ tail tuple
+        parsedChapters       = fmap newChapter chapterRows
+        title                = innerText $ findFirst "<b>" titleRow
         (rawNumber, rawName) = parseRawTitle title
-    in Title { Title.name = titleize rawName, Title.number = rawNumber, chapters = parsedChapters }
+    in  Title
+            { Title.name   = titleize rawName
+            , Title.number = rawNumber
+            , chapters     = parsedChapters
+            }
 
 
 newChapter :: Node → Chapter
-newChapter row =
-    Chapter {
-        Chapter.name   = last columns & innerText & T.strip,
-        Chapter.number = head columns & innerText & T.strip & words & last,
-        url    = findFirst "<a>" row & head & fromAttrib "href",
-        subChapters   = []
+newChapter row = Chapter
+    { Chapter.name   = last columns & innerText & T.strip
+    , Chapter.number = head columns & innerText & T.strip & words & last
+    , url            = findFirst "<a>" row & head & fromAttrib "href"
+    , subChapters    = []
     }
     where columns = findAll "<td>" row
 
@@ -76,21 +86,18 @@ newChapter row =
 parseRawTitle :: Text -> (Integer, Text)
 parseRawTitle input =
     let f = parseOnly p input
-        p = (,) <$>
-            (textSymbol "TITLE" *> integer) <*>
-            (textSymbol "—" *> (fromString <$> many (notChar '\n')))
-    in case f of
-        Left e  -> error e
-        Right b -> b
+        p =
+            (,)
+                <$> (textSymbol "TITLE" *> integer)
+                <*> (textSymbol "—" *> (fromString <$> many (notChar '\n')))
+    in  case f of
+            Left  e -> error e
+            Right b -> b
 
 
 rowTuples :: [Node] → [[[Node]]]
-rowTuples rows =
-    split (whenElt isTitleRow) rows
-        & tail
-        & chunksOf 2
+rowTuples rows = split (whenElt isTitleRow) rows & tail & chunksOf 2
 
 
 isTitleRow :: Node → Bool
-isTitleRow html =
-    length (findAll "<td>" html) == 1
+isTitleRow html = length (findAll "<td>" html) == 1
