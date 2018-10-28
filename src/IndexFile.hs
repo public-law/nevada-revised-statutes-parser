@@ -31,68 +31,68 @@ type Node = [Tag Text]
 
 parseTitlesAndChapters :: Html -> ChapterMap -> [Title]
 parseTitlesAndChapters indexHtml chapterMap =
-    let emptyTitles = parseTitles indexHtml
-    in  map (fillInEmptyTitle chapterMap) emptyTitles
+  let emptyTitles = parseTitles indexHtml
+  in  map (fillInEmptyTitle chapterMap) emptyTitles
 
 
 fillInEmptyTitle :: ChapterMap -> Title -> Title
 fillInEmptyTitle chapterMap emptyTitle = Title
-    { name     = Title.name emptyTitle
-    , number   = Title.number emptyTitle
-    , chapters = map (fillInEmptyChapter chapterMap) (chapters emptyTitle)
-    }
+  { name     = Title.name emptyTitle
+  , number   = Title.number emptyTitle
+  , chapters = map (fillInEmptyChapter chapterMap) (chapters emptyTitle)
+  }
 
 
 parseTitles :: Html → [Title]
 parseTitles indexHtml =
-    let rows   = contentRows indexHtml
-        tuples = rowTuples rows
-    in  fmap newTitle tuples
+  let rows   = contentRows indexHtml
+      tuples = rowTuples rows
+  in  fmap newTitle tuples
 
 
 contentRows :: Html → [Node]
 contentRows indexHtml =
-    let tags  = parseTags $ toText indexHtml
-        table = findFirst "<table class=MsoNormalTable" tags
-    in  findAll "<tr>" table
+  let tags  = parseTags $ toText indexHtml
+      table = findFirst "<table class=MsoNormalTable" tags
+  in  findAll "<tr>" table
 
 
 newTitle :: [[Node]] -> Title
 newTitle tuple =
-    let titleRow             = head (head tuple)
-        chapterRows          = head $ tail tuple
-        parsedChapters       = fmap newChapter chapterRows
-        title                = innerText $ findFirst "<b>" titleRow
-        (rawNumber, rawName) = parseRawTitle title
-    in  Title
-            { Title.name   = titleize rawName
-            , Title.number = rawNumber
-            , chapters     = parsedChapters
-            }
+  let titleRow             = head (head tuple)
+      chapterRows          = head $ tail tuple
+      parsedChapters       = fmap newChapter chapterRows
+      title                = innerText $ findFirst "<b>" titleRow
+      (rawNumber, rawName) = parseRawTitle title
+  in  Title
+        { Title.name   = titleize rawName
+        , Title.number = rawNumber
+        , chapters     = parsedChapters
+        }
 
 
 newChapter :: Node → Chapter
 newChapter row = Chapter
-    { Chapter.name   = last columns & innerText & T.strip
-    , Chapter.number = head columns & innerText & T.strip & words & last
-    , url            = findFirst "<a>" row & head & fromAttrib "href"
-    , subChapters    = []
-    }
-    where columns = findAll "<td>" row
+  { Chapter.name   = last columns & innerText & T.strip
+  , Chapter.number = head columns & innerText & T.strip & words & last
+  , url            = findFirst "<a>" row & head & fromAttrib "href"
+  , subChapters    = []
+  }
+  where columns = findAll "<td>" row
 
 
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: (1, "STATE JUDICIAL DEPARTMENT")
 parseRawTitle :: Text -> (Integer, Text)
 parseRawTitle input =
-    let f = parseOnly p input
-        p =
-            (,)
-                <$> (textSymbol "TITLE" *> integer)
-                <*> (textSymbol "—" *> (fromString <$> many (notChar '\n')))
-    in  case f of
-            Left  e -> error e
-            Right b -> b
+  let f = parseOnly p input
+      p =
+        (,)
+          <$> (textSymbol "TITLE" *> integer)
+          <*> (textSymbol "—" *> (fromString <$> many (notChar '\n')))
+  in  case f of
+        Left  e -> error e
+        Right b -> b
 
 
 rowTuples :: [Node] → [[[Node]]]
