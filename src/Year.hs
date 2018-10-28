@@ -1,9 +1,22 @@
-module Year (Year, toYear, fromYear) where
+module Year
+  ( Year
+  , toYear
+  , fromYear
+  )
+where
 
-import           BasicPrelude (Integer, Show, error, otherwise, show, ($), (++),
-                               (<), (>))
-import           Data.Aeson   (ToJSON)
-import           GHC.Generics (Generic)
+import           BasicPrelude                   ( Integer
+                                                , Show
+                                                , error
+                                                , otherwise
+                                                , show
+                                                , ($)
+                                                , (++)
+                                                , (<)
+                                                , (>)
+                                                )
+import           Data.Aeson                     ( ToJSON )
+import           GHC.Generics                   ( Generic )
 
 
 toYear :: Integer -> Year
