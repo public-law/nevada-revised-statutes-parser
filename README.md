@@ -28,5 +28,6 @@ etc.
 Resources
 ---------
 
+* https://lexi-lambda.github.io/blog/2018/02/10/an-opinionated-guide-to-haskell-in-2018/
 * https://github.com/srid/slownews/blob/master/notes/haskell-port.md
 * http://taylor.fausak.me/haskell-package-checklist/
