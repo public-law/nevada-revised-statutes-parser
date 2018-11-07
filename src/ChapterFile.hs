@@ -76,13 +76,13 @@ parseChapter chapterHtml = Chapter
   { Chapter.name    = rawName
   , Chapter.number  = rawNumber
   , Chapter.url     = chapterUrlPrefix ++ rawNumber ++ ".html"
-  , Chapter.content = internalContent
+  , Chapter.content = sectionsOrSubChapters
   }
  where
-  tags                 = parseTags $ toText chapterHtml
-  rawTitle             = titleText tags
-  (rawNumber, rawName) = parseChapterFileTitle rawTitle
-  internalContent      = chapterContent tags
+  tags                  = parseTags $ toText chapterHtml
+  rawTitle              = titleText tags
+  (rawNumber, rawName)  = parseChapterFileTitle rawTitle
+  sectionsOrSubChapters = chapterContent tags
 
 
 chapterContent :: [Tag Text] -> ChapterContent
