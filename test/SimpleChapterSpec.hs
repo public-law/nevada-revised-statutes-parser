@@ -32,6 +32,11 @@ spec = parallel $
         SimpleChapterContent sections -> length sections `shouldBe` 21
         ComplexChapterContent _ -> error "Got Subchapters but expected Sections"
 
+    it "finds the correct section names"
+      pending
+
+    it "finds the correct section content"
+      pending
     
 --
 -- Helper Functions
