@@ -25,8 +25,8 @@ Parser for the Nevada Revised Statutes
 
 etc.
 
-Resources
----------
+Opinionated Resources for Haskell Best Practices
+------------------------------------------------
 
 * [An Opinionated Guide to Haskell in 2018](https://lexi-lambda.github.io/blog/2018/02/10/an-opinionated-guide-to-haskell-in-2018/)
 * [Haskell Porting Notes](https://github.com/srid/slownews/blob/master/notes/haskell-port.md)
