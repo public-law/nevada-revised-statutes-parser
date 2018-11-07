@@ -76,13 +76,23 @@ parseChapter chapterHtml = Chapter
   { Chapter.name    = rawName
   , Chapter.number  = rawNumber
   , Chapter.url     = chapterUrlPrefix ++ rawNumber ++ ".html"
-  , Chapter.content = ComplexChapterContent subChaps
+  , Chapter.content = internalContent
   }
  where
   tags                 = parseTags $ toText chapterHtml
   rawTitle             = titleText tags
   (rawNumber, rawName) = parseChapterFileTitle rawTitle
-  subChaps             = fmap (newSubChapter tags) (headingGroups tags)
+  internalContent      = chapterContent tags
+
+
+chapterContent :: [Tag Text] -> ChapterContent
+chapterContent tags =
+  case subChapters of
+    [] -> SimpleChapterContent []
+    _  -> ComplexChapterContent subChapters 
+  where
+    subChapters = fmap (newSubChapter tags) (headingGroups tags)
+
 
 
 newSubChapter :: [Tag Text] -> [Tag Text] -> SubChapter
