@@ -28,6 +28,7 @@ etc.
 Resources
 ---------
 
-* https://lexi-lambda.github.io/blog/2018/02/10/an-opinionated-guide-to-haskell-in-2018/
-* https://github.com/srid/slownews/blob/master/notes/haskell-port.md
-* http://taylor.fausak.me/haskell-package-checklist/
+* [An Opinionated Guide to Haskell in 2018](https://lexi-lambda.github.io/blog/2018/02/10/an-opinionated-guide-to-haskell-in-2018/)
+* [Haskell Porting Notes](https://github.com/srid/slownews/blob/master/notes/haskell-port.md)
+* [Haskell Package Checklist](http://taylor.fausak.me/haskell-package-checklist/)
+* [Haskell Data Types in 5 Steps](https://mmhaskell.com/blog/2017/12/24/haskell-data-types-in-5-steps)
