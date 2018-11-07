@@ -18,7 +18,7 @@ import           HtmlUtil
 spec :: SpecWith ()
 spec = parallel $
 
-  describe "parseChapter" $
+  describe "parseChapter" $ do
 
     it "recognizes a chapter with simple content" $ do
       html ← chapter_0_html
@@ -26,11 +26,11 @@ spec = parallel $
         SimpleChapterContent _ -> True `shouldBe` True
         ComplexChapterContent _ -> False `shouldBe` True
 
-    -- it "finds the correct number of sections" $ do
-    --   html ← chapter_0_html
-    --   case content (parseChapter html) of
-    --     SimpleChapterContent sections -> length sections `shouldBe` 21
-    --     ComplexChapterContent _ -> error "Got Subchapters but expected Sections"
+    it "finds the correct number of sections" $ do
+      html ← chapter_0_html
+      case content (parseChapter html) of
+        SimpleChapterContent sections -> length sections `shouldBe` 21
+        ComplexChapterContent _ -> error "Got Subchapters but expected Sections"
 
     
 --
