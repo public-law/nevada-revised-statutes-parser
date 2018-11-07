@@ -73,10 +73,10 @@ chapterNumberToFilename chapterNumber =
 
 parseChapter :: Html -> Chapter
 parseChapter chapterHtml = Chapter
-  { Chapter.name        = rawName
-  , Chapter.number      = rawNumber
-  , Chapter.url         = chapterUrlPrefix ++ rawNumber ++ ".html"
-  , Chapter.subChapters = subChaps
+  { Chapter.name    = rawName
+  , Chapter.number  = rawNumber
+  , Chapter.url     = chapterUrlPrefix ++ rawNumber ++ ".html"
+  , Chapter.content = ComplexChapterContent subChaps
   }
  where
   tags                 = parseTags $ toText chapterHtml

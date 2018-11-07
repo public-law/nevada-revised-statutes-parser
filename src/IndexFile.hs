@@ -76,7 +76,7 @@ newChapter row = Chapter
   { Chapter.name   = last columns & innerText & T.strip
   , Chapter.number = head columns & innerText & T.strip & words & last
   , url            = findFirst "<a>" row & head & fromAttrib "href"
-  , subChapters    = []
+  , content        = ComplexChapterContent []
   }
   where columns = findAll "<td>" row
 

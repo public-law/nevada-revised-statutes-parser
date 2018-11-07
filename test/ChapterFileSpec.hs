@@ -44,14 +44,32 @@ spec = parallel $ do
         `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
 
 
-    it "gets the sub-chapter names" $ do
+    it "gets the sub-chapter names - 1" $ do
       html ← chapter_432b_html
-      let subchapters = subChapters (parseChapter html)
+      let innards = content (parseChapter html)
+      case innards of
+        ComplexChapterContent subchapters ->
+          SubChapter.name (subchapters !! 0) `shouldBe` "General Provisions"
+        _ -> error "Got Sections but expected SubChapters"
 
-      SubChapter.name (subchapters !! 0) `shouldBe` "General Provisions"
-      SubChapter.name (subchapters !! 1) `shouldBe` "Administration"
-      SubChapter.name (subchapters !! 3)
-        `shouldBe` "Protective Services and Custody"
+
+    it "gets the sub-chapter names - 2" $ do
+      html ← chapter_432b_html
+      let innards = content (parseChapter html)
+      case innards of
+        ComplexChapterContent subchapters ->
+          SubChapter.name (subchapters !! 1) `shouldBe` "Administration"
+        _ -> error "Got Sections but expected SubChapters"
+
+
+    it "gets the sub-chapter names - 3" $ do
+      html ← chapter_432b_html
+      let innards = content (parseChapter html)
+      case innards of
+        ComplexChapterContent subchapters ->
+          SubChapter.name (subchapters !! 3)
+            `shouldBe` "Protective Services and Custody"
+        _ -> error "Got Sections but expected SubChapters"
 
 
     it "gets a simple sub-chapter's sections" $ do
@@ -178,3 +196,9 @@ chapter_575_html :: IO Html
 chapter_575_html = htmlFixture "nrs-575.html"
 
 
+-- Return a Chapter's sub-chapters, or raise an error
+-- if it's a simple Chapter with just sections.
+subChapters :: Chapter -> [SubChapter]
+subChapters chapter = case content chapter of
+  ComplexChapterContent subchapters -> subchapters
+  SimpleChapterContent _ -> error "got Sections but expected Subchapters"
