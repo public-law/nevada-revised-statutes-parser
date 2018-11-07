@@ -42,6 +42,7 @@ import           TextUtil                       ( normalizeWhiteSpace
 
 
 type ChapterMap = HashMap RelativePath Html
+type TagList    = [Tag Text]
 
 closingA :: String
 closingA = "</a>"
@@ -85,7 +86,7 @@ parseChapter chapterHtml = Chapter
   sectionsOrSubChapters = chapterContent tags
 
 
-chapterContent :: [Tag Text] -> ChapterContent
+chapterContent :: TagList -> ChapterContent
 chapterContent tags = case foundSubChapters of
   [] -> SimpleChapterContent foundSections
   xs -> ComplexChapterContent xs
@@ -94,7 +95,7 @@ chapterContent tags = case foundSubChapters of
   foundSections    = parseSectionsFromJustHtml tags
 
 
-newSubChapter :: [Tag Text] -> [Tag Text] -> SubChapter
+newSubChapter :: TagList -> TagList -> SubChapter
 newSubChapter dom headingGroup = SubChapter
   { SubChapter.name = subChapterNameFromGroup headingGroup
   , children        = if isSimpleSubChapter headingGroup
@@ -103,23 +104,23 @@ newSubChapter dom headingGroup = SubChapter
   }
 
 
-parseSectionsFromJustHtml :: [Tag Text] -> [Section]
+parseSectionsFromJustHtml :: TagList -> [Section]
 parseSectionsFromJustHtml tags = parseSectionsFromHeadingGroup tags tags
 
 
-parseSectionsFromHeadingGroup :: [Tag Text] -> [Tag Text] -> [Section]
+parseSectionsFromHeadingGroup :: TagList -> TagList -> [Section]
 parseSectionsFromHeadingGroup dom headingGroup = fmap
   (parseSectionFromHeadingParagraph dom)
   (headingParagraphsWithContent headingGroup)
 
 
 -- Some COLeadline P's have no content; they're just used for vertical spacing.
-headingParagraphsWithContent :: [Tag Text] -> [[Tag Text]]
+headingParagraphsWithContent :: TagList -> [TagList]
 headingParagraphsWithContent headingGroup =
   filter (\tags -> length tags > 4) (partitions (~== leadlineP) headingGroup)
 
 
-parseSectionFromHeadingParagraph :: [Tag Text] -> [Tag Text] -> Section
+parseSectionFromHeadingParagraph :: TagList -> TagList -> Section
 parseSectionFromHeadingParagraph dom paragraph = Section
   { Section.name   = secName
   , Section.number = secNumber
@@ -145,17 +146,17 @@ parseNumberFromRawNumberText numberText secName = case words numberText of
       ++ "\" to have at least two words"
 
 
-parseSubSubChapters :: [Tag Text] -> [Tag Text] -> [SubSubChapter]
+parseSubSubChapters :: TagList -> TagList -> [SubSubChapter]
 parseSubSubChapters dom headingGroup =
   fmap (parseSubSubChapter dom) (subSubChapterHeadingGroups headingGroup)
 
 
-subSubChapterHeadingGroups :: [Tag Text] -> [[Tag Text]]
+subSubChapterHeadingGroups :: TagList -> [TagList]
 subSubChapterHeadingGroups headingGroup =
   (partitions (~== heading4P) headingGroup)
 
 
-parseSubSubChapter :: [Tag Text] -> [Tag Text] -> SubSubChapter
+parseSubSubChapter :: TagList -> TagList -> SubSubChapter
 parseSubSubChapter dom subSubChapterHeadingGroup = SubSubChapter
   { SubSubChapter.name     = extractSubSubChapterName subSubChapterHeadingGroup
   , SubSubChapter.sections = parseSectionsFromHeadingGroup
@@ -164,7 +165,7 @@ parseSubSubChapter dom subSubChapterHeadingGroup = SubSubChapter
   }
 
 
-extractSubSubChapterName :: [Tag Text] -> Text
+extractSubSubChapterName :: TagList -> Text
 extractSubSubChapterName headingGroup =
   let linesOfText = lines $ innerText headingGroup
   in  case linesOfText of
@@ -175,26 +176,26 @@ extractSubSubChapterName headingGroup =
             ++ (show headingGroup)
 
 
-subnames :: [Tag Text] -> [Text]
+subnames :: TagList -> [Text]
 subnames tags = fmap subChapterNameFromGroup (headingGroups tags)
 
 
-subChapterNameFromGroup :: [Tag Text] -> Text
+subChapterNameFromGroup :: TagList -> Text
 subChapterNameFromGroup (_ : y : _) = titleize $ fromTagText y
 subChapterNameFromGroup tags =
   error $ "Could not get a chapter name from the group: " ++ (show tags)
 
 
-sectionNamesFromGroup :: [Tag Text] -> [Text]
+sectionNamesFromGroup :: TagList -> [Text]
 sectionNamesFromGroup headingGroup =
   fmap sectionNameFromParagraph (partitions (~== leadlineP) headingGroup)
 
 
-sectionNameFromParagraph :: [Tag Text] -> Text
+sectionNameFromParagraph :: TagList -> Text
 sectionNameFromParagraph = normalizedInnerText . (dropWhile (~/= closingA))
 
 
-headingGroups :: [Tag Text] -> [[Tag Text]]
+headingGroups :: TagList -> [TagList]
 headingGroups tags = partitions (~== ("<p class=COHead2>" :: String)) tags
 
 
@@ -225,12 +226,12 @@ chapterTitleParser = do
   return $ (num, titleize title)
 
 
-isSimpleSubChapter :: [Tag Text] -> Bool
+isSimpleSubChapter :: TagList -> Bool
 isSimpleSubChapter headingGroup =
   null (partitions (~== heading4P) headingGroup)
 
 
-parseSectionBody :: Text -> [Tag Text] -> Html
+parseSectionBody :: Text -> TagList -> Html
 parseSectionBody secNumber dom = sectionText
  where
   sectionGroups   = partitions (~== ("<span class=Section" :: String)) dom
@@ -242,16 +243,16 @@ parseSectionBody secNumber dom = sectionText
       ++ (renderTags rawSectionGroup)
 
 
-isSectionBodyNumber :: Text -> [Tag Text] -> Bool
+isSectionBodyNumber :: Text -> TagList -> Bool
 isSectionBodyNumber secNumber dom = parseSectionBodyNumber dom == secNumber
 
 
-parseSectionBodyNumber :: [Tag Text] -> Text
+parseSectionBodyNumber :: TagList -> Text
 parseSectionBodyNumber dom =
   innerText $ takeWhile (~/= ("</span>" :: String)) dom
 
 
-rawSectionGroupFromSectionGroups :: Text -> [[Tag Text]] -> [Tag Text]
+rawSectionGroupFromSectionGroups :: Text -> [TagList] -> TagList
 rawSectionGroupFromSectionGroups secNumber sectionGroups =
   let bodyNumbers = filter (isSectionBodyNumber secNumber) sectionGroups
   in  case bodyNumbers of
