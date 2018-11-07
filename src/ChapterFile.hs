@@ -86,10 +86,12 @@ parseChapter chapterHtml = Chapter
 
 
 chapterContent :: [Tag Text] -> ChapterContent
-chapterContent tags = case subChapters of
-  [] -> SimpleChapterContent []
-  _  -> ComplexChapterContent subChapters
-  where subChapters = fmap (newSubChapter tags) (headingGroups tags)
+chapterContent tags = case foundSubChapters of
+  [] -> SimpleChapterContent foundSections
+  xs -> ComplexChapterContent xs
+ where
+  foundSubChapters = fmap (newSubChapter tags) (headingGroups tags)
+  foundSections    = parseSectionsFromJustHtml tags
 
 
 newSubChapter :: [Tag Text] -> [Tag Text] -> SubChapter
@@ -99,6 +101,10 @@ newSubChapter dom headingGroup = SubChapter
     then SubChapterSections $ parseSectionsFromHeadingGroup dom headingGroup
     else SubSubChapters $ parseSubSubChapters dom headingGroup
   }
+
+
+parseSectionsFromJustHtml :: [Tag Text] -> [Section]
+parseSectionsFromJustHtml tags = parseSectionsFromHeadingGroup tags tags
 
 
 parseSectionsFromHeadingGroup :: [Tag Text] -> [Tag Text] -> [Section]
