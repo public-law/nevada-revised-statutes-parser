@@ -63,6 +63,7 @@ test-suite nrs-parser-test
   main-is:             Spec.hs
   other-modules:       ChapterFileSpec
                      , IndexFileSpec
+                     , SimpleChapterSpec
                      , TextUtilSpec
 
 
