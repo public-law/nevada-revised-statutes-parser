@@ -57,10 +57,10 @@ fillInEmptyChapter :: ChapterMap -> Chapter -> Chapter
 fillInEmptyChapter chapterMap emptyChapter =
   let key       = chapterNumberToFilename (Chapter.number emptyChapter)
       maybeHtml = HM.lookup key chapterMap
-  in  if not $ (Chapter.number emptyChapter) `elem` chaptersToSkip
+  in  if Chapter.number emptyChapter `notElem` chaptersToSkip
         then case maybeHtml of
           Just html -> parseChapter html
-          Nothing   -> error $ "Chapter " ++ (show key) ++ " not found."
+          Nothing   -> error $ "Chapter " ++ show key ++ " not found."
         else emptyChapter
 
 
@@ -86,13 +86,10 @@ parseChapter chapterHtml = Chapter
 
 
 chapterContent :: [Tag Text] -> ChapterContent
-chapterContent tags =
-  case subChapters of
-    [] -> SimpleChapterContent []
-    _  -> ComplexChapterContent subChapters 
-  where
-    subChapters = fmap (newSubChapter tags) (headingGroups tags)
-
+chapterContent tags = case subChapters of
+  [] -> SimpleChapterContent []
+  _  -> ComplexChapterContent subChapters
+  where subChapters = fmap (newSubChapter tags) (headingGroups tags)
 
 
 newSubChapter :: [Tag Text] -> [Tag Text] -> SubChapter
