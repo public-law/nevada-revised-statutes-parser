@@ -12,7 +12,7 @@ titleize = unwords . titleizeWords . words
 
 titleizeWords :: [Text] -> [Text]
 titleizeWords []       = []
-titleizeWords (x : xs) = (firstWord : remainingWords)
+titleizeWords (x : xs) = firstWord : remainingWords
  where
   firstWord      = titleizeWord x
   remainingWords = conditionallyTitleizeWord <$> xs
@@ -60,11 +60,6 @@ minorWords =
   , "up"
   , "yet"
   ]
-
-
-isHyphen :: Char -> Bool
-isHyphen '-' = True
-isHyphen _   = False
 
 
 normalizedInnerText :: [Tag Text] -> Text
