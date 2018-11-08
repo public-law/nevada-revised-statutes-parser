@@ -223,7 +223,7 @@ chapterTitleParser = do
   num   <- Data.Attoparsec.Text.takeWhile (not . isSpace)
   _     <- string " - "
   title <- Data.Attoparsec.Text.takeText
-  return $ (num, titleize title)
+  return (num, titleize title)
 
 
 isSimpleSubChapter :: TagList -> Bool
