@@ -56,7 +56,6 @@ spec = parallel $ describe "parseChapter" $ do
     Section.number firstSection `shouldBe` "0.060"
 
   it "finds the correct section name" $ do
-    pendingWith "TODO: bug fix"
     html <- chapter_0_html
     let lastSection = last $ simpleChapterContent html
     Section.name lastSection `shouldBe` "“Substantial bodily harm” defined."
