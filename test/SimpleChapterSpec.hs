@@ -27,9 +27,13 @@ spec = parallel $ describe "parseChapter" $ do
     html ← chapter_0_html
     length (simpleChapterContent html) `shouldBe` 21
 
-  it "finds the correct section names"   pending
+  it "finds the correct section names" $ do
+    html <- chapter_0_html
+    let firstSection = head $ simpleChapterContent html
+    Section.name firstSection `shouldBe` "Scope."
 
   it "finds the correct section content" pending
+
 
 --
 -- Helper Functions
