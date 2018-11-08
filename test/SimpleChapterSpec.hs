@@ -7,6 +7,7 @@ import           BasicPrelude
 import           Test.Hspec
 
 import           Models.Chapter                as Chapter
+import           Models.Section                as Section
 
 import           ChapterFile
 import           HtmlUtil
@@ -24,10 +25,7 @@ spec = parallel $ describe "parseChapter" $ do
 
   it "finds the correct number of sections" $ do
     html ← chapter_0_html
-    case content (parseChapter html) of
-      SimpleChapterContent sections -> length sections `shouldBe` 21
-      ComplexChapterContent xs ->
-        expectationFailure $ "Got Subchapters but expected Sections" ++ show xs
+    length (simpleChapterContent html) `shouldBe` 21
 
   it "finds the correct section names"   pending
 
@@ -38,6 +36,15 @@ spec = parallel $ describe "parseChapter" $ do
 --
 main :: IO ()
 main = hspec spec
+
+
+-- A partial function to grab the simple chapter content,
+-- or fail.
+simpleChapterContent :: Html -> [Section]
+simpleChapterContent html = case content (parseChapter html) of
+  SimpleChapterContent sections -> sections
+  ComplexChapterContent xs ->
+    error $ "Expected Sections but got SubChapters" ++ show xs
 
 
 chapter_0_html :: IO Html
