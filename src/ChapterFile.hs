@@ -80,37 +80,39 @@ parseChapter chapterHtml = Chapter
   , Chapter.content = sectionsOrSubChapters
   }
  where
-  tags                  = parseTags $ toText chapterHtml
-  rawTitle              = titleText tags
+  fullPage              = parseTags $ toText chapterHtml
+  rawTitle              = titleText fullPage
   (rawNumber, rawName)  = parseChapterFileTitle rawTitle
-  sectionsOrSubChapters = chapterContent tags
+  sectionsOrSubChapters = chapterContent fullPage
 
 
 chapterContent :: TagList -> ChapterContent
-chapterContent tags = case foundSubChapters of
+chapterContent fullPage = case foundSubChapters of
   [] -> SimpleChapterContent foundSections
   xs -> ComplexChapterContent xs
  where
-  foundSubChapters = fmap (newSubChapter tags) (headingGroups tags)
-  foundSections    = parseSectionsFromJustHtml tags
+  foundSubChapters = fmap (newSubChapter fullPage) (headingGroups fullPage)
+  foundSections    = parseSectionsFromJustHtml fullPage
 
 
 newSubChapter :: TagList -> TagList -> SubChapter
-newSubChapter dom headingGroup = SubChapter
+newSubChapter fullPage headingGroup = SubChapter
   { SubChapter.name = subChapterNameFromGroup headingGroup
   , children        = if isSimpleSubChapter headingGroup
-    then SubChapterSections $ parseSectionsFromHeadingGroup dom headingGroup
-    else SubSubChapters $ parseSubSubChapters dom headingGroup
+    then SubChapterSections
+      $ parseSectionsFromHeadingGroup fullPage headingGroup
+    else SubSubChapters $ parseSubSubChapters fullPage headingGroup
   }
 
 
 parseSectionsFromJustHtml :: TagList -> [Section]
-parseSectionsFromJustHtml tags = parseSectionsFromHeadingGroup tags tags
+parseSectionsFromJustHtml fullPage =
+  parseSectionsFromHeadingGroup fullPage fullPage
 
 
 parseSectionsFromHeadingGroup :: TagList -> TagList -> [Section]
-parseSectionsFromHeadingGroup dom headingGroup = fmap
-  (parseSectionFromHeadingParagraph dom)
+parseSectionsFromHeadingGroup fullPage headingGroup = fmap
+  (parseSectionFromHeadingParagraph fullPage)
   (headingParagraphsWithContent headingGroup)
 
 
