@@ -41,7 +41,7 @@ spec = parallel $ describe "parseChapter" $ do
     html <- chapter_0_html
     let firstSection = simpleChapterContent html !! 0
     Section.body firstSection
-      `shouldBe` "<p class=SectBody><span class=\"Section\">0.010</span><span class=\"Empty\"> </span><span class=\"Leadline\">Scope.</span><span class=\"Empty\"> </span>This chapter provides definitions and declarations of legislative intent which apply to Nevada Revised Statutes as a whole.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/59th/Stats197701.html#Stats197701page181\">1977, 181</a>)</p>"
+      `shouldBe` "<p class=SectBody>This chapter provides definitions and declarations of legislative intent which apply to Nevada Revised Statutes as a whole.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/59th/Stats197701.html#Stats197701page181\">1977, 181</a>)</p>"
 
   it "finds the correct section content" $ do
     html <- chapter_0_html
@@ -63,7 +63,8 @@ spec = parallel $ describe "parseChapter" $ do
   it "finds the correct section content" $ do
     html <- chapter_0_html
     let lastSection = last $ simpleChapterContent html
-    Section.body lastSection `shouldBe` "<p class=SectBody>Unless the context otherwise requires, \147substantial bodily harm\148 means:</p> <p class=\"SectBody\"> 1. Bodily injury which creates a substantial risk of death or which causes serious, permanent disfigurement or protracted loss or impairment of the function of any bodily member or organ; or</p> <p class=\"SectBody\"> 2. Prolonged physical pain.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/63rd/Stats198501.html#Stats198501page221\">1985, 221</a>)</p>"
+    Section.body lastSection
+      `shouldBe` "<p class=SectBody>Unless the context otherwise requires, \147substantial bodily harm\148 means:</p> <p class=\"SectBody\"> 1. Bodily injury which creates a substantial risk of death or which causes serious, permanent disfigurement or protracted loss or impairment of the function of any bodily member or organ; or</p> <p class=\"SectBody\"> 2. Prolonged physical pain.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/63rd/Stats198501.html#Stats198501page221\">1985, 221</a>)</p>"
 
 
 
