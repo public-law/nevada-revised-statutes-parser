@@ -60,7 +60,10 @@ spec = parallel $ describe "parseChapter" $ do
     let lastSection = last $ simpleChapterContent html
     Section.name lastSection `shouldBe` "“Substantial bodily harm” defined."
 
-  it "finds the correct section content" pending
+  it "finds the correct section content" $ do
+    html <- chapter_0_html
+    let lastSection = last $ simpleChapterContent html
+    Section.body lastSection `shouldBe` "<p class=SectBody><span class=\"Section\">0.060</span><span class=\"Empty\"> </span><span class=\"Leadline\">\147Substantial bodily harm\148 defined.</span><span class=\"Empty\"> </span>Unless the context otherwise requires, \147substantial bodily harm\148 means:</p> <p class=\"SectBody\"> 1. Bodily injury which creates a substantial risk of death or which causes serious, permanent disfigurement or protracted loss or impairment of the function of any bodily member or organ; or</p> <p class=\"SectBody\"> 2. Prolonged physical pain.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/63rd/Stats198501.html#Stats198501page221\">1985, 221</a>)</p>"
 
 
 
