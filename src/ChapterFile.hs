@@ -47,6 +47,9 @@ type TagList    = [Tag Text]
 closingA :: String
 closingA = "</a>"
 
+closingP :: String
+closingP = "</p>"
+
 leadlineP :: String
 leadlineP = "<p class=COLeadline>"
 
@@ -91,7 +94,8 @@ chapterContent fullPage = case foundSubChapters of
   [] -> SimpleChapterContent foundSections
   xs -> ComplexChapterContent xs
  where
-  foundSubChapters = fmap (newSubChapter fullPage) (headingGroups fullPage)
+  groups = headingGroups fullPage
+  foundSubChapters = fmap (newSubChapter fullPage) groups
   foundSections    = parseSectionsFromJustHtml fullPage
 
 
@@ -129,7 +133,7 @@ parseSectionFromHeadingParagraph fullPage paragraph = Section
   , Section.body   = secBody
   }
  where
-  secName   = normalizedInnerText $ dropWhile (~/= closingA) paragraph
+  secName   = normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile (~/= closingA) paragraph
   secNumber = parseNumberFromRawNumberText
     (normalizedInnerText $ takeWhile (~/= closingA) paragraph)
     (renderTags paragraph)
@@ -198,7 +202,7 @@ sectionNameFromParagraph = normalizedInnerText . (dropWhile (~/= closingA))
 
 
 headingGroups :: TagList -> [TagList]
-headingGroups tags = partitions (~== ("<p class=COHead2>" :: String)) tags
+headingGroups fullPage = partitions (~== ("<p class=COHead2>" :: String)) fullPage
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
