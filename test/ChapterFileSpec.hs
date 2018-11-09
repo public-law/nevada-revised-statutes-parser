@@ -147,7 +147,6 @@ spec = parallel $ do
           error "Got sections but expected sub-sub-chapters"
 
 
-
   describe "isSimpleSubChapter" $ do
 
     it "correctly identifies a simple sub-chapter" $ do
@@ -159,6 +158,7 @@ spec = parallel $ do
       html <- chapter_432b_html
       let administration = (!! 1) $ headingGroups $ parseTags $ toText html
       isSimpleSubChapter administration `shouldBe` False
+
 
   describe "sectionBody" $ do
 

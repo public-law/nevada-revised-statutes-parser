@@ -238,15 +238,11 @@ isSimpleSubChapter headingGroup =
 
 
 parseSectionBody :: Text -> TagList -> Html
-parseSectionBody secNumber fullPage = sectionText
- where
-  sectionGroups   = partitions (~== ("<span class=Section" :: String)) fullPage
-  rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
-  sectionText =
-    NewHtml
-      $  normalizeWhiteSpace
-      $  "<p class=SectBody>"
-      ++ (renderTags rawSectionGroup)
+parseSectionBody secNumber fullPage = sectionHtml
+  where
+    sectionGroups   = partitions (~== ("<span class=Section" :: String)) fullPage
+    rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
+    sectionHtml = NewHtml $ "<p class=SectBody>" ++ (normalizeWhiteSpace $ innerText $ dropWhile (~/= ("span class=Empty"::String)) rawSectionGroup)
 
 
 rawSectionGroupFromSectionGroups :: Text -> [TagList] -> TagList
