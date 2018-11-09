@@ -123,7 +123,7 @@ headingParagraphsWithContent headingGroup =
 
 
 parseSectionFromHeadingParagraph :: TagList -> TagList -> Section
-parseSectionFromHeadingParagraph dom paragraph = Section
+parseSectionFromHeadingParagraph fullPage paragraph = Section
   { Section.name   = secName
   , Section.number = secNumber
   , Section.body   = secBody
@@ -133,7 +133,7 @@ parseSectionFromHeadingParagraph dom paragraph = Section
   secNumber = parseNumberFromRawNumberText
     (normalizedInnerText $ takeWhile (~/= closingA) paragraph)
     (renderTags paragraph)
-  secBody = parseSectionBody secNumber dom
+  secBody = parseSectionBody secNumber fullPage
 
 
 parseNumberFromRawNumberText :: Text -> Text -> Text
@@ -149,8 +149,8 @@ parseNumberFromRawNumberText numberText secName = case words numberText of
 
 
 parseSubSubChapters :: TagList -> TagList -> [SubSubChapter]
-parseSubSubChapters dom headingGroup =
-  fmap (parseSubSubChapter dom) (subSubChapterHeadingGroups headingGroup)
+parseSubSubChapters fullPage headingGroup =
+  fmap (parseSubSubChapter fullPage) (subSubChapterHeadingGroups headingGroup)
 
 
 subSubChapterHeadingGroups :: TagList -> [TagList]
@@ -159,10 +159,10 @@ subSubChapterHeadingGroups headingGroup =
 
 
 parseSubSubChapter :: TagList -> TagList -> SubSubChapter
-parseSubSubChapter dom subSubChapterHeadingGroup = SubSubChapter
+parseSubSubChapter fullPage subSubChapterHeadingGroup = SubSubChapter
   { SubSubChapter.name     = extractSubSubChapterName subSubChapterHeadingGroup
   , SubSubChapter.sections = parseSectionsFromHeadingGroup
-    dom
+    fullPage
     subSubChapterHeadingGroup
   }
 
@@ -234,24 +234,15 @@ isSimpleSubChapter headingGroup =
 
 
 parseSectionBody :: Text -> TagList -> Html
-parseSectionBody secNumber dom = sectionText
+parseSectionBody secNumber fullPage = sectionText
  where
-  sectionGroups   = partitions (~== ("<span class=Section" :: String)) dom
+  sectionGroups   = partitions (~== ("<span class=Section" :: String)) fullPage
   rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
   sectionText =
     NewHtml
       $  normalizeWhiteSpace
       $  "<p class=SectBody>"
       ++ (renderTags rawSectionGroup)
-
-
-isSectionBodyNumber :: Text -> TagList -> Bool
-isSectionBodyNumber secNumber dom = parseSectionBodyNumber dom == secNumber
-
-
-parseSectionBodyNumber :: TagList -> Text
-parseSectionBodyNumber dom =
-  innerText $ takeWhile (~/= ("</span>" :: String)) dom
 
 
 rawSectionGroupFromSectionGroups :: Text -> [TagList] -> TagList
@@ -265,3 +256,13 @@ rawSectionGroupFromSectionGroups secNumber sectionGroups =
             ++ (T.unpack secNumber)
             ++ " in section groups: "
             ++ (show sectionGroups)
+
+
+isSectionBodyNumber :: Text -> TagList -> Bool
+isSectionBodyNumber secNumber sectionGroup =
+  parseSectionBodyNumber sectionGroup == secNumber
+
+
+parseSectionBodyNumber :: TagList -> Text
+parseSectionBodyNumber sectionGroup =
+  innerText $ takeWhile (~/= ("</span>" :: String)) sectionGroup
