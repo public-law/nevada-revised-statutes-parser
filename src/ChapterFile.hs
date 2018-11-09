@@ -204,7 +204,7 @@ headingGroups tags = partitions (~== ("<p class=COHead2>" :: String)) tags
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
 parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input = if input == chapterZeroTitle
-  then (T.pack "0", T.pack "Preliminary Chapter – General Provisions")
+  then ("0", "Preliminary Chapter – General Provisions")
   else case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
     Left e ->
       error
