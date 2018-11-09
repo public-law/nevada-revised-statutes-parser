@@ -42,9 +42,13 @@ import           TextUtil                       ( normalizeWhiteSpace
 
 
 type ChapterMap = HashMap RelativePath Html
+type TagList    = [Tag Text]
 
 closingA :: String
 closingA = "</a>"
+
+closingP :: String
+closingP = "</p>"
 
 leadlineP :: String
 leadlineP = "<p class=COLeadline>"
@@ -57,10 +61,10 @@ fillInEmptyChapter :: ChapterMap -> Chapter -> Chapter
 fillInEmptyChapter chapterMap emptyChapter =
   let key       = chapterNumberToFilename (Chapter.number emptyChapter)
       maybeHtml = HM.lookup key chapterMap
-  in  if not $ (Chapter.number emptyChapter) `elem` chaptersToSkip
+  in  if Chapter.number emptyChapter `notElem` chaptersToSkip
         then case maybeHtml of
           Just html -> parseChapter html
-          Nothing   -> error $ "Chapter " ++ (show key) ++ " not found."
+          Nothing   -> error $ "Chapter " ++ show key ++ " not found."
         else emptyChapter
 
 
@@ -73,51 +77,69 @@ chapterNumberToFilename chapterNumber =
 
 parseChapter :: Html -> Chapter
 parseChapter chapterHtml = Chapter
-  { Chapter.name        = rawName
-  , Chapter.number      = rawNumber
-  , Chapter.url         = chapterUrlPrefix ++ rawNumber ++ ".html"
-  , Chapter.subChapters = subChaps
+  { Chapter.name    = rawName
+  , Chapter.number  = rawNumber
+  , Chapter.url     = chapterUrlPrefix ++ rawNumber ++ ".html"
+  , Chapter.content = sectionsOrSubChapters
   }
  where
-  tags                 = parseTags $ toText chapterHtml
-  rawTitle             = titleText tags
-  (rawNumber, rawName) = parseChapterFileTitle rawTitle
-  subChaps             = fmap (newSubChapter tags) (headingGroups tags)
+  fullPage              = parseTags $ toText chapterHtml
+  rawTitle              = titleText fullPage
+  (rawNumber, rawName)  = parseChapterFileTitle rawTitle
+  sectionsOrSubChapters = chapterContent fullPage
 
 
-newSubChapter :: [Tag Text] -> [Tag Text] -> SubChapter
-newSubChapter dom headingGroup = SubChapter
+chapterContent :: TagList -> ChapterContent
+chapterContent fullPage = case foundSubChapters of
+  [] -> SimpleChapterContent foundSections
+  xs -> ComplexChapterContent xs
+ where
+  groups           = headingGroups fullPage
+  foundSubChapters = fmap (newSubChapter fullPage) groups
+  foundSections    = parseSectionsFromJustHtml fullPage
+
+
+newSubChapter :: TagList -> TagList -> SubChapter
+newSubChapter fullPage headingGroup = SubChapter
   { SubChapter.name = subChapterNameFromGroup headingGroup
   , children        = if isSimpleSubChapter headingGroup
-    then SubChapterSections $ parseSectionsFromHeadingGroup dom headingGroup
-    else SubSubChapters $ parseSubSubChapters dom headingGroup
+    then SubChapterSections
+      $ parseSectionsFromHeadingGroup fullPage headingGroup
+    else SubSubChapters $ parseSubSubChapters fullPage headingGroup
   }
 
 
-parseSectionsFromHeadingGroup :: [Tag Text] -> [Tag Text] -> [Section]
-parseSectionsFromHeadingGroup dom headingGroup = fmap
-  (parseSectionFromHeadingParagraph dom)
+parseSectionsFromJustHtml :: TagList -> [Section]
+parseSectionsFromJustHtml fullPage =
+  parseSectionsFromHeadingGroup fullPage fullPage
+
+
+parseSectionsFromHeadingGroup :: TagList -> TagList -> [Section]
+parseSectionsFromHeadingGroup fullPage headingGroup = fmap
+  (parseSectionFromHeadingParagraph fullPage)
   (headingParagraphsWithContent headingGroup)
 
 
 -- Some COLeadline P's have no content; they're just used for vertical spacing.
-headingParagraphsWithContent :: [Tag Text] -> [[Tag Text]]
+headingParagraphsWithContent :: TagList -> [TagList]
 headingParagraphsWithContent headingGroup =
   filter (\tags -> length tags > 4) (partitions (~== leadlineP) headingGroup)
 
 
-parseSectionFromHeadingParagraph :: [Tag Text] -> [Tag Text] -> Section
-parseSectionFromHeadingParagraph dom paragraph = Section
+parseSectionFromHeadingParagraph :: TagList -> TagList -> Section
+parseSectionFromHeadingParagraph fullPage paragraph = Section
   { Section.name   = secName
   , Section.number = secNumber
   , Section.body   = secBody
   }
  where
-  secName   = normalizedInnerText $ dropWhile (~/= closingA) paragraph
+  secName = normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile
+    (~/= closingA)
+    paragraph
   secNumber = parseNumberFromRawNumberText
     (normalizedInnerText $ takeWhile (~/= closingA) paragraph)
     (renderTags paragraph)
-  secBody = parseSectionBody secNumber dom
+  secBody = parseSectionBody secNumber fullPage
 
 
 parseNumberFromRawNumberText :: Text -> Text -> Text
@@ -132,26 +154,26 @@ parseNumberFromRawNumberText numberText secName = case words numberText of
       ++ "\" to have at least two words"
 
 
-parseSubSubChapters :: [Tag Text] -> [Tag Text] -> [SubSubChapter]
-parseSubSubChapters dom headingGroup =
-  fmap (parseSubSubChapter dom) (subSubChapterHeadingGroups headingGroup)
+parseSubSubChapters :: TagList -> TagList -> [SubSubChapter]
+parseSubSubChapters fullPage headingGroup =
+  fmap (parseSubSubChapter fullPage) (subSubChapterHeadingGroups headingGroup)
 
 
-subSubChapterHeadingGroups :: [Tag Text] -> [[Tag Text]]
+subSubChapterHeadingGroups :: TagList -> [TagList]
 subSubChapterHeadingGroups headingGroup =
   (partitions (~== heading4P) headingGroup)
 
 
-parseSubSubChapter :: [Tag Text] -> [Tag Text] -> SubSubChapter
-parseSubSubChapter dom subSubChapterHeadingGroup = SubSubChapter
+parseSubSubChapter :: TagList -> TagList -> SubSubChapter
+parseSubSubChapter fullPage subSubChapterHeadingGroup = SubSubChapter
   { SubSubChapter.name     = extractSubSubChapterName subSubChapterHeadingGroup
   , SubSubChapter.sections = parseSectionsFromHeadingGroup
-    dom
+    fullPage
     subSubChapterHeadingGroup
   }
 
 
-extractSubSubChapterName :: [Tag Text] -> Text
+extractSubSubChapterName :: TagList -> Text
 extractSubSubChapterName headingGroup =
   let linesOfText = lines $ innerText headingGroup
   in  case linesOfText of
@@ -162,27 +184,28 @@ extractSubSubChapterName headingGroup =
             ++ (show headingGroup)
 
 
-subnames :: [Tag Text] -> [Text]
+subnames :: TagList -> [Text]
 subnames tags = fmap subChapterNameFromGroup (headingGroups tags)
 
 
-subChapterNameFromGroup :: [Tag Text] -> Text
+subChapterNameFromGroup :: TagList -> Text
 subChapterNameFromGroup (_ : y : _) = titleize $ fromTagText y
 subChapterNameFromGroup tags =
   error $ "Could not get a chapter name from the group: " ++ (show tags)
 
 
-sectionNamesFromGroup :: [Tag Text] -> [Text]
+sectionNamesFromGroup :: TagList -> [Text]
 sectionNamesFromGroup headingGroup =
   fmap sectionNameFromParagraph (partitions (~== leadlineP) headingGroup)
 
 
-sectionNameFromParagraph :: [Tag Text] -> Text
+sectionNameFromParagraph :: TagList -> Text
 sectionNameFromParagraph = normalizedInnerText . (dropWhile (~/= closingA))
 
 
-headingGroups :: [Tag Text] -> [[Tag Text]]
-headingGroups tags = partitions (~== ("<p class=COHead2>" :: String)) tags
+headingGroups :: TagList -> [TagList]
+headingGroups fullPage =
+  partitions (~== ("<p class=COHead2>" :: String)) fullPage
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
@@ -190,7 +213,7 @@ headingGroups tags = partitions (~== ("<p class=COHead2>" :: String)) tags
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
 parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input = if input == chapterZeroTitle
-  then (T.pack "0", T.pack "Preliminary Chapter – General Provisions")
+  then ("0", "Preliminary Chapter – General Provisions")
   else case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
     Left e ->
       error
@@ -209,36 +232,27 @@ chapterTitleParser = do
   num   <- Data.Attoparsec.Text.takeWhile (not . isSpace)
   _     <- string " - "
   title <- Data.Attoparsec.Text.takeText
-  return $ (num, titleize title)
+  return (num, titleize title)
 
 
-isSimpleSubChapter :: [Tag Text] -> Bool
+isSimpleSubChapter :: TagList -> Bool
 isSimpleSubChapter headingGroup =
   null (partitions (~== heading4P) headingGroup)
 
 
-parseSectionBody :: Text -> [Tag Text] -> Html
-parseSectionBody secNumber dom = sectionText
+parseSectionBody :: Text -> TagList -> Html
+parseSectionBody secNumber fullPage = sectionHtml
  where
-  sectionGroups   = partitions (~== ("<span class=Section" :: String)) dom
+  sectionGroups   = partitions (~== ("<span class=Section" :: String)) fullPage
   rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
-  sectionText =
-    NewHtml
-      $  normalizeWhiteSpace
-      $  "<p class=SectBody>"
-      ++ (renderTags rawSectionGroup)
+  sectionHtml     = NewHtml $ "<p class=SectBody>" ++ normalizeWhiteSpace
+    ( renderTags
+    $ drop 6
+    $ dropWhile (~/= ("<span class=Leadline>" :: String)) rawSectionGroup
+    )
 
 
-isSectionBodyNumber :: Text -> [Tag Text] -> Bool
-isSectionBodyNumber secNumber dom = parseSectionBodyNumber dom == secNumber
-
-
-parseSectionBodyNumber :: [Tag Text] -> Text
-parseSectionBodyNumber dom =
-  innerText $ takeWhile (~/= ("</span>" :: String)) dom
-
-
-rawSectionGroupFromSectionGroups :: Text -> [[Tag Text]] -> [Tag Text]
+rawSectionGroupFromSectionGroups :: Text -> [TagList] -> TagList
 rawSectionGroupFromSectionGroups secNumber sectionGroups =
   let bodyNumbers = filter (isSectionBodyNumber secNumber) sectionGroups
   in  case bodyNumbers of
@@ -249,3 +263,13 @@ rawSectionGroupFromSectionGroups secNumber sectionGroups =
             ++ (T.unpack secNumber)
             ++ " in section groups: "
             ++ (show sectionGroups)
+
+
+isSectionBodyNumber :: Text -> TagList -> Bool
+isSectionBodyNumber secNumber sectionGroup =
+  parseSectionBodyNumber sectionGroup == secNumber
+
+
+parseSectionBodyNumber :: TagList -> Text
+parseSectionBodyNumber sectionGroup =
+  innerText $ takeWhile (~/= ("</span>" :: String)) sectionGroup
