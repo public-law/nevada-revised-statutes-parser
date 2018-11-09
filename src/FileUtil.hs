@@ -30,6 +30,7 @@ import           System.IO                      ( IOMode(ReadMode)
                                                 )
 
 
+-- Re-write error() to work with Text instead of String.
 error :: Text -> a
 error = BasicPrelude.error . T.unpack
 
