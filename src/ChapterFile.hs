@@ -94,7 +94,7 @@ chapterContent fullPage = case foundSubChapters of
   [] -> SimpleChapterContent foundSections
   xs -> ComplexChapterContent xs
  where
-  groups = headingGroups fullPage
+  groups           = headingGroups fullPage
   foundSubChapters = fmap (newSubChapter fullPage) groups
   foundSections    = parseSectionsFromJustHtml fullPage
 
@@ -133,7 +133,9 @@ parseSectionFromHeadingParagraph fullPage paragraph = Section
   , Section.body   = secBody
   }
  where
-  secName   = normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile (~/= closingA) paragraph
+  secName = normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile
+    (~/= closingA)
+    paragraph
   secNumber = parseNumberFromRawNumberText
     (normalizedInnerText $ takeWhile (~/= closingA) paragraph)
     (renderTags paragraph)
@@ -202,7 +204,8 @@ sectionNameFromParagraph = normalizedInnerText . (dropWhile (~/= closingA))
 
 
 headingGroups :: TagList -> [TagList]
-headingGroups fullPage = partitions (~== ("<p class=COHead2>" :: String)) fullPage
+headingGroups fullPage =
+  partitions (~== ("<p class=COHead2>" :: String)) fullPage
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
@@ -239,10 +242,14 @@ isSimpleSubChapter headingGroup =
 
 parseSectionBody :: Text -> TagList -> Html
 parseSectionBody secNumber fullPage = sectionHtml
-  where
-    sectionGroups   = partitions (~== ("<span class=Section" :: String)) fullPage
-    rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
-    sectionHtml = NewHtml $ "<p class=SectBody>" ++ (normalizeWhiteSpace $ innerText $ dropWhile (~/= ("span class=Empty"::String)) rawSectionGroup)
+ where
+  sectionGroups   = partitions (~== ("<span class=Section" :: String)) fullPage
+  rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
+  sectionHtml     = NewHtml $ "<p class=SectBody>" ++ normalizeWhiteSpace
+    ( renderTags
+    $ drop 6
+    $ dropWhile (~/= ("<span class=Leadline>" :: String)) rawSectionGroup
+    )
 
 
 rawSectionGroupFromSectionGroups :: Text -> [TagList] -> TagList
