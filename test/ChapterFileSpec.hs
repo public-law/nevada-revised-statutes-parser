@@ -180,10 +180,6 @@ spec = parallel $ do
       parseSectionBody "432B.215" dom `shouldBe` expectedHtml
 
 
-    describe "Chapter 36 parsing" $ do
-      it "can get the section name correctly"   pending
-      it "can get the section number correctly" pending
-
 --
 -- Helper Functions
 --

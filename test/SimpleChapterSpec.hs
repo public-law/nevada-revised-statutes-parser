@@ -67,6 +67,19 @@ spec = parallel $ describe "parseChapter" $ do
       `shouldBe` "<p class=SectBody>Unless the context otherwise requires, \147substantial bodily harm\148 means:</p> <p class=\"SectBody\"> 1. Bodily injury which creates a substantial risk of death or which causes serious, permanent disfigurement or protracted loss or impairment of the function of any bodily member or organ; or</p> <p class=\"SectBody\"> 2. Prolonged physical pain.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/63rd/Stats198501.html#Stats198501page221\">1985, 221</a>)</p>"
 
 
+  describe "Chapter 36 parsing" $ do
+    it "finds the correct section name" $ do
+      html <- chapter_36_html
+      let onlySection = head $ simpleChapterContent html
+      Section.name onlySection
+        `shouldBe` "Defendant asking affirmative relief may have provisional remedies."
+
+    it "finds the correct section number" $ do
+      html <- chapter_36_html
+      let onlySection = head $ simpleChapterContent html
+      Section.number onlySection `shouldBe` "010"
+
+
 
 --
 -- Helper Functions
