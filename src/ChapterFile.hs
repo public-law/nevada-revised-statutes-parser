@@ -136,10 +136,9 @@ parseSectionFromHeadingParagraph fullPage paragraph = Section
   secName = normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile
     (~/= closingA)
     paragraph
-  secNumber = parseNumberFromRawNumberText
-    (normalizedInnerText $ takeWhile (~/= closingA) paragraph)
-    (renderTags paragraph)
-  secBody = parseSectionBody secNumber fullPage
+  rawNumberText = normalizedInnerText $ takeWhile (~/= closingA) paragraph
+  secNumber     = parseNumberFromRawNumberText rawNumberText secName
+  secBody       = parseSectionBody secNumber fullPage
 
 
 parseNumberFromRawNumberText :: Text -> Text -> Text
@@ -246,9 +245,8 @@ parseSectionBody secNumber fullPage = sectionHtml
   sectionGroups   = partitions (~== ("<span class=Section" :: String)) fullPage
   rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
   sectionHtml     = NewHtml $ "<p class=SectBody>" ++ normalizeWhiteSpace
-    ( renderTags
-    $ drop 6
-    $ dropWhile (~/= ("<span class=Leadline>" :: String)) rawSectionGroup
+    (renderTags $ drop 6 $ dropWhile (~/= ("<span class=Leadline>" :: String))
+                                     rawSectionGroup
     )
 
 
