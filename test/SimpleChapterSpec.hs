@@ -77,7 +77,7 @@ spec = parallel $ describe "parseChapter" $ do
     it "finds the correct section number" $ do
       html <- chapter_36_html
       let onlySection = head $ simpleChapterContent html
-      Section.number onlySection `shouldBe` "010"
+      Section.number onlySection `shouldBe` "36.010"
 
 
 
@@ -99,3 +99,6 @@ simpleChapterContent html = case content (parseChapter html) of
 
 chapter_0_html :: IO Html
 chapter_0_html = htmlFixture "NRS-000.html"
+
+chapter_36_html :: IO Html
+chapter_36_html = htmlFixture "NRS-036.html"
