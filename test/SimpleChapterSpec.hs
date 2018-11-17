@@ -79,6 +79,10 @@ spec = parallel $ describe "parseChapter" $ do
       let onlySection = head $ simpleChapterContent html
       Section.number onlySection `shouldBe` "36.010"
 
+    it "finds only one section" $ do
+      html <- chapter_36_html
+      (length . simpleChapterContent) html `shouldBe` 1
+
 
 
 --
