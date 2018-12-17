@@ -130,7 +130,7 @@ parseSectionFromHeadingParagraph :: TagList -> TagList -> Section
 parseSectionFromHeadingParagraph fullPage paragraph = Section
   { Section.name   = toSectionName secName
   , Section.number = toSectionNumber secNumber
-  , Section.body   = secBody
+  , Section.body   = toSectionBody secBody
   }
  where
   secName = normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile

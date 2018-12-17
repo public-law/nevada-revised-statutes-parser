@@ -5,13 +5,15 @@ import           Data.Aeson                     ( ToJSON )
 import           GHC.Generics                   ( Generic )
 import qualified Data.Text                     as T
 
-import           HtmlUtil                       ( Html )
+import           HtmlUtil                       ( Html
+                                                , toText
+                                                )
 
 data Section =
   Section {
     name   :: SectionName,
     number :: SectionNumber,
-    body   :: Html
+    body   :: SectionBody
 } deriving (Generic, Show)
 
 instance ToJSON Section
@@ -50,3 +52,20 @@ toSectionNumber n
     ++ show n
   | otherwise
   = MakeSectionNumber n
+
+
+newtype SectionBody = MakeSectionBody Html deriving ( Generic, Eq )
+instance ToJSON SectionBody
+instance Show SectionBody where
+  show (MakeSectionBody n) = T.unpack (toText n)
+
+toSectionBody :: Html -> SectionBody
+toSectionBody n
+  | T.length (toText n) == 0
+  = error
+    $  "Body must be 1... characters ("
+    ++ show (T.length $ toText n)
+    ++ "): "
+    ++ show n
+  | otherwise
+  = MakeSectionBody n
