@@ -30,12 +30,12 @@ spec = parallel $ describe "parseChapter" $ do
   it "finds the correct section name" $ do
     html <- chapter_0_html
     let firstSection = head $ simpleChapterContent html
-    Section.name firstSection `shouldBe` "Scope."
+    (fromSectionName $ Section.name firstSection) `shouldBe` "Scope."
 
   it "finds the correct section number" $ do
     html <- chapter_0_html
     let firstSection = head $ simpleChapterContent html
-    Section.number firstSection `shouldBe` "0.010"
+    Section.number firstSection `shouldBe` (MakeSectionNumber "0.010")
 
   it "finds the correct section content" $ do
     html <- chapter_0_html
@@ -53,12 +53,13 @@ spec = parallel $ describe "parseChapter" $ do
   it "finds the correct section number" $ do
     html <- chapter_0_html
     let firstSection = last $ simpleChapterContent html
-    Section.number firstSection `shouldBe` "0.060"
+    Section.number firstSection `shouldBe` (MakeSectionNumber "0.060")
 
   it "finds the correct section name" $ do
     html <- chapter_0_html
     let lastSection = last $ simpleChapterContent html
-    Section.name lastSection `shouldBe` "“Substantial bodily harm” defined."
+    fromSectionName (Section.name lastSection)
+      `shouldBe` "“Substantial bodily harm” defined."
 
   it "finds the correct section content" $ do
     html <- chapter_0_html
@@ -71,13 +72,13 @@ spec = parallel $ describe "parseChapter" $ do
     it "finds the correct section name" $ do
       html <- chapter_36_html
       let onlySection = head $ simpleChapterContent html
-      Section.name onlySection
+      fromSectionName (Section.name onlySection)
         `shouldBe` "Defendant asking affirmative relief may have provisional remedies."
 
     it "finds the correct section number" $ do
       html <- chapter_36_html
       let onlySection = head $ simpleChapterContent html
-      Section.number onlySection `shouldBe` "36.010"
+      Section.number onlySection `shouldBe` (MakeSectionNumber "36.010")
 
     it "finds only one section" $ do
       html <- chapter_36_html

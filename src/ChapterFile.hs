@@ -128,8 +128,8 @@ headingParagraphsWithContent headingGroup =
 
 parseSectionFromHeadingParagraph :: TagList -> TagList -> Section
 parseSectionFromHeadingParagraph fullPage paragraph = Section
-  { Section.name   = secName
-  , Section.number = secNumber
+  { Section.name   = toSectionName secName
+  , Section.number = toSectionNumber secNumber
   , Section.body   = secBody
   }
  where
