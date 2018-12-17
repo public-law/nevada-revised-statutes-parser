@@ -22,8 +22,14 @@ instance ToJSON SectionName
 
 toSectionName :: Text -> SectionName
 toSectionName n
-  | T.length n > 200 = error $ "Name is longer than 200 characters: " ++ show n
-  | otherwise        = MakeSectionName n
+  | T.length n > 70 || T.length n == 0
+  = error
+    $  "Name must be 1...70 characters ("
+    ++ show (T.length n)
+    ++ "): "
+    ++ show n
+  | otherwise
+  = MakeSectionName n
 
 fromSectionName :: SectionName -> Text
 fromSectionName (MakeSectionName n) = n
@@ -34,8 +40,14 @@ instance ToJSON SectionNumber
 
 toSectionNumber :: Text -> SectionNumber
 toSectionNumber n
-  | T.length n > 8 = error $ "Number is longer than 8 characters: " ++ show n
-  | otherwise      = MakeSectionNumber n
+  | T.length n > 8 || T.length n == 0
+  = error
+    $  "Number must be 1...8 characters ("
+    ++ show (T.length n)
+    ++ "): "
+    ++ show n
+  | otherwise
+  = MakeSectionNumber n
 
 fromSectionNumber :: SectionNumber -> Text
 fromSectionNumber (MakeSectionNumber n) = n
