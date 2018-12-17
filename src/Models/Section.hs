@@ -17,8 +17,10 @@ data Section =
 instance ToJSON Section
 
 
-newtype SectionName = MakeSectionName Text deriving ( Generic, Show, Eq )
+newtype SectionName = MakeSectionName Text deriving ( Generic, Eq )
 instance ToJSON SectionName
+instance Show SectionName where
+  show (MakeSectionName n) = T.unpack n
 
 toSectionName :: Text -> SectionName
 toSectionName n
@@ -31,12 +33,12 @@ toSectionName n
   | otherwise
   = MakeSectionName n
 
-fromSectionName :: SectionName -> Text
-fromSectionName (MakeSectionName n) = n
 
 
-newtype SectionNumber = MakeSectionNumber Text deriving ( Generic, Show, Eq )
+newtype SectionNumber = MakeSectionNumber Text deriving ( Generic, Eq )
 instance ToJSON SectionNumber
+instance Show SectionNumber where
+  show (MakeSectionNumber n) = T.unpack n
 
 toSectionNumber :: Text -> SectionNumber
 toSectionNumber n
@@ -48,6 +50,3 @@ toSectionNumber n
     ++ show n
   | otherwise
   = MakeSectionNumber n
-
-fromSectionNumber :: SectionNumber -> Text
-fromSectionNumber (MakeSectionNumber n) = n

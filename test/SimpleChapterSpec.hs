@@ -30,7 +30,7 @@ spec = parallel $ describe "parseChapter" $ do
   it "finds the correct section name" $ do
     html <- chapter_0_html
     let firstSection = head $ simpleChapterContent html
-    (fromSectionName $ Section.name firstSection) `shouldBe` "Scope."
+    (show $ Section.name firstSection) `shouldBe` "Scope."
 
   it "finds the correct section number" $ do
     html <- chapter_0_html
@@ -58,7 +58,7 @@ spec = parallel $ describe "parseChapter" $ do
   it "finds the correct section name" $ do
     html <- chapter_0_html
     let lastSection = last $ simpleChapterContent html
-    fromSectionName (Section.name lastSection)
+    show (Section.name lastSection)
       `shouldBe` "“Substantial bodily harm” defined."
 
   it "finds the correct section content" $ do
@@ -72,7 +72,7 @@ spec = parallel $ describe "parseChapter" $ do
     it "finds the correct section name" $ do
       html <- chapter_36_html
       let onlySection = head $ simpleChapterContent html
-      fromSectionName (Section.name onlySection)
+      show (Section.name onlySection)
         `shouldBe` "Defendant asking affirmative relief may have provisional remedies."
 
     it "finds the correct section number" $ do
