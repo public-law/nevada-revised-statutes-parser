@@ -41,9 +41,10 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
 
   parseSectionsFromJustHtml :: TagList -> [Section]
   parseSectionsFromJustHtml fullPage =
-    parseSectionsFromHeadingGroup fullPage topHalf
+    parseSectionsFromHeadingGroup bottomHalf topHalf
     where
-      topHalf = takeWhile (~/= horizontalRule) fullPage
+      topHalf    = takeWhile (~/= horizontalRule) fullPage
+      bottomHalf = dropWhile (~/= horizontalRule) fullPage
   
   
   parseSectionsFromHeadingGroup :: TagList -> TagList -> [Section]
