@@ -16,6 +16,7 @@ import           Models.SubChapter             as SubChapter
 import           Models.SubSubChapter          as SubSubChapter
 
 import           ChapterFile
+import           SimpleChapterFile
 import           HtmlUtil
 
 
@@ -85,7 +86,7 @@ spec = parallel $ do
       let generalProvisions = head $ subChapters (parseChapter html)
       case children generalProvisions of
         SubChapterSections xs ->
-          Section.name (head xs) `shouldBe` "Definitions."
+          show (Section.name (head xs)) `shouldBe` "Definitions."
         SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
 
@@ -94,7 +95,7 @@ spec = parallel $ do
       let generalProvisions = head $ subChapters (parseChapter html)
       case children generalProvisions of
         SubChapterSections xs ->
-          Section.name (xs !! 1)
+          show (Section.name (xs !! 1))
             `shouldBe` "“Abuse or neglect of a child” defined."
         SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
@@ -102,7 +103,8 @@ spec = parallel $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters (parseChapter html)
       case children generalProvisions of
-        SubChapterSections xs -> Section.number (xs !! 1) `shouldBe` "432B.020"
+        SubChapterSections xs ->
+          Section.number (xs !! 1) `shouldBe` (MakeSectionNumber "432B.020")
         SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
 
@@ -141,7 +143,7 @@ spec = parallel $ do
       let administration = (!! 1) $ subChapters $ parseChapter html
       case children administration of
         SubSubChapters xs ->
-          Section.name ((!! 0) $ SubSubChapter.sections (head xs))
+          show (Section.name ((!! 0) $ SubSubChapter.sections (head xs)))
             `shouldBe` "Duties of Division of Child and Family Services."
         SubChapterSections _ ->
           error "Got sections but expected sub-sub-chapters"
@@ -180,7 +182,6 @@ spec = parallel $ do
       parseSectionBody "432B.215" dom `shouldBe` expectedHtml
 
 
-
 --
 -- Helper Functions
 --
@@ -189,11 +190,11 @@ main = hspec spec
 
 
 chapter_432b_html :: IO Html
-chapter_432b_html = htmlFixture "nrs-432b.html"
+chapter_432b_html = htmlFixture "NRS-432B.html"
 
 
 chapter_575_html :: IO Html
-chapter_575_html = htmlFixture "nrs-575.html"
+chapter_575_html = htmlFixture "NRS-575.html"
 
 
 -- Return a Chapter's sub-chapters, or raise an error

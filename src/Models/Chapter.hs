@@ -20,7 +20,8 @@ data Chapter =
 
 
 data ChapterContent = SimpleChapterContent [Section]
-                    | ComplexChapterContent [SubChapter] deriving (Generic, Show)
+                    | ComplexChapterContent [SubChapter]
+                    deriving (Generic, Show)
 
 instance ToJSON ChapterContent
 instance ToJSON Chapter

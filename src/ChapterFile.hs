@@ -26,6 +26,9 @@ import           HtmlUtil                       ( Html(NewHtml)
                                                 , titleText
                                                 , toText
                                                 )
+import           SimpleChapterFile              ( parseSectionsFromJustHtml
+                                                , isSimpleSubChapter
+                                                )
 import           Models.Chapter                as Chapter
 import           Models.Section                as Section
 import           Models.SubChapter             as SubChapter
@@ -109,11 +112,6 @@ newSubChapter fullPage headingGroup = SubChapter
   }
 
 
-parseSectionsFromJustHtml :: TagList -> [Section]
-parseSectionsFromJustHtml fullPage =
-  parseSectionsFromHeadingGroup fullPage fullPage
-
-
 parseSectionsFromHeadingGroup :: TagList -> TagList -> [Section]
 parseSectionsFromHeadingGroup fullPage headingGroup = fmap
   (parseSectionFromHeadingParagraph fullPage)
@@ -128,18 +126,17 @@ headingParagraphsWithContent headingGroup =
 
 parseSectionFromHeadingParagraph :: TagList -> TagList -> Section
 parseSectionFromHeadingParagraph fullPage paragraph = Section
-  { Section.name   = secName
-  , Section.number = secNumber
-  , Section.body   = secBody
+  { Section.name   = toSectionName secName
+  , Section.number = toSectionNumber secNumber
+  , Section.body   = toSectionBody secBody
   }
  where
   secName = normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile
     (~/= closingA)
     paragraph
-  secNumber = parseNumberFromRawNumberText
-    (normalizedInnerText $ takeWhile (~/= closingA) paragraph)
-    (renderTags paragraph)
-  secBody = parseSectionBody secNumber fullPage
+  rawNumberText = normalizedInnerText $ takeWhile (~/= closingA) paragraph
+  secNumber     = parseNumberFromRawNumberText rawNumberText secName
+  secBody       = parseSectionBody secNumber fullPage
 
 
 parseNumberFromRawNumberText :: Text -> Text -> Text
@@ -235,20 +232,14 @@ chapterTitleParser = do
   return (num, titleize title)
 
 
-isSimpleSubChapter :: TagList -> Bool
-isSimpleSubChapter headingGroup =
-  null (partitions (~== heading4P) headingGroup)
-
-
 parseSectionBody :: Text -> TagList -> Html
 parseSectionBody secNumber fullPage = sectionHtml
  where
   sectionGroups   = partitions (~== ("<span class=Section" :: String)) fullPage
   rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
   sectionHtml     = NewHtml $ "<p class=SectBody>" ++ normalizeWhiteSpace
-    ( renderTags
-    $ drop 6
-    $ dropWhile (~/= ("<span class=Leadline>" :: String)) rawSectionGroup
+    (renderTags $ drop 6 $ dropWhile (~/= ("<span class=Leadline>" :: String))
+                                     rawSectionGroup
     )
 
 
