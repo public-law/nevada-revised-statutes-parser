@@ -26,6 +26,9 @@ import           HtmlUtil                       ( Html(NewHtml)
                                                 , titleText
                                                 , toText
                                                 )
+import           SimpleChapterFile              ( parseSectionsFromJustHtml
+                                                , isSimpleSubChapter
+                                                )
 import           Models.Chapter                as Chapter
 import           Models.Section                as Section
 import           Models.SubChapter             as SubChapter
@@ -107,11 +110,6 @@ newSubChapter fullPage headingGroup = SubChapter
       $ parseSectionsFromHeadingGroup fullPage headingGroup
     else SubSubChapters $ parseSubSubChapters fullPage headingGroup
   }
-
-
-parseSectionsFromJustHtml :: TagList -> [Section]
-parseSectionsFromJustHtml fullPage =
-  parseSectionsFromHeadingGroup fullPage fullPage
 
 
 parseSectionsFromHeadingGroup :: TagList -> TagList -> [Section]
@@ -232,11 +230,6 @@ chapterTitleParser = do
   _     <- string " - "
   title <- Data.Attoparsec.Text.takeText
   return (num, titleize title)
-
-
-isSimpleSubChapter :: TagList -> Bool
-isSimpleSubChapter headingGroup =
-  null (partitions (~== heading4P) headingGroup)
 
 
 parseSectionBody :: Text -> TagList -> Html

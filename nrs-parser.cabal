@@ -51,6 +51,7 @@ common deps
     Models.Title,
     Models.Tree,
     NRSParser,
+    SimpleChapterFile,
     TextUtil,
     TreeParser,
     Year
