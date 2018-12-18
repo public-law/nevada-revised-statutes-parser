@@ -30,6 +30,9 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
   heading4P :: String
   heading4P = "<p class=COHead4>"
 
+  horizontalRule :: String
+  horizontalRule = "<p class=\"J-Dash\""
+
 
   isSimpleSubChapter :: TagList -> Bool
   isSimpleSubChapter headingGroup =
@@ -38,7 +41,7 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
 
   parseSectionsFromJustHtml :: TagList -> [Section]
   parseSectionsFromJustHtml fullPage =
-    parseSectionsFromHeadingGroup fullPage fullPage
+    parseSectionsFromHeadingGroup fullPage (takeWhile (~/= horizontalRule) fullPage)
   
   
   parseSectionsFromHeadingGroup :: TagList -> TagList -> [Section]
