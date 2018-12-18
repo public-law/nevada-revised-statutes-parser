@@ -16,6 +16,7 @@ import           Models.SubChapter             as SubChapter
 import           Models.SubSubChapter          as SubSubChapter
 
 import           ChapterFile
+import           SimpleChapterFile
 import           HtmlUtil
 
 
