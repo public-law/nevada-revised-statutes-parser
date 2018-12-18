@@ -26,14 +26,17 @@ instance Show SectionName where
 
 toSectionName :: Text -> SectionName
 toSectionName n
-  | T.length n > 70 || T.length n == 0
+  | T.length n > maxLen || T.length n == 0
   = error
-    $  "Name must be 1...70 characters ("
+    $  "Name must be 1..."
+    ++ show maxLen
+    ++ " characters ("
     ++ show (T.length n)
     ++ "): "
     ++ show n
   | otherwise
   = MakeSectionName n
+  where maxLen = 255
 
 
 

@@ -190,11 +190,11 @@ main = hspec spec
 
 
 chapter_432b_html :: IO Html
-chapter_432b_html = htmlFixture "nrs-432b.html"
+chapter_432b_html = htmlFixture "NRS-432B.html"
 
 
 chapter_575_html :: IO Html
-chapter_575_html = htmlFixture "nrs-575.html"
+chapter_575_html = htmlFixture "NRS-575.html"
 
 
 -- Return a Chapter's sub-chapters, or raise an error
