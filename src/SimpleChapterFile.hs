@@ -3,8 +3,8 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
   import           BasicPrelude
   import qualified Data.Text                     as T
   import           Text.HTML.TagSoup
-  
-  
+
+
   import qualified FileUtil                      as Util
   import           HtmlUtil                       ( Html(NewHtml)
                                                   , shaveBackTagsToLastClosingP
@@ -13,20 +13,20 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
   import           TextUtil                       ( normalizeWhiteSpace
                                                   , normalizedInnerText
                                                   )
-  
-  
-  
+
+
+
   type TagList    = [Tag Text]
-  
+
   closingA :: String
   closingA = "</a>"
-  
+
   closingP :: String
   closingP = "</p>"
-  
+
   leadlineP :: String
   leadlineP = "<p class=COLeadline>"
-  
+
   heading4P :: String
   heading4P = "<p class=COHead4>"
 
@@ -37,7 +37,7 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
   isSimpleSubChapter :: TagList -> Bool
   isSimpleSubChapter headingGroup =
     null (partitions (~== heading4P) headingGroup)
-  
+
 
   parseSectionsFromJustHtml :: TagList -> [Section]
   parseSectionsFromJustHtml fullPage =
@@ -45,22 +45,22 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
     where
       topHalf    = takeWhile (~/= horizontalRule) fullPage
       bottomHalf = dropWhile (~/= horizontalRule) fullPage
-  
-  
+
+
   parseSectionsFromHeadingGroup :: TagList -> TagList -> [Section]
-  parseSectionsFromHeadingGroup fullPage headingGroup = fmap
-    (parseSectionFromHeadingParagraph fullPage)
-    (headingParagraphsWithContent headingGroup)
-  
-  
+  parseSectionsFromHeadingGroup contentHalf headingsHalf = fmap
+    (parseSectionFromHeadingParagraph contentHalf)
+    (headingParagraphsWithContent headingsHalf)
+
+
   -- Some COLeadline P's have no content; they're just used for vertical spacing.
   headingParagraphsWithContent :: TagList -> [TagList]
-  headingParagraphsWithContent headingGroup =
-    filter (\tags -> length tags > 4) (partitions (~== leadlineP) headingGroup)
-  
-  
+  headingParagraphsWithContent headingParagraphs =
+    filter (\tags -> length tags > 4) (partitions (~== leadlineP) headingParagraphs)
+
+
   parseSectionFromHeadingParagraph :: TagList -> TagList -> Section
-  parseSectionFromHeadingParagraph fullPage paragraph = Section
+  parseSectionFromHeadingParagraph contentHalf paragraph = Section
     { Section.name   = toSectionName secName
     , Section.number = toSectionNumber secNumber
     , Section.body   = toSectionBody secBody
@@ -71,9 +71,9 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
       paragraph
     rawNumberText = normalizedInnerText $ takeWhile (~/= closingA) paragraph
     secNumber     = parseNumberFromRawNumberText rawNumberText secName
-    secBody       = parseSectionBody secNumber fullPage
-  
-  
+    secBody       = parseSectionBody secNumber contentHalf
+
+
   parseNumberFromRawNumberText :: Text -> Text -> Text
   parseNumberFromRawNumberText numberText secName = case words numberText of
     (_ : x : _) -> x
@@ -84,19 +84,19 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
         ++ "\" raw number \""
         ++ numberText
         ++ "\" to have at least two words"
-  
-  
+
+
   parseSectionBody :: Text -> TagList -> Html
-  parseSectionBody secNumber fullPage = sectionHtml
+  parseSectionBody secNumber contentHalf = sectionHtml
    where
-    sectionGroups   = partitions (~== ("<span class=Section" :: String)) fullPage
+    sectionGroups   = partitions (~== ("<span class=Section" :: String)) contentHalf
     rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
     sectionHtml     = NewHtml $ "<p class=SectBody>" ++ normalizeWhiteSpace
       (renderTags $ drop 6 $ dropWhile (~/= ("<span class=Leadline>" :: String))
                                        rawSectionGroup
       )
-  
-  
+
+
   rawSectionGroupFromSectionGroups :: Text -> [TagList] -> TagList
   rawSectionGroupFromSectionGroups secNumber sectionGroups =
     let bodyNumbers = filter (isSectionBodyNumber secNumber) sectionGroups
@@ -108,13 +108,13 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
               ++ (T.unpack secNumber)
               ++ " in section groups: "
               ++ (show sectionGroups)
-  
-  
+
+
   isSectionBodyNumber :: Text -> TagList -> Bool
   isSectionBodyNumber secNumber sectionGroup =
     parseSectionBodyNumber sectionGroup == secNumber
-  
-  
+
+
   parseSectionBodyNumber :: TagList -> Text
   parseSectionBodyNumber sectionGroup =
     innerText $ takeWhile (~/= ("</span>" :: String)) sectionGroup
