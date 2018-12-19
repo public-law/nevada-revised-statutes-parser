@@ -43,8 +43,8 @@ toSectionName n
     ++ "): "
     ++ show n
   | otherwise
-  = MakeSectionName n
-  where maxLen = 600 --220
+  = MakeSectionName $ parseName n
+  where maxLen = 220
 
 
 
@@ -84,9 +84,7 @@ toSectionBody n
 
 parseName :: Text -> Text
 parseName = normalizeWhiteSpace . removeAnnotation
-
-removeAnnotation :: Text -> Text
-removeAnnotation = T.takeWhile isLegalNameChar
+  where removeAnnotation = T.takeWhile isLegalNameChar
 
 isLegalNameChar :: Char -> Bool
-isLegalNameChar c = c /= '['
+isLegalNameChar c = (c /= '[' && c /= ']')
