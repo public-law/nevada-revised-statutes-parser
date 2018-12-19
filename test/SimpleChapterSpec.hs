@@ -34,8 +34,8 @@ spec = parallel $ describe "parseChapter" $ do
 
   it "finds the correct section number" $ do
     html <- chapter_0_html
-    let firstSection       = html |> simpleChapterContent |> head
-    let firstSectionNumber = firstSection |> Section.number |> show
+    let firstSectionNumber =
+          html |> simpleChapterContent |> head |> Section.number |> show
     firstSectionNumber `shouldBe` "0.010"
 
   it "finds the correct section content" $ do
@@ -49,7 +49,6 @@ spec = parallel $ describe "parseChapter" $ do
     let secondSection = simpleChapterContent html !! 1
     show (Section.body secondSection)
       `shouldBe` "<p class=SectBody>1. If any provision of the Nevada Revised Statutes, or the application thereof to any person, thing or circumstance is held invalid, such invalidity shall not affect the provisions or application of NRS which can be given effect without the invalid provision or application, and to this end the provisions of NRS are declared to be severable.</p> <p class=\"SectBody\"> 2. The inclusion of an express declaration of severability in the enactment of any provision of NRS or the inclusion of any such provision in NRS, does not enhance the severability of the provision so treated or detract from the severability of any other provision of NRS.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/59th/Stats197701.html#Stats197701page166\">1977, 166</a>)</p>"
-
 
   it "finds the correct section number" $ do
     html <- chapter_0_html
