@@ -32,7 +32,7 @@ spec = parallel $ describe "parseChapter" $ do
     let firstSection = head $ simpleChapterContent html
     (show $ Section.name firstSection) `shouldBe` "Scope."
 
-  it "finds the correct section number" $ do
+    it "finds the correct section number" $ do
     html <- chapter_0_html
     let firstSection = head $ simpleChapterContent html
     Section.number firstSection `shouldBe` (MakeSectionNumber "0.010")
@@ -105,5 +105,14 @@ simpleChapterContent html = case content (parseChapter html) of
 chapter_0_html :: IO Html
 chapter_0_html = htmlFixture "NRS-000.html"
 
+chapter_1_html :: IO Html
+chapter_1_html = htmlFixture "NRS-001.html"
+
 chapter_36_html :: IO Html
 chapter_36_html = htmlFixture "NRS-036.html"
+
+findSec510 :: [Section] -> Section
+findSec510 sections = head $ filter is510 sections
+
+is510 :: Section -> Bool
+is510 s = Section.number s == "001.510"

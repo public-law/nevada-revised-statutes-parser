@@ -36,11 +36,11 @@ toSectionName n
     ++ show n
   | otherwise
   = MakeSectionName n
-  where maxLen = 255
+  where maxLen = 600 --220
 
 
 
-newtype SectionNumber = MakeSectionNumber Text deriving ( Generic, Eq )
+newtype SectionNumber = MakeSectionNumber Text deriving ( Generic, Eq, IsString )
 instance ToJSON SectionNumber
 instance Show SectionNumber where
   show (MakeSectionNumber n) = T.unpack n
