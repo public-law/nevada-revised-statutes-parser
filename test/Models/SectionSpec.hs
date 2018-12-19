@@ -10,7 +10,7 @@ import           Test.Hspec
 
 
 spec :: SpecWith ()
-spec = parallel $ describe "cleanUpName" $ do
+spec = parallel $ describe "parseName" $ do
 
   it "runs tests in a sub-module" $ do
     let a = 1 :: Integer
