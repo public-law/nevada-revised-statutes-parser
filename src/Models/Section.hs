@@ -15,6 +15,7 @@ import qualified Data.Text                     as T
 import           HtmlUtil                       ( Html
                                                 , toText
                                                 )
+import           TextUtil
 
 data Section =
   Section {
@@ -82,4 +83,10 @@ toSectionBody n
 
 
 parseName :: Text -> Text
-parseName rawName = rawName
+parseName = normalizeWhiteSpace . removeAnnotation
+
+removeAnnotation :: Text -> Text
+removeAnnotation = T.takeWhile isLegalNameChar
+
+isLegalNameChar :: Char -> Bool
+isLegalNameChar c = c /= '['

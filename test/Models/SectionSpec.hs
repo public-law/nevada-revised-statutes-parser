@@ -6,7 +6,7 @@ module Models.SectionSpec where
 import           BasicPrelude
 import           Test.Hspec
 
-import           Models.Section                as Section
+import           Models.Section                 ( parseName )
 
 
 spec :: SpecWith ()
@@ -19,9 +19,11 @@ spec = parallel $ describe "parseName" $ do
 
   it "returns the name when it's simple" $ do
     let simpleName = "Definitions."
-    Section.parseName simpleName `shouldBe` simpleName
+    parseName simpleName `shouldBe` simpleName
 
-  it "returns the name when there's a bracket notation" $ pending
+  it "returns the name when there's a bracket notation" $ do
+    let annotatedName = "Definitions. [Effective until 1/1/2019.]"
+    parseName annotatedName `shouldBe` "Definitions."
 
   it "returns the bracket annotation when there is one" $ pending
 
