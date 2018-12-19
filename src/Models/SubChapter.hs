@@ -1,8 +1,8 @@
 module Models.SubChapter where
 
 import           BasicPrelude
-import           Data.Aeson           (ToJSON)
-import           GHC.Generics         (Generic)
+import           Data.Aeson                     ( ToJSON )
+import           GHC.Generics                   ( Generic )
 
 import           Models.Section
 import           Models.SubSubChapter
@@ -10,8 +10,8 @@ import           Models.SubSubChapter
 
 data SubChapter =
   SubChapter {
-    name     ∷ Text,
-    children ∷ SubChapterChildList
+    name     :: Text,
+    children :: SubChapterChildList
 } deriving (Generic, Show)
 
 

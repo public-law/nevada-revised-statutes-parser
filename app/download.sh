@@ -3,4 +3,4 @@
 
 cd /tmp
 rm -rf www.leg.state.nv.us
-wget --recursive --no-parent https://www.leg.state.nv.us/NRS/
+wget --recursive --no-parent --no-verbose https://www.leg.state.nv.us/NRS/

@@ -40,6 +40,7 @@ common deps
   other-modules:
     ChapterFile,
     Config,
+    DateUtil,
     FileUtil,
     IndexFile,
     HtmlUtil,
@@ -51,8 +52,10 @@ common deps
     Models.Title,
     Models.Tree,
     NRSParser,
+    SimpleChapterFile,
     TextUtil,
     TreeParser,
+    Util,
     Year
 
 
@@ -64,6 +67,8 @@ test-suite nrs-parser-test
   main-is:             Spec.hs
   other-modules:       ChapterFileSpec
                      , IndexFileSpec
+                     , Models.SectionSpec
+                     , SimpleChapterSpec
                      , TextUtilSpec
 
 
