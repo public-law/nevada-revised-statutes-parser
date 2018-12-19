@@ -11,6 +11,7 @@ import           Models.Section                as Section
 
 import           ChapterFile
 import           HtmlUtil
+import           Util
 
 
 spec :: SpecWith ()
@@ -30,7 +31,8 @@ spec = parallel $ describe "parseChapter" $ do
   it "finds the correct section name" $ do
     html <- chapter_0_html
     let firstSection = head $ simpleChapterContent html
-    (show $ Section.name firstSection) `shouldBe` "Scope."
+    let firstSectionName = firstSection |> Section.name |> show
+    firstSectionName `shouldBe` "Scope."
 
   it "finds the correct section number" $ do
     html <- chapter_0_html
@@ -52,14 +54,15 @@ spec = parallel $ describe "parseChapter" $ do
 
   it "finds the correct section number" $ do
     html <- chapter_0_html
-    let firstSection = last $ simpleChapterContent html
-    firstSection |> Section.number |> show `shouldBe` "0.060"
+    let lastSection       = html |> simpleChapterContent |> last
+    let lastSectionNumber = lastSection |> Section.number |> show
+    lastSectionNumber `shouldBe` "0.060"
 
   it "finds the correct section name" $ do
     html <- chapter_0_html
-    let lastSection = last $ simpleChapterContent html
-    show (Section.name lastSection)
-      `shouldBe` "“Substantial bodily harm” defined."
+    let lastSection     = html |> simpleChapterContent |> last
+    let lastSectionName = lastSection |> Section.name |> show
+    lastSectionName `shouldBe` "“Substantial bodily harm” defined."
 
   it "finds the correct section content" $ do
     html <- chapter_0_html
@@ -82,7 +85,7 @@ spec = parallel $ describe "parseChapter" $ do
 
     it "finds only one section" $ do
       html <- chapter_36_html
-      (length . simpleChapterContent) html `shouldBe` 1
+      html |> simpleChapterContent |> length `shouldBe` 1
 
 
 
@@ -116,7 +119,3 @@ findSec510 sections = head $ filter is510 sections
 
 is510 :: Section -> Bool
 is510 s = Section.number s == "001.510"
-
-(|>) :: a -> (a -> b) -> b
-(|>) a f = f a
-

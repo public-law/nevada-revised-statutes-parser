@@ -54,6 +54,7 @@ common deps
     SimpleChapterFile,
     TextUtil,
     TreeParser,
+    Util,
     Year
 
 
