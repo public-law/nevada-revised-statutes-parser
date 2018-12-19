@@ -7,9 +7,6 @@ import           BasicPrelude
 import           Test.Hspec
 import           Text.HTML.TagSoup
 
--- What exactly is this?
--- import          Text.InterpolatedString.Perl6 (q)
-
 import           Models.Chapter                as Chapter
 import           Models.Section                as Section
 import           Models.SubChapter             as SubChapter
