@@ -32,3 +32,4 @@ Opinionated Resources for Haskell Best Practices
 * [Haskell Porting Notes](https://github.com/srid/slownews/blob/master/notes/haskell-port.md)
 * [Haskell Package Checklist](http://taylor.fausak.me/haskell-package-checklist/)
 * [Haskell Data Types in 5 Steps](https://mmhaskell.com/blog/2017/12/24/haskell-data-types-in-5-steps)
+* [Pure Functional Validation](https://medium.com/blacklane-engineering/pure-functional-validation-64a7885d22ac)
