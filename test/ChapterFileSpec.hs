@@ -182,13 +182,6 @@ spec = parallel $ do
       parseSectionBody "432B.215" dom `shouldBe` expectedHtml
 
 
-    it "finds the correct section name when there's a note" $ do
-      html <- chapter_1_html
-      let sec510 = findSec510 $ simpleChapterContent html
-      (show $ Section.name sec510)
-        `shouldBe` "Regulations establishing program of certification or registration of interpreters; application for certificate or registration; grounds for disciplinary action."
-
-
 
 
 --

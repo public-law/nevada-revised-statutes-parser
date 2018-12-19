@@ -32,7 +32,7 @@ spec = parallel $ describe "parseChapter" $ do
     let firstSection = head $ simpleChapterContent html
     (show $ Section.name firstSection) `shouldBe` "Scope."
 
-    it "finds the correct section number" $ do
+  it "finds the correct section number" $ do
     html <- chapter_0_html
     let firstSection = head $ simpleChapterContent html
     Section.number firstSection `shouldBe` (MakeSectionNumber "0.010")
