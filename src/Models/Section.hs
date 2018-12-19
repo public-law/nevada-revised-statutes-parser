@@ -34,17 +34,20 @@ instance Show SectionName where
 
 toSectionName :: Text -> SectionName
 toSectionName n
-  | T.length n > maxLen || T.length n == 0
+  | T.length parsedName > maxLen || T.length parsedName == 0
   = error
     $  "Name must be 1..."
     ++ show maxLen
     ++ " characters ("
-    ++ show (T.length n)
+    ++ show (T.length parsedName)
     ++ "): "
-    ++ show n
+    ++ show parsedName
   | otherwise
-  = MakeSectionName $ parseName n
-  where maxLen = 220
+  = MakeSectionName parsedName
+ where
+  maxLen     = 336
+  parsedName = parseName n
+
 
 
 
@@ -87,4 +90,4 @@ parseName = normalizeWhiteSpace . removeAnnotation
   where removeAnnotation = T.takeWhile isLegalNameChar
 
 isLegalNameChar :: Char -> Bool
-isLegalNameChar c = (c /= '[' && c /= ']')
+isLegalNameChar c = c /= '['
