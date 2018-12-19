@@ -35,7 +35,7 @@ spec = parallel $ describe "parseChapter" $ do
   it "finds the correct section number" $ do
     html <- chapter_0_html
     let firstSection = head $ simpleChapterContent html
-    Section.number firstSection `shouldBe` (MakeSectionNumber "0.010")
+    firstSection |> Section.number |> show `shouldBe` "0.010"
 
   it "finds the correct section content" $ do
     html <- chapter_0_html
@@ -53,7 +53,7 @@ spec = parallel $ describe "parseChapter" $ do
   it "finds the correct section number" $ do
     html <- chapter_0_html
     let firstSection = last $ simpleChapterContent html
-    Section.number firstSection `shouldBe` (MakeSectionNumber "0.060")
+    firstSection |> Section.number |> show `shouldBe` "0.060"
 
   it "finds the correct section name" $ do
     html <- chapter_0_html
@@ -78,7 +78,7 @@ spec = parallel $ describe "parseChapter" $ do
     it "finds the correct section number" $ do
       html <- chapter_36_html
       let onlySection = head $ simpleChapterContent html
-      Section.number onlySection `shouldBe` (MakeSectionNumber "36.010")
+      show (Section.number onlySection) `shouldBe` "36.010"
 
     it "finds only one section" $ do
       html <- chapter_36_html
@@ -116,3 +116,7 @@ findSec510 sections = head $ filter is510 sections
 
 is510 :: Section -> Bool
 is510 s = Section.number s == "001.510"
+
+(|>) :: a -> (a -> b) -> b
+(|>) a f = f a
+

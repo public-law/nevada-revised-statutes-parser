@@ -1,4 +1,11 @@
-module Models.Section where
+module Models.Section
+  ( Section(Section, body, name, number)
+  , toSectionName
+  , toSectionNumber
+  , toSectionBody
+  , parseName
+  )
+where
 
 import           BasicPrelude
 import           Data.Aeson                     ( ToJSON )
@@ -74,4 +81,5 @@ toSectionBody n
   = MakeSectionBody n
 
 
-  
+parseName :: Text -> Text
+parseName rawName = rawName

@@ -104,7 +104,7 @@ spec = parallel $ do
       let generalProvisions = head $ subChapters (parseChapter html)
       case children generalProvisions of
         SubChapterSections xs ->
-          Section.number (xs !! 1) `shouldBe` (MakeSectionNumber "432B.020")
+          show (Section.number (xs !! 1)) `shouldBe` "432B.020"
         SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
 
