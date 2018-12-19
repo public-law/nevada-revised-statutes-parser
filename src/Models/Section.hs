@@ -1,4 +1,11 @@
-module Models.Section where
+module Models.Section
+  ( Section(Section, body, name, number)
+  , toSectionName
+  , toSectionNumber
+  , toSectionBody
+  , parseName
+  )
+where
 
 import           BasicPrelude
 import           Data.Aeson                     ( ToJSON )
@@ -8,6 +15,7 @@ import qualified Data.Text                     as T
 import           HtmlUtil                       ( Html
                                                 , toText
                                                 )
+import           TextUtil
 
 data Section =
   Section {
@@ -26,21 +34,24 @@ instance Show SectionName where
 
 toSectionName :: Text -> SectionName
 toSectionName n
-  | T.length n > maxLen || T.length n == 0
+  | T.length parsedName > maxLen || T.length parsedName == 0
   = error
     $  "Name must be 1..."
     ++ show maxLen
     ++ " characters ("
-    ++ show (T.length n)
+    ++ show (T.length parsedName)
     ++ "): "
-    ++ show n
+    ++ show parsedName
   | otherwise
-  = MakeSectionName n
-  where maxLen = 255
+  = MakeSectionName parsedName
+ where
+  maxLen     = 336
+  parsedName = parseName n
 
 
 
-newtype SectionNumber = MakeSectionNumber Text deriving ( Generic, Eq )
+
+newtype SectionNumber = MakeSectionNumber Text deriving ( Generic, Eq, IsString )
 instance ToJSON SectionNumber
 instance Show SectionNumber where
   show (MakeSectionNumber n) = T.unpack n
@@ -72,3 +83,11 @@ toSectionBody n
     ++ show n
   | otherwise
   = MakeSectionBody n
+
+
+parseName :: Text -> Text
+parseName = normalizeWhiteSpace . removeAnnotation
+  where removeAnnotation = T.takeWhile isLegalNameChar
+
+isLegalNameChar :: Char -> Bool
+isLegalNameChar c = c /= '['

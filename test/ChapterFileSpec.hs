@@ -104,7 +104,7 @@ spec = parallel $ do
       let generalProvisions = head $ subChapters (parseChapter html)
       case children generalProvisions of
         SubChapterSections xs ->
-          Section.number (xs !! 1) `shouldBe` (MakeSectionNumber "432B.020")
+          show (Section.number (xs !! 1)) `shouldBe` "432B.020"
         SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
 
@@ -162,7 +162,7 @@ spec = parallel $ do
       isSimpleSubChapter administration `shouldBe` False
 
 
-  describe "sectionBody" $ do
+  describe "section" $ do
 
     it "returns the complete HTML - 1" $ do
       html <- chapter_432b_html
@@ -180,6 +180,8 @@ spec = parallel $ do
         expectedHtml
           = "<p class=SectBody>1. An agency which provides child welfare services may request the Division of Parole and Probation of the Department of Public Safety to provide information concerning a probationer or parolee that may assist the agency in carrying out the provisions of this chapter. The Division of Parole and Probation shall provide such information upon request.</p> <p class=\"SectBody\"> 2. The agency which provides child welfare services may use the information obtained pursuant to subsection 1 only for the limited purpose of carrying out the provisions of this chapter.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/69th/Stats199706.html#Stats199706page835\">1997, 835</a>; A <a href=\"../Statutes/71st/Stats200117.html#Stats200117page2612\">2001, 2612</a>; <a href=\"../Statutes/17thSS/Stats2001SS1701.html#Stats2001SS1701page36\">2001 Special Session, 36</a>; <a href=\"../Statutes/72nd/Stats200301.html#Stats200301page236\">2003, 236</a>)</p> <p class=\"DocHeading2\">Corrective Action, Improvement Plans and Incentive Payments</p>"
       parseSectionBody "432B.215" dom `shouldBe` expectedHtml
+
+
 
 
 --

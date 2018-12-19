@@ -11,6 +11,7 @@ import           Models.Section                as Section
 
 import           ChapterFile
 import           HtmlUtil
+import           Util
 
 
 spec :: SpecWith ()
@@ -30,12 +31,14 @@ spec = parallel $ describe "parseChapter" $ do
   it "finds the correct section name" $ do
     html <- chapter_0_html
     let firstSection = head $ simpleChapterContent html
-    (show $ Section.name firstSection) `shouldBe` "Scope."
+    let firstSectionName = firstSection |> Section.name |> show
+    firstSectionName `shouldBe` "Scope."
 
   it "finds the correct section number" $ do
     html <- chapter_0_html
-    let firstSection = head $ simpleChapterContent html
-    Section.number firstSection `shouldBe` (MakeSectionNumber "0.010")
+    let firstSectionNumber =
+          html |> simpleChapterContent |> head |> Section.number |> show
+    firstSectionNumber `shouldBe` "0.010"
 
   it "finds the correct section content" $ do
     html <- chapter_0_html
@@ -49,17 +52,17 @@ spec = parallel $ describe "parseChapter" $ do
     show (Section.body secondSection)
       `shouldBe` "<p class=SectBody>1. If any provision of the Nevada Revised Statutes, or the application thereof to any person, thing or circumstance is held invalid, such invalidity shall not affect the provisions or application of NRS which can be given effect without the invalid provision or application, and to this end the provisions of NRS are declared to be severable.</p> <p class=\"SectBody\"> 2. The inclusion of an express declaration of severability in the enactment of any provision of NRS or the inclusion of any such provision in NRS, does not enhance the severability of the provision so treated or detract from the severability of any other provision of NRS.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/59th/Stats197701.html#Stats197701page166\">1977, 166</a>)</p>"
 
-
   it "finds the correct section number" $ do
     html <- chapter_0_html
-    let firstSection = last $ simpleChapterContent html
-    Section.number firstSection `shouldBe` (MakeSectionNumber "0.060")
+    let lastSection       = html |> simpleChapterContent |> last
+    let lastSectionNumber = lastSection |> Section.number |> show
+    lastSectionNumber `shouldBe` "0.060"
 
   it "finds the correct section name" $ do
     html <- chapter_0_html
-    let lastSection = last $ simpleChapterContent html
-    show (Section.name lastSection)
-      `shouldBe` "“Substantial bodily harm” defined."
+    let lastSection     = html |> simpleChapterContent |> last
+    let lastSectionName = lastSection |> Section.name |> show
+    lastSectionName `shouldBe` "“Substantial bodily harm” defined."
 
   it "finds the correct section content" $ do
     html <- chapter_0_html
@@ -78,11 +81,11 @@ spec = parallel $ describe "parseChapter" $ do
     it "finds the correct section number" $ do
       html <- chapter_36_html
       let onlySection = head $ simpleChapterContent html
-      Section.number onlySection `shouldBe` (MakeSectionNumber "36.010")
+      show (Section.number onlySection) `shouldBe` "36.010"
 
     it "finds only one section" $ do
       html <- chapter_36_html
-      (length . simpleChapterContent) html `shouldBe` 1
+      html |> simpleChapterContent |> length `shouldBe` 1
 
 
 
@@ -105,5 +108,14 @@ simpleChapterContent html = case content (parseChapter html) of
 chapter_0_html :: IO Html
 chapter_0_html = htmlFixture "NRS-000.html"
 
+chapter_1_html :: IO Html
+chapter_1_html = htmlFixture "NRS-001.html"
+
 chapter_36_html :: IO Html
 chapter_36_html = htmlFixture "NRS-036.html"
+
+findSec510 :: [Section] -> Section
+findSec510 sections = head $ filter is510 sections
+
+is510 :: Section -> Bool
+is510 s = Section.number s == "001.510"
