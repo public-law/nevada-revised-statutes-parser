@@ -142,13 +142,7 @@ parseSectionFromHeadingParagraph fullPage paragraph = Section
 parseNumberFromRawNumberText :: Text -> Text -> Text
 parseNumberFromRawNumberText numberText secName = case words numberText of
   (_ : x : _) -> x
-  _ ->
-    Util.error
-      $  "Expected section \""
-      ++ secName
-      ++ "\" raw number \""
-      ++ numberText
-      ++ "\" to have at least two words"
+  _ -> Util.error $ [qq|Expected sec. $numberText $secName to have >= 2 words|]
 
 
 parseSubSubChapters :: TagList -> TagList -> [SubSubChapter]
@@ -212,7 +206,7 @@ parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input = if input == chapterZeroTitle
   then ("0", "Preliminary Chapter – General Provisions")
   else case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
-    Left  e -> error $ [qq| Could not parse chapter file title $input $e|]
+    Left  e -> error $ [qq|Could not parse chapter file title $input $e|]
     Right b -> b
 
 
