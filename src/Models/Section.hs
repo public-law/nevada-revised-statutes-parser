@@ -1,5 +1,8 @@
 module Models.Section
   ( Section(Section, body, name, number)
+  , SectionName
+  , SectionNumber
+  , SectionBody
   , toSectionName
   , toSectionNumber
   , toSectionBody
@@ -33,11 +36,11 @@ instance ToJSON SectionName
 instance Show SectionName where
   show (MakeSectionName n) = T.unpack n
 
-toSectionName :: Text -> SectionName
+toSectionName :: (Monad m) => Text -> m SectionName
 toSectionName n
-  | actualLen > maxLen || actualLen == 0 = error
+  | actualLen > maxLen || actualLen == 0 = fail
     [qq| Name must be 1...$maxLen chars ($actualLen): $parsedName |]
-  | otherwise = MakeSectionName parsedName
+  | otherwise = return $ MakeSectionName parsedName
  where
   maxLen     = 336
   parsedName = parseName n
@@ -50,11 +53,11 @@ instance ToJSON SectionNumber
 instance Show SectionNumber where
   show (MakeSectionNumber n) = T.unpack n
 
-toSectionNumber :: Text -> SectionNumber
+toSectionNumber :: (Monad m) => Text -> m SectionNumber
 toSectionNumber n
-  | actualLen > 8 || actualLen == 0 = error
+  | actualLen > 8 || actualLen == 0 = fail
     [qq| Number must be 1...8 characters ($actualLen): $n |]
-  | otherwise = MakeSectionNumber n
+  | otherwise = return $ MakeSectionNumber n
   where actualLen = T.length n
 
 
@@ -63,10 +66,10 @@ instance ToJSON SectionBody
 instance Show SectionBody where
   show (MakeSectionBody n) = T.unpack (toText n)
 
-toSectionBody :: Html -> SectionBody
+toSectionBody :: (Monad m) => Html -> m SectionBody
 toSectionBody n
-  | actualLen == 0 = error [qq| Body is blank |]
-  | otherwise = MakeSectionBody n
+  | actualLen == 0 = fail [qq| Body is blank |]
+  | otherwise = return $ MakeSectionBody n
   where actualLen = T.length $ toText n
 
 

@@ -25,10 +25,6 @@ spec = parallel $ describe "parseName" $ do
     let annotatedName = "Definitions. [Effective until 1/1/2019.]"
     parseName annotatedName `shouldBe` "Definitions."
 
-  it "returns the bracket annotation when there is one" $ pending
-
-  it "returns Nothing when there's no annotation" $ pending
-
 
 --
 -- Helper Functions

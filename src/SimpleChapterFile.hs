@@ -1,4 +1,4 @@
-module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
+module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml, parseSectionFromHeadingParagraph, parseSectionBody) where
 
   import           BasicPrelude
   import           Text.HTML.TagSoup
@@ -59,10 +59,11 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
 
 
   parseSectionFromHeadingParagraph :: TagList -> TagList -> Section
-  parseSectionFromHeadingParagraph contentHalf paragraph = Section
-    { Section.name   = toSectionName secName
-    , Section.number = toSectionNumber secNumber
-    , Section.body   = toSectionBody secBody
+  parseSectionFromHeadingParagraph contentHalf paragraph = 
+    Section
+    { Section.name   = name'
+    , Section.number = number'
+    , Section.body   = body'
     }
    where
     secName = normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile
@@ -71,6 +72,17 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
     rawNumberText = normalizedInnerText $ takeWhile (~/= closingA) paragraph
     secNumber     = parseNumberFromRawNumberText rawNumberText secName
     secBody       = parseSectionBody secNumber contentHalf
+    (name', number', body') = case toThreeSectionFields secName secNumber secBody of
+      Right (x, y, z) -> (x, y, z)
+      Left  message   -> error message
+
+
+  toThreeSectionFields :: Text -> Text -> Html -> Either String (SectionName, SectionNumber, SectionBody)
+  toThreeSectionFields name' number' body' = do
+    name''   <- toSectionName name'
+    number'' <- toSectionNumber number'
+    body''   <- toSectionBody body'
+    return (name'', number'', body'')
 
 
   parseNumberFromRawNumberText :: Text -> Text -> Text
