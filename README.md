@@ -37,3 +37,4 @@ Exception Handling
 ------------------
 * [Monadic Either](https://www.reddit.com/r/haskellquestions/comments/a6xzdj/library_for_easy_newtype_generation_eg_data/ec5b3rz/)
 * [Pure Functional Validation](https://medium.com/blacklane-engineering/pure-functional-validation-64a7885d22ac)
+* [Eight Ways to Report Errors in Haskell](http://www.randomhacks.net/2007/03/10/haskell-8-ways-to-report-errors/)
