@@ -56,7 +56,7 @@ instance Show SectionNumber where
 toSectionNumber :: Text -> Text -> Either String SectionNumber
 toSectionNumber n context
   | actualLen > 8 || actualLen == 0 || not (T.isInfixOf "." n) = Left
-    [qq| Section number must be 1...8 characters ($actualLen): "$n"  context: $context |]
+    [qq| Section number must be 1..8 characters and have a dot: "$n"  context: $context |]
   | otherwise = Right $ MakeSectionNumber n
   where actualLen = T.length n
 
