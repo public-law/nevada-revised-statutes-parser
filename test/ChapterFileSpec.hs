@@ -24,27 +24,27 @@ spec = parallel $ do
 
     it "gets the chapter name" $ do
       html ← chapter_432b_html
-      Chapter.name (parseChapter html)
+      Chapter.name (unwrap $ parseChapter html)
         `shouldBe` "Protection of Children from Abuse and Neglect"
 
     -- it "gets the chapter name when it has embedded newline" $ do
     --     html ← chapter_575_html
-    --     Chapter.name (parseChapter html) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
+    --     Chapter.name (unwrap $ parseChapter html) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
 
     it "gets the chapter number" $ do
       html ← chapter_432b_html
-      Chapter.number (parseChapter html) `shouldBe` "432B"
+      Chapter.number (unwrap $ parseChapter html) `shouldBe` "432B"
 
 
     it "gets the chapter URL" $ do
       html ← chapter_432b_html
-      url (parseChapter html)
+      url (unwrap $ parseChapter html)
         `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
 
 
     it "gets the sub-chapter names - 1" $ do
       html ← chapter_432b_html
-      let innards = content (parseChapter html)
+      let innards = content (unwrap $ parseChapter html)
       case innards of
         ComplexChapterContent subchapters ->
           SubChapter.name (subchapters !! 0) `shouldBe` "General Provisions"
@@ -53,7 +53,7 @@ spec = parallel $ do
 
     it "gets the sub-chapter names - 2" $ do
       html ← chapter_432b_html
-      let innards = content (parseChapter html)
+      let innards = content (unwrap $ parseChapter html)
       case innards of
         ComplexChapterContent subchapters ->
           SubChapter.name (subchapters !! 1) `shouldBe` "Administration"
@@ -62,7 +62,7 @@ spec = parallel $ do
 
     it "gets the sub-chapter names - 3" $ do
       html ← chapter_432b_html
-      let innards = content (parseChapter html)
+      let innards = content (unwrap $ parseChapter html)
       case innards of
         ComplexChapterContent subchapters ->
           SubChapter.name (subchapters !! 3)
@@ -72,7 +72,7 @@ spec = parallel $ do
 
     it "gets a simple sub-chapter's sections" $ do
       html <- chapter_432b_html
-      let generalProvisions = head $ subChapters (parseChapter html)
+      let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
       case children generalProvisions of
         SubChapterSections xs -> length xs `shouldBe` 31
         SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
@@ -80,7 +80,7 @@ spec = parallel $ do
 
     it "gets the sub-chapter's section names right - 1" $ do
       html <- chapter_432b_html
-      let generalProvisions = head $ subChapters (parseChapter html)
+      let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
       case children generalProvisions of
         SubChapterSections xs ->
           show (Section.name (head xs)) `shouldBe` "Definitions."
@@ -89,7 +89,7 @@ spec = parallel $ do
 
     it "gets the sub-chapter's section names right - 2" $ do
       html <- chapter_432b_html
-      let generalProvisions = head $ subChapters (parseChapter html)
+      let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
       case children generalProvisions of
         SubChapterSections xs ->
           show (Section.name (xs !! 1))
@@ -98,7 +98,7 @@ spec = parallel $ do
 
     it "gets the sub-chapter's section numbers right" $ do
       html <- chapter_432b_html
-      let generalProvisions = head $ subChapters (parseChapter html)
+      let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
       case children generalProvisions of
         SubChapterSections xs ->
           show (Section.number (xs !! 1)) `shouldBe` "432B.020"
@@ -107,7 +107,7 @@ spec = parallel $ do
 
     it "gets a complex sub-chapter's sub-sub-chapters" $ do
       html <- chapter_432b_html
-      let administration = (!! 1) $ subChapters $ parseChapter html
+      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
       case children administration of
         SubSubChapters xs -> length xs `shouldBe` 3
         SubChapterSections _ ->
@@ -116,7 +116,7 @@ spec = parallel $ do
 
     it "gets a complex sub-chapter's sub-sub-chapter names - 1" $ do
       html <- chapter_432b_html
-      let administration = (!! 1) $ subChapters $ parseChapter html
+      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
       case children administration of
         SubSubChapters xs ->
           SubSubChapter.name (head xs) `shouldBe` "General Provisions"
@@ -126,7 +126,7 @@ spec = parallel $ do
 
     it "gets a complex sub-chapter's sub-sub-chapter names - 2" $ do
       html <- chapter_432b_html
-      let administration = (!! 1) $ subChapters $ parseChapter html
+      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
       case children administration of
         SubSubChapters xs ->
           SubSubChapter.name (xs !! 2)
@@ -137,7 +137,7 @@ spec = parallel $ do
 
     it "gets a complex sub-chapter's sub-sub-chapter sections" $ do
       html <- chapter_432b_html
-      let administration = (!! 1) $ subChapters $ parseChapter html
+      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
       case children administration of
         SubSubChapters xs ->
           show (Section.name ((!! 0) $ SubSubChapter.sections (head xs)))
@@ -202,3 +202,9 @@ subChapters :: Chapter -> [SubChapter]
 subChapters chapter = case content chapter of
   ComplexChapterContent subchapters -> subchapters
   SimpleChapterContent _ -> error "got Sections but expected Subchapters"
+
+
+unwrap :: Either String a -> a
+unwrap thing = case thing of
+  Right contents -> contents
+  Left  message  -> error message

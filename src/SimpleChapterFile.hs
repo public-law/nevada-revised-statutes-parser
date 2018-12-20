@@ -75,17 +75,18 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml, parseSec
 
   toThreeSectionFields :: Text -> Text -> Html -> Either String (SectionName, SectionNumber, SectionBody)
   toThreeSectionFields name' number' body' = do
-    name''   <- toSectionName name'
-    number'' <- toSectionNumber number'
-    body''   <- toSectionBody body'
+    name''   <- toSectionName name' [qq| $number' $body' |]
+    number'' <- toSectionNumber number' [qq| $name' $body' |]
+    body''   <- toSectionBody body' [qq| $name' $number' |]
     return (name'', number'', body'')
 
 
   parseNumberFromRawNumberText :: Text -> Text -> Text
   parseNumberFromRawNumberText numberText secName = case words numberText of
-    (_ : x : _) -> x
-    _ ->
-      error [qq|Expected sec. $numberText $secName to have >= 2 words|]
+    (_ : x : _) -> case toSectionNumber x [qq|name: $secName|] of
+      Left message -> error message
+      Right _ -> x
+    _ -> error [qq|Expected sec. $numberText $secName to have >= 2 words|]
 
 
   parseSectionBody :: Text -> TagList -> Html
@@ -105,7 +106,7 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml, parseSec
     in  case bodyNumbers of
           (x : _) -> shaveBackTagsToLastClosingP x
           _ ->
-            error [qq|Couldn't find sec. body num. $secNumber in sec. groups: $secGroups|]
+            error [qq|Couldn't find sec. body for num. "$secNumber" in sec. groups: ...|]
 
 
   isSectionBodyNumber :: Text -> TagList -> Bool

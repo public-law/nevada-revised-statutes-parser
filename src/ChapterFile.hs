@@ -25,12 +25,10 @@ import           HtmlUtil                       ( Html
                                                 , toText
                                                 )
 import           SimpleChapterFile              ( parseSectionsFromJustHtml
-                                                , parseSectionFromHeadingParagraph
                                                 , parseSectionsFromHeadingGroup
                                                 , isSimpleSubChapter
                                                 )
 import           Models.Chapter                as Chapter
-import           Models.Section                as Section
 import           Models.SubChapter             as SubChapter
 import           Models.SubSubChapter          as SubSubChapter
 import           TextUtil                       ( normalizeWhiteSpace
@@ -85,22 +83,23 @@ parseChapter chapterHtml = do
 
 chapterContent :: TagList -> Either String ChapterContent
 chapterContent fullPage = do
-  let groups           = headingGroups fullPage
-  let foundSubChapters = fmap (newSubChapter fullPage) groups
-  foundSections <- parseSectionsFromJustHtml fullPage
+  let groups = headingGroups fullPage
+  foundSubChapters <- mapM (newSubChapter fullPage) groups
+  foundSections    <- parseSectionsFromJustHtml fullPage
   return $ case foundSubChapters of
     [] -> SimpleChapterContent foundSections
     xs -> ComplexChapterContent xs
 
 
-newSubChapter :: TagList -> TagList -> SubChapter
-newSubChapter fullPage headingGroup = SubChapter
-  { SubChapter.name = subChapterNameFromGroup headingGroup
-  , children        = if isSimpleSubChapter headingGroup
-    then SubChapterSections
-      $ parseSectionsFromHeadingGroup fullPage headingGroup
-    else SubSubChapters $ parseSubSubChapters fullPage headingGroup
-  }
+newSubChapter :: TagList -> TagList -> Either String SubChapter
+newSubChapter fullPage headingGroup = do
+  scs <- parseSectionsFromHeadingGroup fullPage headingGroup
+  ssc <- parseSubSubChapters fullPage headingGroup
+  let name' = subChapterNameFromGroup headingGroup
+  let children' = if isSimpleSubChapter headingGroup
+        then SubChapterSections scs
+        else SubSubChapters ssc
+  return SubChapter { SubChapter.name = name', SubChapter.children = children' }
 
 
 -- Some COLeadline P's have no content; they're just used for vertical spacing.
@@ -109,9 +108,11 @@ headingParagraphsWithContent headingGroup =
   filter (\tags -> length tags > 4) (partitions (~== leadlineP) headingGroup)
 
 
-parseSubSubChapters :: TagList -> TagList -> [SubSubChapter]
+parseSubSubChapters :: TagList -> TagList -> Either String [SubSubChapter]
 parseSubSubChapters fullPage headingGroup =
-  fmap (parseSubSubChapter fullPage) (subSubChapterHeadingGroups headingGroup)
+  let parser = parseSubSubChapter fullPage
+      groups = subSubChapterHeadingGroups headingGroup
+  in  mapM parser groups
 
 
 subSubChapterHeadingGroups :: TagList -> [TagList]
@@ -119,13 +120,14 @@ subSubChapterHeadingGroups headingGroup =
   (partitions (~== heading4P) headingGroup)
 
 
-parseSubSubChapter :: TagList -> TagList -> SubSubChapter
-parseSubSubChapter fullPage subSubChapterHeadingGroup = SubSubChapter
-  { SubSubChapter.name     = extractSubSubChapterName subSubChapterHeadingGroup
-  , SubSubChapter.sections = parseSectionsFromHeadingGroup
-    fullPage
-    subSubChapterHeadingGroup
-  }
+parseSubSubChapter :: TagList -> TagList -> Either String SubSubChapter
+parseSubSubChapter fullPage subSubChapterHeadingGroup = do
+  let name' = extractSubSubChapterName subSubChapterHeadingGroup
+  sections' <- parseSectionsFromHeadingGroup fullPage subSubChapterHeadingGroup
+  return SubSubChapter
+    { SubSubChapter.name     = name'
+    , SubSubChapter.sections = sections'
+    }
 
 
 extractSubSubChapterName :: TagList -> Text
