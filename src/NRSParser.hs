@@ -25,10 +25,10 @@ import           DateUtil                       ( todaysDate )
 
 parseFiles :: AbsolutePath -> IO NRS
 parseFiles dir = do
-  let indexFile = (//) $ (toFilePath dir) </> "index.html"
+  let indexFile = (//) $ toFilePath dir </> "index.html"
   chapterFilenames <- listFilesInDirectory dir
   let relativeChapterFilenames =
-        map ((./) . takeFileName . toFilePath) chapterFilenames
+        (./) . takeFileName . toFilePath <$> chapterFilenames
   today        <- todaysDate
   indexHtml    <- readHtmlFile indexFile
   chaptersHtml <- mapM readHtmlFile chapterFilenames

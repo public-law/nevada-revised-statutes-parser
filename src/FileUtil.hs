@@ -8,7 +8,6 @@ import           BasicPrelude                   ( Eq
                                                 , Show
                                                 , Text
                                                 , filterM
-                                                , fmap
                                                 , otherwise
                                                 , return
                                                 , ($)
@@ -38,13 +37,13 @@ error = BasicPrelude.error . T.unpack
 listFilesInDirectory :: AbsolutePath -> IO [AbsolutePath]
 listFilesInDirectory dir = do
   rawList <- Dir.listDirectory $ toFilePath dir
-  paths   <- filterM Dir.doesFileExist (fmap ((toFilePath dir) </>) rawList)
+  paths   <- filterM Dir.doesFileExist ((toFilePath dir </>) <$> rawList)
   return $ toAbsolutePath <$> paths
 
 
 readFileLatin1 :: FilePath -> IO Text
 readFileLatin1 pathname =
-  fmap decodeLatin1 (withFile pathname ReadMode hGetContents)
+  decodeLatin1 <$> withFile pathname ReadMode hGetContents
 
 
 

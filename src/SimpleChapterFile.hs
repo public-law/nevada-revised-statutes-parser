@@ -1,11 +1,10 @@
 module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
 
   import           BasicPrelude
-  import qualified Data.Text                     as T
   import           Text.HTML.TagSoup
+  import           Text.InterpolatedString.Perl6  ( qq )
 
 
-  import qualified FileUtil                      as Util
   import           HtmlUtil                       ( Html(NewHtml)
                                                   , shaveBackTagsToLastClosingP
                                                   )
@@ -78,12 +77,7 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
   parseNumberFromRawNumberText numberText secName = case words numberText of
     (_ : x : _) -> x
     _ ->
-      Util.error
-        $  "Expected section \""
-        ++ secName
-        ++ "\" raw number \""
-        ++ numberText
-        ++ "\" to have at least two words"
+      error $ [qq|Expected sec. $numberText $secName to have >= 2 words|]
 
 
   parseSectionBody :: Text -> TagList -> Html
@@ -98,16 +92,12 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
 
 
   rawSectionGroupFromSectionGroups :: Text -> [TagList] -> TagList
-  rawSectionGroupFromSectionGroups secNumber sectionGroups =
-    let bodyNumbers = filter (isSectionBodyNumber secNumber) sectionGroups
+  rawSectionGroupFromSectionGroups secNumber secGroups =
+    let bodyNumbers = filter (isSectionBodyNumber secNumber) secGroups
     in  case bodyNumbers of
           (x : _) -> shaveBackTagsToLastClosingP x
           _ ->
-            error
-              $  "Error, could not find section body number "
-              ++ (T.unpack secNumber)
-              ++ " in section groups: "
-              ++ (show sectionGroups)
+            error $ [qq|Couldn't find sec. body num. $secNumber in sec. groups: $secGroups|]
 
 
   isSectionBodyNumber :: Text -> TagList -> Bool
