@@ -20,7 +20,6 @@ import           Config
 import           FileUtil                       ( RelativePath
                                                 , toRelativePath
                                                 )
-import qualified FileUtil                      as Util
 import           HtmlUtil                       ( Html(NewHtml)
                                                 , shaveBackTagsToLastClosingP
                                                 , titleText
@@ -142,7 +141,7 @@ parseSectionFromHeadingParagraph fullPage paragraph = Section
 parseNumberFromRawNumberText :: Text -> Text -> Text
 parseNumberFromRawNumberText numberText secName = case words numberText of
   (_ : x : _) -> x
-  _ -> Util.error $ [qq|Expected sec. $numberText $secName to have >= 2 words|]
+  _ -> error $ [qq|Expected sec. $numberText $secName to have >= 2 words|]
 
 
 parseSubSubChapters :: TagList -> TagList -> [SubSubChapter]
