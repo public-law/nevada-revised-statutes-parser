@@ -84,7 +84,7 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml, parseSec
   parseNumberFromRawNumberText :: Text -> Text -> Text
   parseNumberFromRawNumberText numberText secName = case words numberText of
     (_ : x : _) -> case toSectionNumber x [qq|name: $secName|] of
-      Left message -> error message
+      Left message -> error [qq|while parsing $numberText - $message|]
       Right _ -> x
     _ -> error [qq|Expected sec. $numberText $secName to have >= 2 words|]
 
