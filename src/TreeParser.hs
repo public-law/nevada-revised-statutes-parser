@@ -6,11 +6,10 @@ where
 import           BasicPrelude                   ( Maybe(Just, Nothing)
                                                 , error
                                                 , head
-                                                , show
                                                 , ($)
-                                                , (++)
                                                 )
 import qualified Data.HashMap.Lazy             as HM
+import           Text.InterpolatedString.Perl6  ( qq )
 
 import           ChapterFile                    ( ChapterMap
                                                 , parseChapter
@@ -31,14 +30,12 @@ parseTree indexFile chapterMap = Tree
 
 
 parseChapterZero :: ChapterMap -> Chapter
-parseChapterZero chapterMap = case HM.lookup chapterZeroPathname chapterMap of
-  Just html -> parseChapter html
-  Nothing ->
-    error
-      $  "Chapter Zero "
-      ++ (show chapterZeroPathname)
-      ++ " not found in "
-      ++ (show $ head $ HM.keys chapterMap)
+parseChapterZero chapterMap =
+  let path = chapterZeroPathname
+  in  case HM.lookup path chapterMap of
+        Just html -> parseChapter html
+        Nothing ->
+          error [qq|Chap. Zero $path not found in {head $ HM.keys chapterMap}|]
 
 
 allButChapterZero :: ChapterMap -> ChapterMap

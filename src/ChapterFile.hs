@@ -141,7 +141,7 @@ parseSectionFromHeadingParagraph fullPage paragraph = Section
 parseNumberFromRawNumberText :: Text -> Text -> Text
 parseNumberFromRawNumberText numberText secName = case words numberText of
   (_ : x : _) -> x
-  _ -> error $ [qq|Expected sec. $numberText $secName to have >= 2 words|]
+  _ -> error [qq|Expected sec. $numberText $secName to have >= 2 words|]
 
 
 parseSubSubChapters :: TagList -> TagList -> [SubSubChapter]
@@ -169,7 +169,7 @@ extractSubSubChapterName headingGroup =
   in  case linesOfText of
         (x : _) -> normalizeWhiteSpace x
         _ ->
-          error $ [qq|Couldn't parse sub sub chapter name from: $headingGroup|]
+          error [qq|Couldn't parse sub sub chapter name from: $headingGroup|]
 
 
 subnames :: TagList -> [Text]
@@ -179,7 +179,7 @@ subnames tags = fmap subChapterNameFromGroup (headingGroups tags)
 subChapterNameFromGroup :: TagList -> Text
 subChapterNameFromGroup (_ : y : _) = titleize $ fromTagText y
 subChapterNameFromGroup tags =
-  error $ [qq|Couldn't get a chapter name from the group: $tags|]
+  error [qq|Couldn't get a chapter name from the group: $tags|]
 
 
 sectionNamesFromGroup :: TagList -> [Text]
@@ -203,7 +203,7 @@ parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input = if input == chapterZeroTitle
   then ("0", "Preliminary Chapter – General Provisions")
   else case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
-    Left  e -> error $ [qq|Couldn't parse chapter file title $input $e|]
+    Left  e -> error [qq|Couldn't parse chapter file title $input $e|]
     Right b -> b
 
 
@@ -237,7 +237,7 @@ rawSectionGroupFromSectionGroups secNumber sectionGroups =
       (x : _) -> shaveBackTagsToLastClosingP x
       _ ->
         error
-          $ [qq|Error, couldn't find sec. body number $secNumber in sec. groups: $sectionGroups|]
+          [qq|Error, couldn't find sec. body number $secNumber in sec. groups: $sectionGroups|]
 
 
 isSectionBodyNumber :: Text -> TagList -> Bool

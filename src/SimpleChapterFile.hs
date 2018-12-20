@@ -77,7 +77,7 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
   parseNumberFromRawNumberText numberText secName = case words numberText of
     (_ : x : _) -> x
     _ ->
-      error $ [qq|Expected sec. $numberText $secName to have >= 2 words|]
+      error [qq|Expected sec. $numberText $secName to have >= 2 words|]
 
 
   parseSectionBody :: Text -> TagList -> Html
@@ -97,7 +97,7 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
     in  case bodyNumbers of
           (x : _) -> shaveBackTagsToLastClosingP x
           _ ->
-            error $ [qq|Couldn't find sec. body num. $secNumber in sec. groups: $secGroups|]
+            error [qq|Couldn't find sec. body num. $secNumber in sec. groups: $secGroups|]
 
 
   isSectionBodyNumber :: Text -> TagList -> Bool
