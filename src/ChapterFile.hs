@@ -169,9 +169,7 @@ extractSubSubChapterName headingGroup =
   in  case linesOfText of
         (x : _) -> normalizeWhiteSpace x
         _ ->
-          error
-            $  "Could not parse sub sub chapter name from: "
-            ++ (show headingGroup)
+          error $ [qq|Couldn't parse sub sub chapter name from: $headingGroup|]
 
 
 subnames :: TagList -> [Text]
