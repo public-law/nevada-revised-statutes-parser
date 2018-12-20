@@ -14,7 +14,7 @@ import qualified Data.Text                     as T
 import           Text.HTML.TagSoup
 import           Text.Parser.Char
 import           Text.Printf
-
+import           Text.InterpolatedString.Perl6  ( qq )
 
 import           Config
 import           FileUtil                       ( RelativePath
@@ -209,13 +209,11 @@ headingGroups fullPage =
 --    or:  "NRS: PRELIMINARY CHAPTER - GENERAL PROVISIONS"
 -- Output: ("432B", "Protection of Children from Abuse and Neglect")
 parseChapterFileTitle :: Text -> (Text, Text)
-parseChapterFileTitle input =
-    if input == chapterZeroTitle
-        then (T.pack "0", T.pack "Preliminary Chapter – General Provisions")
-        else case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
-               Left e ->
-                 error $ [qq| Could not parse chapter file title $input $e|]
-               Right b -> b
+parseChapterFileTitle input = if input == chapterZeroTitle
+  then ("0", "Preliminary Chapter – General Provisions")
+  else case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
+    Left  e -> error $ [qq| Could not parse chapter file title $input $e|]
+    Right b -> b
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
