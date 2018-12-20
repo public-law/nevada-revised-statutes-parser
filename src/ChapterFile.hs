@@ -26,6 +26,7 @@ import           HtmlUtil                       ( Html
                                                 )
 import           SimpleChapterFile              ( parseSectionsFromJustHtml
                                                 , parseSectionFromHeadingParagraph
+                                                , parseSectionsFromHeadingGroup
                                                 , isSimpleSubChapter
                                                 )
 import           Models.Chapter                as Chapter
@@ -47,14 +48,17 @@ heading4P :: String
 heading4P = "<p class=COHead4>"
 
 
+-- TODO: Refactor.
 fillInEmptyChapter :: ChapterMap -> Chapter -> Chapter
 fillInEmptyChapter chapterMap emptyChapter =
   let key       = chapterNumberToFilename (Chapter.number emptyChapter)
       maybeHtml = HM.lookup key chapterMap
   in  if Chapter.number emptyChapter `notElem` chaptersToSkip
         then case maybeHtml of
-          Just html -> parseChapter html
-          Nothing   -> error $ "Chapter " ++ show key ++ " not found."
+          Just html -> case parseChapter html of
+            Right aChapter -> aChapter
+            Left  message  -> error [qq| $message in $key |]
+          Nothing -> error [qq| Chapter $key not found |]
         else emptyChapter
 
 
@@ -65,28 +69,28 @@ chapterNumberToFilename chapterNumber =
   in  toRelativePath $ "NRS-" ++ printf format chapterNumber ++ ".html"
 
 
-parseChapter :: Html -> Chapter
-parseChapter chapterHtml = Chapter
-  { Chapter.name    = rawName
-  , Chapter.number  = rawNumber
-  , Chapter.url     = chapterUrlPrefix ++ rawNumber ++ ".html"
-  , Chapter.content = sectionsOrSubChapters
-  }
- where
-  fullPage              = parseTags $ toText chapterHtml
-  rawTitle              = titleText fullPage
-  (rawNumber, rawName)  = parseChapterFileTitle rawTitle
-  sectionsOrSubChapters = chapterContent fullPage
+parseChapter :: Html -> Either String Chapter
+parseChapter chapterHtml = do
+  let fullPage             = parseTags $ toText chapterHtml
+  let rawTitle             = titleText fullPage
+  let (rawNumber, rawName) = parseChapterFileTitle rawTitle
+  sectionsOrSubChapters <- chapterContent fullPage
+  return Chapter
+    { Chapter.name    = rawName
+    , Chapter.number  = rawNumber
+    , Chapter.url     = chapterUrlPrefix ++ rawNumber ++ ".html"
+    , Chapter.content = sectionsOrSubChapters
+    }
 
 
-chapterContent :: TagList -> ChapterContent
-chapterContent fullPage = case foundSubChapters of
-  [] -> SimpleChapterContent foundSections
-  xs -> ComplexChapterContent xs
- where
-  groups           = headingGroups fullPage
-  foundSubChapters = fmap (newSubChapter fullPage) groups
-  foundSections    = parseSectionsFromJustHtml fullPage
+chapterContent :: TagList -> Either String ChapterContent
+chapterContent fullPage = do
+  let groups           = headingGroups fullPage
+  let foundSubChapters = fmap (newSubChapter fullPage) groups
+  foundSections <- parseSectionsFromJustHtml fullPage
+  return $ case foundSubChapters of
+    [] -> SimpleChapterContent foundSections
+    xs -> ComplexChapterContent xs
 
 
 newSubChapter :: TagList -> TagList -> SubChapter
@@ -97,12 +101,6 @@ newSubChapter fullPage headingGroup = SubChapter
       $ parseSectionsFromHeadingGroup fullPage headingGroup
     else SubSubChapters $ parseSubSubChapters fullPage headingGroup
   }
-
-
-parseSectionsFromHeadingGroup :: TagList -> TagList -> [Section]
-parseSectionsFromHeadingGroup fullPage headingGroup = fmap
-  (parseSectionFromHeadingParagraph fullPage)
-  (headingParagraphsWithContent headingGroup)
 
 
 -- Some COLeadline P's have no content; they're just used for vertical spacing.

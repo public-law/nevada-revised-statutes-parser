@@ -1,4 +1,4 @@
-module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml, parseSectionFromHeadingParagraph, parseSectionBody) where
+module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml, parseSectionFromHeadingParagraph, parseSectionBody, parseSectionsFromHeadingGroup) where
 
   import           BasicPrelude
   import           Text.HTML.TagSoup
@@ -38,18 +38,19 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml, parseSec
     null (partitions (~== heading4P) headingGroup)
 
 
-  parseSectionsFromJustHtml :: TagList -> [Section]
-  parseSectionsFromJustHtml fullPage =
-    parseSectionsFromHeadingGroup bottomHalf topHalf
-    where
-      topHalf    = takeWhile (~/= horizontalRule) fullPage
-      bottomHalf = dropWhile (~/= horizontalRule) fullPage
+  parseSectionsFromJustHtml :: TagList -> Either String [Section]
+  parseSectionsFromJustHtml fullPage = do
+    let topHalf    = takeWhile (~/= horizontalRule) fullPage
+    let bottomHalf = dropWhile (~/= horizontalRule) fullPage
+    sections' <- parseSectionsFromHeadingGroup bottomHalf topHalf
+    return sections'
 
 
-  parseSectionsFromHeadingGroup :: TagList -> TagList -> [Section]
-  parseSectionsFromHeadingGroup contentHalf headingsHalf = fmap
-    (parseSectionFromHeadingParagraph contentHalf)
-    (headingParagraphsWithContent headingsHalf)
+  parseSectionsFromHeadingGroup :: TagList -> TagList -> Either String [Section]
+  parseSectionsFromHeadingGroup contentHalf headingsHalf =
+    let parser     = parseSectionFromHeadingParagraph contentHalf
+        paragraphs = headingParagraphsWithContent headingsHalf
+    in mapM parser paragraphs
 
 
   -- Some COLeadline P's have no content; they're just used for vertical spacing.
@@ -58,23 +59,18 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml, parseSec
     filter (\tags -> length tags > 4) (partitions (~== leadlineP) headingParagraphs)
 
 
-  parseSectionFromHeadingParagraph :: TagList -> TagList -> Section
-  parseSectionFromHeadingParagraph contentHalf paragraph = 
-    Section
-    { Section.name   = name'
-    , Section.number = number'
-    , Section.body   = body'
-    }
-   where
-    secName = normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile
-      (~/= closingA)
-      paragraph
-    rawNumberText = normalizedInnerText $ takeWhile (~/= closingA) paragraph
-    secNumber     = parseNumberFromRawNumberText rawNumberText secName
-    secBody       = parseSectionBody secNumber contentHalf
-    (name', number', body') = case toThreeSectionFields secName secNumber secBody of
-      Right (x, y, z) -> (x, y, z)
-      Left  message   -> error message
+  parseSectionFromHeadingParagraph :: TagList -> TagList -> Either String Section
+  parseSectionFromHeadingParagraph contentHalf paragraph = do
+    let secName       = normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile (~/= closingA) paragraph
+    let rawNumberText = normalizedInnerText $ takeWhile (~/= closingA) paragraph
+    let secNumber     = parseNumberFromRawNumberText rawNumberText secName
+    let secBody       = parseSectionBody secNumber contentHalf
+    (name', number', body') <- toThreeSectionFields secName secNumber secBody
+    return Section
+      { Section.name   = name'
+      , Section.number = number'
+      , Section.body   = body'
+      }
 
 
   toThreeSectionFields :: Text -> Text -> Html -> Either String (SectionName, SectionNumber, SectionBody)
