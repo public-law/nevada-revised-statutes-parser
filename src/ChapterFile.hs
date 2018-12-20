@@ -179,7 +179,7 @@ subnames tags = fmap subChapterNameFromGroup (headingGroups tags)
 subChapterNameFromGroup :: TagList -> Text
 subChapterNameFromGroup (_ : y : _) = titleize $ fromTagText y
 subChapterNameFromGroup tags =
-  error $ "Could not get a chapter name from the group: " ++ (show tags)
+  error $ [qq|Couldn't get a chapter name from the group: $tags|]
 
 
 sectionNamesFromGroup :: TagList -> [Text]
@@ -203,7 +203,7 @@ parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input = if input == chapterZeroTitle
   then ("0", "Preliminary Chapter – General Provisions")
   else case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
-    Left  e -> error $ [qq|Could not parse chapter file title $input $e|]
+    Left  e -> error $ [qq|Couldn't parse chapter file title $input $e|]
     Right b -> b
 
 
@@ -232,14 +232,12 @@ parseSectionBody secNumber fullPage = sectionHtml
 rawSectionGroupFromSectionGroups :: Text -> [TagList] -> TagList
 rawSectionGroupFromSectionGroups secNumber sectionGroups =
   let bodyNumbers = filter (isSectionBodyNumber secNumber) sectionGroups
-  in  case bodyNumbers of
-        (x : _) -> shaveBackTagsToLastClosingP x
-        _ ->
-          error
-            $  "Error, could not find section body number "
-            ++ (T.unpack secNumber)
-            ++ " in section groups: "
-            ++ (show sectionGroups)
+  in
+    case bodyNumbers of
+      (x : _) -> shaveBackTagsToLastClosingP x
+      _ ->
+        error
+          $ [qq|Error, couldn't find sec. body number $secNumber in sec. groups: $sectionGroups|]
 
 
 isSectionBodyNumber :: Text -> TagList -> Bool
