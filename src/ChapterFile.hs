@@ -37,19 +37,8 @@ import           TextUtil                       ( normalizeWhiteSpace
                                                 )
 
 
---
--- TODO: Any way to shorten this file?
---
-
-
 type ChapterMap = HashMap RelativePath Html
 type TagList    = [Tag Text]
-
--- closingA :: String
--- closingA = "</a>"
-
--- closingP :: String
--- closingP = "</p>"
 
 leadlineP :: String
 leadlineP = "<p class=COLeadline>"
@@ -122,12 +111,6 @@ headingParagraphsWithContent headingGroup =
   filter (\tags -> length tags > 4) (partitions (~== leadlineP) headingGroup)
 
 
--- parseNumberFromRawNumberText :: Text -> Text -> Text
--- parseNumberFromRawNumberText numberText secName = case words numberText of
---   (_ : x : _) -> x
---   _ -> error [qq|Expected sec. $numberText $secName to have >= 2 words|]
-
-
 parseSubSubChapters :: TagList -> TagList -> [SubSubChapter]
 parseSubSubChapters fullPage headingGroup =
   fmap (parseSubSubChapter fullPage) (subSubChapterHeadingGroups headingGroup)
@@ -156,23 +139,10 @@ extractSubSubChapterName headingGroup =
           error [qq|Couldn't parse sub sub chapter name from: $headingGroup|]
 
 
--- subnames :: TagList -> [Text]
--- subnames tags = fmap subChapterNameFromGroup (headingGroups tags)
-
-
 subChapterNameFromGroup :: TagList -> Text
 subChapterNameFromGroup (_ : y : _) = titleize $ fromTagText y
 subChapterNameFromGroup tags =
   error [qq|Couldn't get a chapter name from the group: $tags|]
-
-
--- sectionNamesFromGroup :: TagList -> [Text]
--- sectionNamesFromGroup headingGroup =
---   fmap sectionNameFromParagraph (partitions (~== leadlineP) headingGroup)
-
-
--- sectionNameFromParagraph :: TagList -> Text
--- sectionNameFromParagraph = normalizedInnerText . (dropWhile (~/= closingA))
 
 
 headingGroups :: TagList -> [TagList]
@@ -200,35 +170,3 @@ chapterTitleParser = do
   _     <- string " - "
   title <- Data.Attoparsec.Text.takeText
   return (num, titleize title)
-
-
--- parseSectionBody :: Text -> TagList -> Html
--- parseSectionBody secNumber fullPage = sectionHtml
---  where
---   sectionGroups   = partitions (~== ("<span class=Section" :: String)) fullPage
---   rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
---   sectionHtml     = NewHtml $ "<p class=SectBody>" ++ normalizeWhiteSpace
---     (renderTags $ drop 6 $ dropWhile (~/= ("<span class=Leadline>" :: String))
---                                      rawSectionGroup
---     )
-
-
--- rawSectionGroupFromSectionGroups :: Text -> [TagList] -> TagList
--- rawSectionGroupFromSectionGroups secNumber sectionGroups =
---   let bodyNumbers = filter (isSectionBodyNumber secNumber) sectionGroups
---   in
---     case bodyNumbers of
---       (x : _) -> shaveBackTagsToLastClosingP x
---       _ ->
---         error
---           [qq|Error, couldn't find sec. body number $secNumber in sec. groups: $sectionGroups|]
-
-
--- isSectionBodyNumber :: Text -> TagList -> Bool
--- isSectionBodyNumber secNumber sectionGroup =
---   parseSectionBodyNumber sectionGroup == secNumber
-
-
--- parseSectionBodyNumber :: TagList -> Text
--- parseSectionBodyNumber sectionGroup =
---   innerText $ takeWhile (~/= ("</span>" :: String)) sectionGroup
