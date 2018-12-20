@@ -11,6 +11,7 @@ import           BasicPrelude
 import           Data.Aeson                     ( ToJSON )
 import           GHC.Generics                   ( Generic )
 import qualified Data.Text                     as T
+import           Text.InterpolatedString.Perl6  ( qq )
 
 import           HtmlUtil                       ( Html
                                                 , toText
@@ -34,20 +35,13 @@ instance Show SectionName where
 
 toSectionName :: Text -> SectionName
 toSectionName n
-  | T.length parsedName > maxLen || T.length parsedName == 0
-  = error
-    $  "Name must be 1..."
-    ++ show maxLen
-    ++ " characters ("
-    ++ show (T.length parsedName)
-    ++ "): "
-    ++ show parsedName
-  | otherwise
-  = MakeSectionName parsedName
+  | actualLen > maxLen || actualLen == 0 = error
+    [qq| Name must be 1...$maxLen chars ($actualLen): $parsedName |]
+  | otherwise = MakeSectionName parsedName
  where
   maxLen     = 336
   parsedName = parseName n
-
+  actualLen  = T.length parsedName
 
 
 
@@ -58,14 +52,10 @@ instance Show SectionNumber where
 
 toSectionNumber :: Text -> SectionNumber
 toSectionNumber n
-  | T.length n > 8 || T.length n == 0
-  = error
-    $  "Number must be 1...8 characters ("
-    ++ show (T.length n)
-    ++ "): "
-    ++ show n
-  | otherwise
-  = MakeSectionNumber n
+  | actualLen > 8 || actualLen == 0 = error
+    [qq| Number must be 1...8 characters ($actualLen): $n |]
+  | otherwise = MakeSectionNumber n
+  where actualLen = T.length n
 
 
 newtype SectionBody = MakeSectionBody Html deriving ( Generic, Eq )
@@ -75,19 +65,15 @@ instance Show SectionBody where
 
 toSectionBody :: Html -> SectionBody
 toSectionBody n
-  | T.length (toText n) == 0
-  = error
-    $  "Body must be 1... characters ("
-    ++ show (T.length $ toText n)
-    ++ "): "
-    ++ show n
-  | otherwise
-  = MakeSectionBody n
+  | actualLen == 0 = error [qq| Body is blank |]
+  | otherwise = MakeSectionBody n
+  where actualLen = T.length $ toText n
 
 
 parseName :: Text -> Text
 parseName = normalizeWhiteSpace . removeAnnotation
   where removeAnnotation = T.takeWhile isLegalNameChar
 
+  
 isLegalNameChar :: Char -> Bool
 isLegalNameChar c = c /= '['
