@@ -1,7 +1,7 @@
 module DateUtil where
 
 import           BasicPrelude                   ( IO
-                                                , fmap
+                                                , (<$>)
                                                 , (.)
                                                 )
 import           Data.Time                      ( Day
@@ -11,4 +11,4 @@ import           Data.Time                      ( Day
                                                 )
 
 todaysDate :: IO Day
-todaysDate = fmap (localDay . zonedTimeToLocalTime) getZonedTime
+todaysDate = localDay . zonedTimeToLocalTime <$> getZonedTime

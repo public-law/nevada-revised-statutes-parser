@@ -10,6 +10,7 @@ import           Text.HTML.TagSoup              ( Tag
                                                 )
 import           GHC.Generics                   ( Generic )
 import           Data.Aeson                     ( ToJSON )
+import           Text.InterpolatedString.Perl6  ( qq )
 
 import           FileUtil                       ( AbsolutePath
                                                 , readFileLatin1
@@ -32,7 +33,7 @@ readHtmlFile file = NewHtml <$> readFileLatin1 (toFilePath file)
 titleText :: [Tag Text] -> Text
 titleText tags = case findFirst "<title>" tags of
   (_ : y : _) -> innerText [y]
-  _           -> error $ "No <title> found in: " ++ (show tags)
+  _           -> error [qq| No <title> found in: $tags |]
 
 
 -- Return the first occurrence of an HTML tag within the given
@@ -40,12 +41,7 @@ titleText tags = case findFirst "<title>" tags of
 findFirst :: Text → [Tag Text] → [Tag Text]
 findFirst searchTerm tags = case findAll searchTerm tags of
   (x : _) -> x
-  _ ->
-    error
-      $  "Could not find the tag "
-      ++ T.unpack searchTerm
-      ++ " in: "
-      ++ show tags
+  _       -> error [qq| Couldn't find the tag $searchTerm in: $tags |]
 
 
 -- Return all the occurrences of an HTML tag within the given

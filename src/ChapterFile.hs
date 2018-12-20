@@ -14,13 +14,12 @@ import qualified Data.Text                     as T
 import           Text.HTML.TagSoup
 import           Text.Parser.Char
 import           Text.Printf
-
+import           Text.InterpolatedString.Perl6  ( qq )
 
 import           Config
 import           FileUtil                       ( RelativePath
                                                 , toRelativePath
                                                 )
-import qualified FileUtil                      as Util
 import           HtmlUtil                       ( Html(NewHtml)
                                                 , shaveBackTagsToLastClosingP
                                                 , titleText
@@ -142,13 +141,7 @@ parseSectionFromHeadingParagraph fullPage paragraph = Section
 parseNumberFromRawNumberText :: Text -> Text -> Text
 parseNumberFromRawNumberText numberText secName = case words numberText of
   (_ : x : _) -> x
-  _ ->
-    Util.error
-      $  "Expected section \""
-      ++ secName
-      ++ "\" raw number \""
-      ++ numberText
-      ++ "\" to have at least two words"
+  _ -> error [qq|Expected sec. $numberText $secName to have >= 2 words|]
 
 
 parseSubSubChapters :: TagList -> TagList -> [SubSubChapter]
@@ -176,9 +169,7 @@ extractSubSubChapterName headingGroup =
   in  case linesOfText of
         (x : _) -> normalizeWhiteSpace x
         _ ->
-          error
-            $  "Could not parse sub sub chapter name from: "
-            ++ (show headingGroup)
+          error [qq|Couldn't parse sub sub chapter name from: $headingGroup|]
 
 
 subnames :: TagList -> [Text]
@@ -188,7 +179,7 @@ subnames tags = fmap subChapterNameFromGroup (headingGroups tags)
 subChapterNameFromGroup :: TagList -> Text
 subChapterNameFromGroup (_ : y : _) = titleize $ fromTagText y
 subChapterNameFromGroup tags =
-  error $ "Could not get a chapter name from the group: " ++ (show tags)
+  error [qq|Couldn't get a chapter name from the group: $tags|]
 
 
 sectionNamesFromGroup :: TagList -> [Text]
@@ -212,12 +203,7 @@ parseChapterFileTitle :: Text -> (Text, Text)
 parseChapterFileTitle input = if input == chapterZeroTitle
   then ("0", "Preliminary Chapter – General Provisions")
   else case (Data.Attoparsec.Text.parseOnly chapterTitleParser input) of
-    Left e ->
-      error
-        $  "Could not parse chapter file title '"
-        ++ (show input)
-        ++ "'\n"
-        ++ e
+    Left  e -> error [qq|Couldn't parse chapter file title $input $e|]
     Right b -> b
 
 
@@ -246,14 +232,12 @@ parseSectionBody secNumber fullPage = sectionHtml
 rawSectionGroupFromSectionGroups :: Text -> [TagList] -> TagList
 rawSectionGroupFromSectionGroups secNumber sectionGroups =
   let bodyNumbers = filter (isSectionBodyNumber secNumber) sectionGroups
-  in  case bodyNumbers of
-        (x : _) -> shaveBackTagsToLastClosingP x
-        _ ->
-          error
-            $  "Error, could not find section body number "
-            ++ (T.unpack secNumber)
-            ++ " in section groups: "
-            ++ (show sectionGroups)
+  in
+    case bodyNumbers of
+      (x : _) -> shaveBackTagsToLastClosingP x
+      _ ->
+        error
+          [qq|Error, couldn't find sec. body number $secNumber in sec. groups: $sectionGroups|]
 
 
 isSectionBodyNumber :: Text -> TagList -> Bool
