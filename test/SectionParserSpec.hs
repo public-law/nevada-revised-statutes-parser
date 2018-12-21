@@ -30,6 +30,12 @@ spec = parallel $ describe "isTOCEntry" $ do
     let html = "<p class=\"COLeadline\"><a href=\"#N\"> </a> &nbsp;" :: Text
     isTOCEntry (tagsAsIfParsed html) `shouldBe` False
 
+  it "rejects a list missing a text tag" $ do
+    let
+      html
+        = "<p class=\"COLeadline\"><a href=\"#NRS002ASec130\">NRS&#8194;2A.130</a><hr>" :: Text
+    isTOCEntry (tagsAsIfParsed html) `shouldBe` False
+
 
 
 -- Helper functions

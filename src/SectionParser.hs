@@ -19,5 +19,6 @@ isTOCEntry tags =
     == 5
     && isTagOpenName "p" (tags !! 0)
     && isTagOpenName "a" (tags !! 1)
+    && isTagText (tags !! 4)
     && normalizeWhiteSpace (innerText tags)
     /= ""
