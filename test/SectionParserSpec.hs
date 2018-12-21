@@ -10,12 +10,15 @@ import           SectionParser
 
 
 spec :: SpecWith ()
-spec =
-  parallel $ describe "isTOCEntry" $ it "recognizes a valid TOC entry" $ do
+spec = parallel $ describe "isTOCEntry" $ do
+
+  it "recognizes a valid TOC entry" $ do
     let
       html =
         ("<p class=\"COLeadline\"><a href=\"#NRS002ASec130\">NRS&#8194;2A.130</a> Benefits for surviving child." :: Text
         )
-    let tags = parseTags html
+    let tagsAsIfParsed = takeWhile (~/= "</p>") (parseTags html)
 
-    isTOCEntry tags `shouldBe` True
+    isTOCEntry tagsAsIfParsed `shouldBe` True
+
+  it "rejects a same-length string of incorrect tags" $ pending
