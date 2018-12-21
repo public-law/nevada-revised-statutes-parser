@@ -15,11 +15,11 @@ import           Util
 
 
 spec :: SpecWith ()
-spec = parallel $ describe "parseChapter" $ do
+spec = parallel $ describe "unwrap $ parseChapter" $ do
 
   it "recognizes a chapter with simple content" $ do
     html ← chapter_0_html
-    case content (parseChapter html) of
+    case content (unwrap $ parseChapter html) of
       SimpleChapterContent _ -> pure ()
       ComplexChapterContent xs ->
         expectationFailure $ "Expected Sections but got SubChapters" ++ show xs
@@ -30,7 +30,7 @@ spec = parallel $ describe "parseChapter" $ do
 
   it "finds the correct section name" $ do
     html <- chapter_0_html
-    let firstSection = head $ simpleChapterContent html
+    let firstSection     = head $ simpleChapterContent html
     let firstSectionName = firstSection |> Section.name |> show
     firstSectionName `shouldBe` "Scope."
 
@@ -99,7 +99,7 @@ main = hspec spec
 -- A partial function to grab the simple chapter content,
 -- or fail.
 simpleChapterContent :: Html -> [Section]
-simpleChapterContent html = case content (parseChapter html) of
+simpleChapterContent html = case content (unwrap $ parseChapter html) of
   SimpleChapterContent sections -> sections
   ComplexChapterContent xs ->
     error $ "Expected Sections but got SubChapters" ++ show xs
@@ -119,3 +119,8 @@ findSec510 sections = head $ filter is510 sections
 
 is510 :: Section -> Bool
 is510 s = Section.number s == "001.510"
+
+unwrap :: Either String a -> a
+unwrap thing = case thing of
+  Right contents -> contents
+  Left  message  -> error message

@@ -1,4 +1,4 @@
-module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
+module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml, parseSectionFromHeadingParagraph, parseSectionBody, parseSectionsFromHeadingGroup) where
 
   import           BasicPrelude
   import           Text.HTML.TagSoup
@@ -38,46 +38,55 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
     null (partitions (~== heading4P) headingGroup)
 
 
-  parseSectionsFromJustHtml :: TagList -> [Section]
-  parseSectionsFromJustHtml fullPage =
-    parseSectionsFromHeadingGroup bottomHalf topHalf
-    where
-      topHalf    = takeWhile (~/= horizontalRule) fullPage
-      bottomHalf = dropWhile (~/= horizontalRule) fullPage
+  parseSectionsFromJustHtml :: TagList -> Either String [Section]
+  parseSectionsFromJustHtml fullPage = do
+    let topHalf    = takeWhile (~/= horizontalRule) fullPage
+    let bottomHalf = dropWhile (~/= horizontalRule) fullPage
+    sections' <- parseSectionsFromHeadingGroup bottomHalf topHalf
+    return sections'
 
 
-  parseSectionsFromHeadingGroup :: TagList -> TagList -> [Section]
-  parseSectionsFromHeadingGroup contentHalf headingsHalf = fmap
-    (parseSectionFromHeadingParagraph contentHalf)
-    (headingParagraphsWithContent headingsHalf)
+  parseSectionsFromHeadingGroup :: TagList -> TagList -> Either String [Section]
+  parseSectionsFromHeadingGroup contentHalf headingsHalf =
+    let parser     = parseSectionFromHeadingParagraph contentHalf
+        paragraphs = headingParagraphsWithContent headingsHalf
+    in mapM parser paragraphs
 
 
   -- Some COLeadline P's have no content; they're just used for vertical spacing.
   headingParagraphsWithContent :: TagList -> [TagList]
-  headingParagraphsWithContent headingParagraphs =
-    filter (\tags -> length tags > 4) (partitions (~== leadlineP) headingParagraphs)
+  headingParagraphsWithContent headingsHTML =
+    filter (\t -> normalizedInnerText t /= "") $ (takeWhile (~/= closingP)) <$> (partitions (~== leadlineP) headingsHTML)
 
 
-  parseSectionFromHeadingParagraph :: TagList -> TagList -> Section
-  parseSectionFromHeadingParagraph contentHalf paragraph = Section
-    { Section.name   = toSectionName secName
-    , Section.number = toSectionNumber secNumber
-    , Section.body   = toSectionBody secBody
-    }
-   where
-    secName = normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile
-      (~/= closingA)
-      paragraph
-    rawNumberText = normalizedInnerText $ takeWhile (~/= closingA) paragraph
-    secNumber     = parseNumberFromRawNumberText rawNumberText secName
-    secBody       = parseSectionBody secNumber contentHalf
+  parseSectionFromHeadingParagraph :: TagList -> TagList -> Either String Section
+  parseSectionFromHeadingParagraph contentHalf paragraph = do
+    let secName       = normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile (~/= closingA) paragraph
+    let rawNumberText = normalizedInnerText $ takeWhile (~/= closingA) paragraph
+    let secNumber     = parseNumberFromRawNumberText rawNumberText secName
+    let secBody       = parseSectionBody secNumber contentHalf
+    (name', number', body') <- toThreeSectionFields secName secNumber secBody
+    return Section
+      { Section.name   = name'
+      , Section.number = number'
+      , Section.body   = body'
+      }
+
+
+  toThreeSectionFields :: Text -> Text -> Html -> Either String (SectionName, SectionNumber, SectionBody)
+  toThreeSectionFields name' number' body' = do
+    name''   <- toSectionName name' [qq| $number' $body' |]
+    number'' <- toSectionNumber number' [qq| $name' $body' |]
+    body''   <- toSectionBody body' [qq| $name' $number' |]
+    return (name'', number'', body'')
 
 
   parseNumberFromRawNumberText :: Text -> Text -> Text
   parseNumberFromRawNumberText numberText secName = case words numberText of
-    (_ : x : _) -> x
-    _ ->
-      error [qq|Expected sec. $numberText $secName to have >= 2 words|]
+    (_ : x : _) -> case toSectionNumber x [qq|name: $secName|] of
+      Left message -> error [qq|while parsing $numberText - $message|]
+      Right _ -> x
+    _ -> error [qq|Expected sec. $numberText $secName to have >= 2 words|]
 
 
   parseSectionBody :: Text -> TagList -> Html
@@ -97,7 +106,7 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml) where
     in  case bodyNumbers of
           (x : _) -> shaveBackTagsToLastClosingP x
           _ ->
-            error [qq|Couldn't find sec. body num. $secNumber in sec. groups: $secGroups|]
+            error [qq|Couldn't find sec. body for num. "$secNumber" in sec. groups: ...|]
 
 
   isSectionBodyNumber :: Text -> TagList -> Bool

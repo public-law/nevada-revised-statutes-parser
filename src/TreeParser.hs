@@ -4,6 +4,7 @@ module TreeParser
 where
 
 import           BasicPrelude                   ( Maybe(Just, Nothing)
+                                                , Either(..)
                                                 , error
                                                 , head
                                                 , ($)
@@ -33,9 +34,11 @@ parseChapterZero :: ChapterMap -> Chapter
 parseChapterZero chapterMap =
   let path = chapterZeroPathname
   in  case HM.lookup path chapterMap of
-        Just html -> parseChapter html
-        Nothing ->
-          error [qq|Chap. Zero $path not found in {head $ HM.keys chapterMap}|]
+        Just html -> case parseChapter html of
+          Left message -> error [qq| Can't parse chap. zero: $message |]
+          Right aChapter -> aChapter
+        Nothing -> error
+          [qq| Chap. Zero $path not found in {head $ HM.keys chapterMap} |]
 
 
 allButChapterZero :: ChapterMap -> ChapterMap
