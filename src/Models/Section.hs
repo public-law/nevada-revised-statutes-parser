@@ -29,7 +29,7 @@ data Section =
 } deriving (Generic, Show)
 
 maxNameLen :: Int
-maxNameLen = 658
+maxNameLen = 1126
 
 maxNumberLen :: Int
 maxNumberLen = 11
