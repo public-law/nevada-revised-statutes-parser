@@ -28,21 +28,23 @@ data Section =
     body   :: SectionBody
 } deriving (Generic, Show)
 
-instance ToJSON Section
+maxNameLen :: Int
+maxNameLen = 375
+
+maxNumberLen :: Int
+maxNumberLen = 10
 
 
 newtype SectionName = MakeSectionName Text deriving ( Generic, Eq )
-instance ToJSON SectionName
 instance Show SectionName where
   show (MakeSectionName n) = T.unpack n
 
 toSectionName :: Text -> Text -> Either String SectionName
 toSectionName n context
-  | actualLen > maxLen || actualLen == 0 = Left
-    [qq| Section name must be 1...$maxLen chars ($actualLen): $parsedName. context: $context |]
+  | actualLen > maxNameLen || actualLen == 0 = Left
+    [qq| Section name must be 1...$maxNameLen chars ($actualLen): $parsedName. context: $context |]
   | otherwise = Right $ MakeSectionName parsedName
  where
-  maxLen     = 336
   parsedName = parseName n
   actualLen  = T.length parsedName
 
@@ -55,14 +57,14 @@ instance Show SectionNumber where
 
 toSectionNumber :: Text -> Text -> Either String SectionNumber
 toSectionNumber n context
-  | actualLen > 8 || actualLen == 0 || not (T.isInfixOf "." n) = Left
-    [qq| Section number must be 1..8 characters and have a dot: "$n"  context: $context |]
+  | actualLen > maxNumberLen || actualLen == 0 || not (T.isInfixOf "." n) = Left
+    [qq| Section number must be 1..$maxNumberLen characters and have a dot: "$n"  context: $context |]
   | otherwise = Right $ MakeSectionNumber n
-  where actualLen = T.length n
+  where 
+    actualLen = T.length n
 
 
 newtype SectionBody = MakeSectionBody Html deriving ( Generic, Eq )
-instance ToJSON SectionBody
 instance Show SectionBody where
   show (MakeSectionBody n) = T.unpack (toText n)
 
@@ -80,3 +82,8 @@ parseName = normalizeWhiteSpace . removeAnnotation
   
 isLegalNameChar :: Char -> Bool
 isLegalNameChar c = c /= '['
+
+
+instance ToJSON Section
+instance ToJSON SectionBody
+instance ToJSON SectionName
