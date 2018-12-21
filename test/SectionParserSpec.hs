@@ -26,6 +26,10 @@ spec = parallel $ describe "isTOCEntry" $ do
     let html = "<p class=\"COLeadline\"><i href=\"#N\">NRS</i> Hello." :: Text
     isTOCEntry (tagsAsIfParsed html) `shouldBe` False
 
+  it "rejects a blank paragraph" $ do
+    let html = "<p class=\"COLeadline\"><a href=\"#N\"> </a> &nbsp;" :: Text
+    isTOCEntry (tagsAsIfParsed html) `shouldBe` False
+
 
 
 -- Helper functions

@@ -6,6 +6,8 @@ where
 import           BasicPrelude
 import           Text.HTML.TagSoup
 
+import           TextUtil                       ( normalizeWhiteSpace )
+
 
 -- Not all paragraphs in the Table of Contents with the COLeadline
 -- class are actual leadline entries. There are empty paragraphs as
@@ -13,6 +15,9 @@ import           Text.HTML.TagSoup
 -- helps filter out the unwanted ones.
 isTOCEntry :: [Tag Text] -> Bool
 isTOCEntry tags =
-  length tags == 5 && isTagOpenName "p" (head tags) && isTagOpenName
-    "a"
-    (tags !! 1)
+  length tags
+    == 5
+    && isTagOpenName "p" (tags !! 0)
+    && isTagOpenName "a" (tags !! 1)
+    && normalizeWhiteSpace (innerText tags)
+    /= ""
