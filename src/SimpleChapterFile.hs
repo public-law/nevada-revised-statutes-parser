@@ -55,8 +55,8 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml, parseSec
 
   -- Some COLeadline P's have no content; they're just used for vertical spacing.
   headingParagraphsWithContent :: TagList -> [TagList]
-  headingParagraphsWithContent headingParagraphs =
-    filter (\tags -> length tags > 4) (partitions (~== leadlineP) headingParagraphs)
+  headingParagraphsWithContent headingsHTML =
+    filter (\t -> normalizedInnerText t /= "") $ (takeWhile (~/= closingP)) <$> (partitions (~== leadlineP) headingsHTML)
 
 
   parseSectionFromHeadingParagraph :: TagList -> TagList -> Either String Section
