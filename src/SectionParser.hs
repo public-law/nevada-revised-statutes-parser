@@ -12,4 +12,4 @@ import           Text.HTML.TagSoup
 -- well as annotations marked with this CSS class. This predicate 
 -- helps filter out the unwanted ones.
 isTOCEntry :: [Tag Text] -> Bool
-isTOCEntry tags = length tags == 5
+isTOCEntry tags = length tags == 5 && isTagOpenName "p" (head tags)
