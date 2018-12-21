@@ -8,9 +8,9 @@ import           Test.Hspec
 import           Text.HTML.TagSoup
 
 import           Models.Chapter                as Chapter
--- import           Models.Section                as Section
+import           Models.Section                as Section
 import           Models.SubChapter             as SubChapter
--- import           Models.SubSubChapter          as SubSubChapter
+import           Models.SubSubChapter          as SubSubChapter
 
 import           ChapterFile
 import           SimpleChapterFile
@@ -20,130 +20,130 @@ import           HtmlUtil
 spec :: SpecWith ()
 spec = parallel $ do
 
-  -- describe "parseChapter" $ do
+  describe "parseChapter" $ do
 
-  --   it "gets the chapter name" $ do
-  --     html ← chapter_432b_html
-  --     Chapter.name (unwrap $ parseChapter html)
-  --       `shouldBe` "Protection of Children from Abuse and Neglect"
+    it "gets the chapter name" $ do
+      html ← chapter_432b_html
+      Chapter.name (unwrap $ parseChapter html)
+        `shouldBe` "Protection of Children from Abuse and Neglect"
 
-  --   -- it "gets the chapter name when it has embedded newline" $ do
-  --   --     html ← chapter_575_html
-  --   --     Chapter.name (unwrap $ parseChapter html) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
+    -- it "gets the chapter name when it has embedded newline" $ do
+    --     html ← chapter_575_html
+    --     Chapter.name (unwrap $ parseChapter html) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
 
-  --   it "gets the chapter number" $ do
-  --     html ← chapter_432b_html
-  --     Chapter.number (unwrap $ parseChapter html) `shouldBe` "432B"
-
-
-  --   it "gets the chapter URL" $ do
-  --     html ← chapter_432b_html
-  --     url (unwrap $ parseChapter html)
-  --       `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
+    it "gets the chapter number" $ do
+      html ← chapter_432b_html
+      Chapter.number (unwrap $ parseChapter html) `shouldBe` "432B"
 
 
-  --   it "gets the sub-chapter names - 1" $ do
-  --     html ← chapter_432b_html
-  --     let innards = content (unwrap $ parseChapter html)
-  --     case innards of
-  --       ComplexChapterContent subchapters ->
-  --         SubChapter.name (subchapters !! 0) `shouldBe` "General Provisions"
-  --       _ -> error "Got Sections but expected SubChapters"
+    it "gets the chapter URL" $ do
+      html ← chapter_432b_html
+      url (unwrap $ parseChapter html)
+        `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
 
 
-  --   it "gets the sub-chapter names - 2" $ do
-  --     html ← chapter_432b_html
-  --     let innards = content (unwrap $ parseChapter html)
-  --     case innards of
-  --       ComplexChapterContent subchapters ->
-  --         SubChapter.name (subchapters !! 1) `shouldBe` "Administration"
-  --       _ -> error "Got Sections but expected SubChapters"
+    it "gets the sub-chapter names - 1" $ do
+      html ← chapter_432b_html
+      let innards = content (unwrap $ parseChapter html)
+      case innards of
+        ComplexChapterContent subchapters ->
+          SubChapter.name (subchapters !! 0) `shouldBe` "General Provisions"
+        _ -> error "Got Sections but expected SubChapters"
 
 
-  --   it "gets the sub-chapter names - 3" $ do
-  --     html ← chapter_432b_html
-  --     let innards = content (unwrap $ parseChapter html)
-  --     case innards of
-  --       ComplexChapterContent subchapters ->
-  --         SubChapter.name (subchapters !! 3)
-  --           `shouldBe` "Protective Services and Custody"
-  --       _ -> error "Got Sections but expected SubChapters"
+    it "gets the sub-chapter names - 2" $ do
+      html ← chapter_432b_html
+      let innards = content (unwrap $ parseChapter html)
+      case innards of
+        ComplexChapterContent subchapters ->
+          SubChapter.name (subchapters !! 1) `shouldBe` "Administration"
+        _ -> error "Got Sections but expected SubChapters"
 
 
-  --   it "gets a simple sub-chapter's sections" $ do
-  --     html <- chapter_432b_html
-  --     let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
-  --     case children generalProvisions of
-  --       SubChapterSections xs -> length xs `shouldBe` 31
-  --       SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
+    it "gets the sub-chapter names - 3" $ do
+      html ← chapter_432b_html
+      let innards = content (unwrap $ parseChapter html)
+      case innards of
+        ComplexChapterContent subchapters ->
+          SubChapter.name (subchapters !! 3)
+            `shouldBe` "Protective Services and Custody"
+        _ -> error "Got Sections but expected SubChapters"
 
 
-  --   it "gets the sub-chapter's section names right - 1" $ do
-  --     html <- chapter_432b_html
-  --     let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
-  --     case children generalProvisions of
-  --       SubChapterSections xs ->
-  --         show (Section.name (head xs)) `shouldBe` "Definitions."
-  --       SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
+    it "gets a simple sub-chapter's sections" $ do
+      html <- chapter_432b_html
+      let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
+      case children generalProvisions of
+        SubChapterSections xs -> length xs `shouldBe` 31
+        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
 
-  --   it "gets the sub-chapter's section names right - 2" $ do
-  --     html <- chapter_432b_html
-  --     let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
-  --     case children generalProvisions of
-  --       SubChapterSections xs ->
-  --         show (Section.name (xs !! 1))
-  --           `shouldBe` "“Abuse or neglect of a child” defined."
-  --       SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
-
-  --   it "gets the sub-chapter's section numbers right" $ do
-  --     html <- chapter_432b_html
-  --     let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
-  --     case children generalProvisions of
-  --       SubChapterSections xs ->
-  --         show (Section.number (xs !! 1)) `shouldBe` "432B.020"
-  --       SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
+    it "gets the sub-chapter's section names right - 1" $ do
+      html <- chapter_432b_html
+      let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
+      case children generalProvisions of
+        SubChapterSections xs ->
+          show (Section.name (head xs)) `shouldBe` "Definitions."
+        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
 
-  --   it "gets a complex sub-chapter's sub-sub-chapters" $ do
-  --     html <- chapter_432b_html
-  --     let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
-  --     case children administration of
-  --       SubSubChapters xs -> length xs `shouldBe` 3
-  --       SubChapterSections _ ->
-  --         error "Got sections but expected sub-sub-chapters"
+    it "gets the sub-chapter's section names right - 2" $ do
+      html <- chapter_432b_html
+      let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
+      case children generalProvisions of
+        SubChapterSections xs ->
+          show (Section.name (xs !! 1))
+            `shouldBe` "“Abuse or neglect of a child” defined."
+        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
+
+    it "gets the sub-chapter's section numbers right" $ do
+      html <- chapter_432b_html
+      let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
+      case children generalProvisions of
+        SubChapterSections xs ->
+          show (Section.number (xs !! 1)) `shouldBe` "432B.020"
+        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
 
-  --   it "gets a complex sub-chapter's sub-sub-chapter names - 1" $ do
-  --     html <- chapter_432b_html
-  --     let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
-  --     case children administration of
-  --       SubSubChapters xs ->
-  --         SubSubChapter.name (head xs) `shouldBe` "General Provisions"
-  --       SubChapterSections _ ->
-  --         error "Got sections but expected sub-sub-chapters"
+    it "gets a complex sub-chapter's sub-sub-chapters" $ do
+      html <- chapter_432b_html
+      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
+      case children administration of
+        SubSubChapters xs -> length xs `shouldBe` 3
+        SubChapterSections _ ->
+          error "Got sections but expected sub-sub-chapters"
 
 
-  --   it "gets a complex sub-chapter's sub-sub-chapter names - 2" $ do
-  --     html <- chapter_432b_html
-  --     let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
-  --     case children administration of
-  --       SubSubChapters xs ->
-  --         SubSubChapter.name (xs !! 2)
-  --           `shouldBe` "Grants to Agency Which Provides Child Welfare Services"
-  --       SubChapterSections _ ->
-  --         error "Got sections but expected sub-sub-chapters"
+    it "gets a complex sub-chapter's sub-sub-chapter names - 1" $ do
+      html <- chapter_432b_html
+      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
+      case children administration of
+        SubSubChapters xs ->
+          SubSubChapter.name (head xs) `shouldBe` "General Provisions"
+        SubChapterSections _ ->
+          error "Got sections but expected sub-sub-chapters"
 
 
-  --   it "gets a complex sub-chapter's sub-sub-chapter sections" $ do
-  --     html <- chapter_432b_html
-  --     let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
-  --     case children administration of
-  --       SubSubChapters xs ->
-  --         show (Section.name ((!! 0) $ SubSubChapter.sections (head xs)))
-  --           `shouldBe` "Duties of Division of Child and Family Services."
-  --       SubChapterSections _ ->
-  --         error "Got sections but expected sub-sub-chapters"
+    it "gets a complex sub-chapter's sub-sub-chapter names - 2" $ do
+      html <- chapter_432b_html
+      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
+      case children administration of
+        SubSubChapters xs ->
+          SubSubChapter.name (xs !! 2)
+            `shouldBe` "Grants to Agency Which Provides Child Welfare Services"
+        SubChapterSections _ ->
+          error "Got sections but expected sub-sub-chapters"
+
+
+    it "gets a complex sub-chapter's sub-sub-chapter sections" $ do
+      html <- chapter_432b_html
+      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
+      case children administration of
+        SubSubChapters xs ->
+          show (Section.name ((!! 0) $ SubSubChapter.sections (head xs)))
+            `shouldBe` "Duties of Division of Child and Family Services."
+        SubChapterSections _ ->
+          error "Got sections but expected sub-sub-chapters"
 
 
   describe "isSimpleSubChapter" $ do
