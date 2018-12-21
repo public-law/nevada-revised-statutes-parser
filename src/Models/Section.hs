@@ -29,10 +29,10 @@ data Section =
 } deriving (Generic, Show)
 
 maxNameLen :: Int
-maxNameLen = 375
+maxNameLen = 658
 
 maxNumberLen :: Int
-maxNumberLen = 10
+maxNumberLen = 11
 
 
 newtype SectionName = MakeSectionName Text deriving ( Generic, Eq )
