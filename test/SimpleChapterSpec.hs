@@ -1,6 +1,5 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 
-
 module SimpleChapterSpec where
 
 import           BasicPrelude

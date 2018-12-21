@@ -9,6 +9,7 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml, parseSec
                                                   , shaveBackTagsToLastClosingP
                                                   )
   import           Models.Section                as Section
+  import qualified SectionParser
   import           TextUtil                       ( normalizeWhiteSpace
                                                   , normalizedInnerText
                                                   )
@@ -56,7 +57,9 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml, parseSec
   -- Some COLeadline P's have no content; they're just used for vertical spacing.
   headingParagraphsWithContent :: TagList -> [TagList]
   headingParagraphsWithContent headingsHTML =
-    filter (\t -> normalizedInnerText t /= "") $ (takeWhile (~/= closingP)) <$> (partitions (~== leadlineP) headingsHTML)
+    filter SectionParser.isTOCEntry putativeTOCEntries 
+    where
+      putativeTOCEntries = (takeWhile (~/= closingP)) <$> (partitions (~== leadlineP) headingsHTML)
 
 
   parseSectionFromHeadingParagraph :: TagList -> TagList -> Either String Section

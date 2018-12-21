@@ -39,6 +39,10 @@ import           TextUtil                       ( normalizeWhiteSpace
 type ChapterMap = HashMap RelativePath Html
 type TagList    = [Tag Text]
 
+newtype SubChapterTOC = MakeSubChapterGroup TagList
+newtype SubSubChapterTOC = MakeSubSubChapterGroup TagList
+
+
 leadlineP :: String
 leadlineP = "<p class=COLeadline>"
 
@@ -46,7 +50,7 @@ heading4P :: String
 heading4P = "<p class=COHead4>"
 
 
--- TODO: Refactor.
+-- TODO: Refactor. Change this method by creating an EmptyChapter type.
 fillInEmptyChapter :: ChapterMap -> Chapter -> Chapter
 fillInEmptyChapter chapterMap emptyChapter =
   let key       = chapterNumberToFilename (Chapter.number emptyChapter)
@@ -81,6 +85,7 @@ parseChapter chapterHtml = do
     }
 
 
+-- TODO: What is a "heading group"?
 chapterContent :: TagList -> Either String ChapterContent
 chapterContent fullPage = do
   let groups = headingGroups fullPage
@@ -102,22 +107,11 @@ newSubChapter fullPage headingGroup = do
   return SubChapter { SubChapter.name = name', SubChapter.children = children' }
 
 
--- Some COLeadline P's have no content; they're just used for vertical spacing.
-headingParagraphsWithContent :: TagList -> [TagList]
-headingParagraphsWithContent headingGroup =
-  filter (\tags -> length tags > 4) (partitions (~== leadlineP) headingGroup)
-
-
 parseSubSubChapters :: TagList -> TagList -> Either String [SubSubChapter]
 parseSubSubChapters fullPage headingGroup =
   let parser = parseSubSubChapter fullPage
       groups = subSubChapterHeadingGroups headingGroup
   in  mapM parser groups
-
-
-subSubChapterHeadingGroups :: TagList -> [TagList]
-subSubChapterHeadingGroups headingGroup =
-  (partitions (~== heading4P) headingGroup)
 
 
 parseSubSubChapter :: TagList -> TagList -> Either String SubSubChapter
@@ -145,9 +139,16 @@ subChapterNameFromGroup tags =
   error [qq|Couldn't get a chapter name from the group: $tags|]
 
 
+-- A Heading Group is a Sub Chapter heading with all of its following
+-- content.
 headingGroups :: TagList -> [TagList]
 headingGroups fullPage =
   partitions (~== ("<p class=COHead2>" :: String)) fullPage
+
+
+subSubChapterHeadingGroups :: TagList -> [TagList]
+subSubChapterHeadingGroups headingGroup =
+  (partitions (~== heading4P) headingGroup)
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
