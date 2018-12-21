@@ -16,16 +16,21 @@ spec = parallel $ describe "isTOCEntry" $ do
     let
       html =
         "<p class=\"COLeadline\"><a href=\"#NRS002ASec130\">NRS&#8194;2A.130</a> Benefits for surviving child." :: Text
-    let tagsAsIfParsed = takeWhile (~/= "</p>") (parseTags html)
+    isTOCEntry (tagsAsIfParsed html) `shouldBe` True
 
-    isTOCEntry tagsAsIfParsed `shouldBe` True
+  it "rejects a same-length list of incorrect tags" $ do
+    let html = "<i class=\"COLeadline\"><a href=\"#N\">NRS</a> Hello." :: Text
+    isTOCEntry (tagsAsIfParsed html) `shouldBe` False
 
-  it "rejects a same-length string of incorrect tags" $ do
-    let
-      html =
-        "<div class=\"COLeadline\"><a href=\"#NRS002ASec130\">NRS&#8194;2A.130</a> Benefits for surviving child." :: Text
-    let tagsAsIfParsed = takeWhile (~/= "</p>") (parseTags html)
-
-    isTOCEntry tagsAsIfParsed `shouldBe` False
+  it "rejects a same-length list of incorrect tags" $ do
+    let html = "<p class=\"COLeadline\"><i href=\"#N\">NRS</i> Hello." :: Text
+    isTOCEntry (tagsAsIfParsed html) `shouldBe` False
 
 
+
+-- Helper functions
+
+-- In the app, the parser returns the paragraph tags minus the
+-- closing </p>.
+tagsAsIfParsed :: Text -> [Tag Text]
+tagsAsIfParsed html = takeWhile (~/= "</p>") (parseTags html)
