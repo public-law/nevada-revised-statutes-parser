@@ -187,9 +187,7 @@ main = hspec spec
 
 
 chapter_432b_data :: IO ChapterData
-chapter_432b_data = do
-  html <- chapter_432b_html
-  return $ makeChapterData html
+chapter_432b_data = makeChapterData <$> chapter_432b_html
 
 
 chapter_432b_html :: IO Html
