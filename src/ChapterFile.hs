@@ -81,16 +81,9 @@ chapterNumberToFilename chapterNumber =
 
 parseChapter :: Html -> Either String Chapter
 parseChapter chapterHtml = do
-  let fullPage             = parseTags $ toText chapterHtml
-  let topHalf'             = topHalf fullPage
-  let bottomHalf'          = bottomHalf fullPage
-  let rawTitle             = titleText topHalf'
+  let chapterData          = makeChapterData chapterHtml
+  let rawTitle             = titleText (headings chapterData)
   let (rawNumber, rawName) = parseChapterFileTitle rawTitle
-  let chapterData = ChapterData
-        { headings      = topHalf'
-        , content       = bottomHalf'
-        , sectionGroups = findSectionGroups bottomHalf'
-        }
   sectionsOrSubChapters <- chapterContent chapterData
 
   return Chapter
