@@ -77,9 +77,31 @@ spec = parallel $ do
       html ← chapter_432b_html
       let innards = Chapter.content (unwrap $ parseChapter html)
       case innards of
-        ComplexChapterContent subchapters -> length subchapters `shouldBe` 12
+        ComplexChapterContent subchapters -> length subchapters `shouldBe` 13
         _ -> error "Got Sections but expected SubChapters"
 
+
+    it "finds the right sub-chapters" $ do
+      html ← chapter_432b_html
+      let innards = Chapter.content (unwrap $ parseChapter html)
+      case innards of
+        ComplexChapterContent subchapters ->
+          map SubChapter.name subchapters
+            `shouldBe` [ "General Provisions"
+                       , "Administration"
+                       , "Reports of Abuse or Neglect; Reports of Prenatal Illegal Substance Abuse"
+                       , "Protective Services and Custody"
+                       , "Child Death Review Teams"
+                       , "Civil Proceedings"
+                       , "Continuation of Jurisdiction of Court Over Child Who Reaches 18 Years of Age While in Custody of Agency Which Provides Child Welfare Services"
+                       , "Local Advisory Boards to Expedite Proceedings for Placement of Children"
+                       , "Court-ordered Admission of Certain Children With Emotional Disturbance to Certain Facilities"
+                       , "Sexual Abuse or Sexual Exploitation of Children Under Age of 18 Years"
+                       , "Kinship Guardianship Assistance Program"
+                       , "Miscellaneous Provisions"
+                       , "Task Force on the Prevention of Sexual Abuse of Children"
+                       ]
+        _ -> error "Got Sections but expected SubChapters"
 
 
     it "gets a simple sub-chapter's sections" $ do
