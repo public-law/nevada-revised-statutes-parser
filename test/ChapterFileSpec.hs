@@ -73,6 +73,15 @@ spec = parallel $ do
         _ -> error "Got Sections but expected SubChapters"
 
 
+    it "finds the right number of sub-chapters" $ do
+      html ← chapter_432b_html
+      let innards = Chapter.content (unwrap $ parseChapter html)
+      case innards of
+        ComplexChapterContent subchapters -> length subchapters `shouldBe` 12
+        _ -> error "Got Sections but expected SubChapters"
+
+
+
     it "gets a simple sub-chapter's sections" $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
@@ -150,11 +159,11 @@ spec = parallel $ do
     describe "isSimpleSubChapter" $ do
 
       it "correctly identifies a simple sub-chapter" $ do
-        generalProvisions <- ((!! 0) . headingGroups) <$> chapterData
+        generalProvisions <- ((!! 0) . subChapterHeadingGroups) <$> chapterData
         isSimpleSubChapter generalProvisions `shouldBe` True
 
       it "correctly identifies a complex sub-chapter" $ do
-        administration <- ((!! 1) . headingGroups) <$> chapterData
+        administration <- ((!! 1) . subChapterHeadingGroups) <$> chapterData
         isSimpleSubChapter administration `shouldBe` False
 
 

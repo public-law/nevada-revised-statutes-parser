@@ -50,11 +50,14 @@ type ChapterMap = HashMap RelativePath Html
 leadlineP :: String
 leadlineP = "<p class=COLeadline>"
 
+heading2P :: String
+heading2P = "<p class=COHead2>"
+
 heading4P :: String
 heading4P = "<p class=COHead4>"
 
 horizontalRule :: String
-horizontalRule = "<p class=\"J-Dash\""
+horizontalRule = "<p class=J-Dash"
 
 
 
@@ -106,7 +109,6 @@ makeChapterData chapterHtml =
         }
 
 
-
 findSectionGroups :: TagList -> [TagList]
 findSectionGroups contentHalf =
   partitions (~== ("<span class=Section" :: String)) contentHalf
@@ -119,10 +121,9 @@ bottomHalf :: TagList -> TagList
 bottomHalf fullPage = dropWhile (~/= horizontalRule) fullPage
 
 
--- TODO: What is a "heading group"?
 chapterContent :: ChapterData -> Either String ChapterContent
 chapterContent chapterData = do
-  let groups = headingGroups chapterData
+  let groups = subChapterHeadingGroups chapterData
   foundSubChapters <- mapM (newSubChapter chapterData) groups
   foundSections    <- SimpleChapterFile.parseSectionsFromJustHtml chapterData
   return $ case foundSubChapters of
@@ -176,16 +177,15 @@ subChapterNameFromGroup tags =
   error [qq|Couldn't get a chapter name from the group: $tags|]
 
 
--- A Heading Group is a Sub Chapter heading with all of its following
--- content.
-headingGroups :: ChapterData -> [TagList]
-headingGroups chapterData =
-  partitions (~== ("<p class=COHead2>" :: String)) (headings chapterData)
+-- A Sub Chapter heading with all of its following content.
+subChapterHeadingGroups :: ChapterData -> [TagList]
+subChapterHeadingGroups chapterData =
+  partitions (~== heading2P) (headings chapterData)
 
 
 subSubChapterHeadingGroups :: TagList -> [TagList]
-subSubChapterHeadingGroups headingGroup =
-  (partitions (~== heading4P) headingGroup)
+subSubChapterHeadingGroups subChapterHeadingGroup =
+  partitions (~== heading4P) subChapterHeadingGroup
 
 
 -- Input:  "NRS: CHAPTER 432B - PROTECTION OF CHILDREN FROM ABUSE AND NEGLECT"
