@@ -24,7 +24,7 @@ import           HtmlUtil                       ( Html
                                                 , titleText
                                                 , toText
                                                 )
-import           SimpleChapterFile              ( parseSectionsFromJustHtml
+import qualified SimpleChapterFile              ( parseSectionsFromJustHtml
                                                 , parseSectionsFromHeadingGroup
                                                 , isSimpleSubChapter
                                                 )
@@ -90,7 +90,7 @@ chapterContent :: TagList -> Either String ChapterContent
 chapterContent fullPage = do
   let groups = headingGroups fullPage
   foundSubChapters <- mapM (newSubChapter fullPage) groups
-  foundSections    <- parseSectionsFromJustHtml fullPage
+  foundSections    <- SimpleChapterFile.parseSectionsFromJustHtml fullPage
   return $ case foundSubChapters of
     [] -> SimpleChapterContent foundSections
     xs -> ComplexChapterContent xs
@@ -98,10 +98,10 @@ chapterContent fullPage = do
 
 newSubChapter :: TagList -> TagList -> Either String SubChapter
 newSubChapter fullPage headingGroup = do
-  scs <- parseSectionsFromHeadingGroup fullPage headingGroup
+  scs <- SimpleChapterFile.parseSectionsFromHeadingGroup fullPage headingGroup
   ssc <- parseSubSubChapters fullPage headingGroup
   let name' = subChapterNameFromGroup headingGroup
-  let children' = if isSimpleSubChapter headingGroup
+  let children' = if SimpleChapterFile.isSimpleSubChapter headingGroup
         then SubChapterSections scs
         else SubSubChapters ssc
   return SubChapter { SubChapter.name = name', SubChapter.children = children' }
@@ -117,7 +117,9 @@ parseSubSubChapters fullPage headingGroup =
 parseSubSubChapter :: TagList -> TagList -> Either String SubSubChapter
 parseSubSubChapter fullPage subSubChapterHeadingGroup = do
   let name' = extractSubSubChapterName subSubChapterHeadingGroup
-  sections' <- parseSectionsFromHeadingGroup fullPage subSubChapterHeadingGroup
+  sections' <- SimpleChapterFile.parseSectionsFromHeadingGroup
+    fullPage
+    subSubChapterHeadingGroup
   return SubSubChapter
     { SubSubChapter.name     = name'
     , SubSubChapter.sections = sections'

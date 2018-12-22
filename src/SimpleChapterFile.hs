@@ -95,12 +95,15 @@ module SimpleChapterFile(isSimpleSubChapter, parseSectionsFromJustHtml, parseSec
   parseSectionBody :: Text -> TagList -> Html
   parseSectionBody secNumber contentHalf = sectionHtml
    where
-    sectionGroups   = partitions (~== ("<span class=Section" :: String)) contentHalf
-    rawSectionGroup = rawSectionGroupFromSectionGroups secNumber sectionGroups
+    rawSectionGroup = rawSectionGroupFromSectionGroups secNumber (sectionGroups contentHalf)
     sectionHtml     = NewHtml $ "<p class=SectBody>" ++ normalizeWhiteSpace
       (renderTags $ drop 6 $ dropWhile (~/= ("<span class=Leadline>" :: String))
                                        rawSectionGroup
       )
+
+
+  sectionGroups :: TagList -> [TagList]
+  sectionGroups contentHalf = partitions (~== ("<span class=Section" :: String)) contentHalf
 
 
   rawSectionGroupFromSectionGroups :: Text -> [TagList] -> TagList
