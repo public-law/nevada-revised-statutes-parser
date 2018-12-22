@@ -5,7 +5,7 @@ module ChapterFileSpec where
 
 import           BasicPrelude
 import           Test.Hspec
--- import           Text.HTML.TagSoup
+import           Text.HTML.TagSoup
 
 import           Models.Chapter                as Chapter
 import           Models.Section                as Section
@@ -13,7 +13,7 @@ import           Models.SubChapter             as SubChapter
 import           Models.SubSubChapter          as SubSubChapter
 
 import           ChapterFile
--- import           SimpleChapterFile
+import           SimpleChapterFile
 import           HtmlUtil
 
 
@@ -145,42 +145,38 @@ spec = parallel $ describe "parseChapter" $ do
 
 
 
-  -- TODO: Figure out how to get these tests working again, after the
-  --       introduction of ChapterData.
+  describe "isSimpleSubChapter" $ do
 
+    it "correctly identifies a simple sub-chapter" $ do
+      html <- chapter_432b_html
+      let generalProvisions = (!! 0) $ headingGroups $ parseTags $ toText html
+      isSimpleSubChapter generalProvisions `shouldBe` True
 
-  -- describe "isSimpleSubChapter" $ do
-
-  --   it "correctly identifies a simple sub-chapter" $ do
-  --     html <- chapter_432b_html
-  --     let generalProvisions = (!! 0) $ headingGroups $ parseTags $ toText html
-  --     isSimpleSubChapter generalProvisions `shouldBe` True
-
-  --   it "correctly identifies a complex sub-chapter" $ do
-  --     html <- chapter_432b_html
-  --     let administration = (!! 1) $ headingGroups $ parseTags $ toText html
-  --     isSimpleSubChapter administration `shouldBe` False
+    it "correctly identifies a complex sub-chapter" $ do
+      html <- chapter_432b_html
+      let administration = (!! 1) $ headingGroups $ parseTags $ toText html
+      isSimpleSubChapter administration `shouldBe` False
 
 
 
-  -- describe "section" $ do
+  describe "section" $ do
 
-  --   it "returns the complete HTML - 1" $ do
-  --     html <- chapter_432b_html
-  --     let dom = parseTags $ toText html
-  --     let
-  --       expectedHtml
-  --         = "<p class=SectBody>The Division of Child and Family Services shall establish and maintain a center with a toll-free telephone number to receive reports of abuse or neglect of a child in this State 24 hours a day, 7 days a week. Any reports made to this center must be promptly transmitted to the agency which provides child welfare services in the community where the child is located.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/63rd/Stats198506.html#Stats198506page1371\">1985, 1371</a>; A <a href=\"../Statutes/67th/Stats199313.html#Stats199313page2706\">1993, 2706</a>; <a href=\"../Statutes/17thSS/Stats2001SS1701.html#Stats2001SS1701page36\">2001 Special Session, 36</a>)</p>"
-  --     parseSectionBody "432B.200" dom `shouldBe` expectedHtml
+    it "returns the complete HTML - 1" $ do
+      html <- chapter_432b_html
+      let dom = parseTags $ toText html
+      let
+        expectedHtml
+          = "<p class=SectBody>The Division of Child and Family Services shall establish and maintain a center with a toll-free telephone number to receive reports of abuse or neglect of a child in this State 24 hours a day, 7 days a week. Any reports made to this center must be promptly transmitted to the agency which provides child welfare services in the community where the child is located.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/63rd/Stats198506.html#Stats198506page1371\">1985, 1371</a>; A <a href=\"../Statutes/67th/Stats199313.html#Stats199313page2706\">1993, 2706</a>; <a href=\"../Statutes/17thSS/Stats2001SS1701.html#Stats2001SS1701page36\">2001 Special Session, 36</a>)</p>"
+      parseSectionBody "432B.200" dom `shouldBe` expectedHtml
 
 
-  --   it "returns the complete HTML - 2" $ do
-  --     html <- chapter_432b_html
-  --     let dom = parseTags $ toText html
-  --     let
-  --       expectedHtml
-  --         = "<p class=SectBody>1. An agency which provides child welfare services may request the Division of Parole and Probation of the Department of Public Safety to provide information concerning a probationer or parolee that may assist the agency in carrying out the provisions of this chapter. The Division of Parole and Probation shall provide such information upon request.</p> <p class=\"SectBody\"> 2. The agency which provides child welfare services may use the information obtained pursuant to subsection 1 only for the limited purpose of carrying out the provisions of this chapter.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/69th/Stats199706.html#Stats199706page835\">1997, 835</a>; A <a href=\"../Statutes/71st/Stats200117.html#Stats200117page2612\">2001, 2612</a>; <a href=\"../Statutes/17thSS/Stats2001SS1701.html#Stats2001SS1701page36\">2001 Special Session, 36</a>; <a href=\"../Statutes/72nd/Stats200301.html#Stats200301page236\">2003, 236</a>)</p> <p class=\"DocHeading2\">Corrective Action, Improvement Plans and Incentive Payments</p>"
-  --     parseSectionBody "432B.215" dom `shouldBe` expectedHtml
+    it "returns the complete HTML - 2" $ do
+      html <- chapter_432b_html
+      let dom = parseTags $ toText html
+      let
+        expectedHtml
+          = "<p class=SectBody>1. An agency which provides child welfare services may request the Division of Parole and Probation of the Department of Public Safety to provide information concerning a probationer or parolee that may assist the agency in carrying out the provisions of this chapter. The Division of Parole and Probation shall provide such information upon request.</p> <p class=\"SectBody\"> 2. The agency which provides child welfare services may use the information obtained pursuant to subsection 1 only for the limited purpose of carrying out the provisions of this chapter.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/69th/Stats199706.html#Stats199706page835\">1997, 835</a>; A <a href=\"../Statutes/71st/Stats200117.html#Stats200117page2612\">2001, 2612</a>; <a href=\"../Statutes/17thSS/Stats2001SS1701.html#Stats2001SS1701page36\">2001 Special Session, 36</a>; <a href=\"../Statutes/72nd/Stats200301.html#Stats200301page236\">2003, 236</a>)</p> <p class=\"DocHeading2\">Corrective Action, Improvement Plans and Incentive Payments</p>"
+      parseSectionBody "432B.215" dom `shouldBe` expectedHtml
 
 
 
