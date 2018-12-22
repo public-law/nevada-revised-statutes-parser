@@ -50,10 +50,11 @@ parseSectionsFromJustHtml chapterData =
 
 
 parseSectionsFromHeadingGroup :: ChapterData -> TagList -> Either String [Section]
-parseSectionsFromHeadingGroup chapterData = do
-  let paragraphs = headingParagraphsWithContent chapterData
-  let parser = parseSectionFromHeadingParagraph chapterData
-  return $ mapM parser paragraphs
+parseSectionsFromHeadingGroup chapterData headingGroup =
+  let paragraphs = headingParagraphsWithContent' headingGroup
+      parser = parseSectionFromHeadingParagraph chapterData
+  in
+    mapM parser paragraphs
 
 
 -- Some COLeadline P's have no content; they're just used for vertical spacing.
@@ -66,6 +67,15 @@ headingParagraphsWithContent chapterData = filter SectionParser.isTOCEntry
       <$> (partitions (~== leadlineP) (headings chapterData))
 
 
+headingParagraphsWithContent' :: TagList -> [TagList]
+headingParagraphsWithContent' headingGroup = filter SectionParser.isTOCEntry
+                                                  putativeTOCEntries
+  where
+  putativeTOCEntries =
+    (takeWhile (~/= closingP))
+      <$> (partitions (~== leadlineP) headingGroup)
+
+      
 parseSectionFromHeadingParagraph
   :: ChapterData -> TagList -> Either String Section
 parseSectionFromHeadingParagraph chapterData paragraph = do
