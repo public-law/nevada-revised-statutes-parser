@@ -104,14 +104,6 @@ spec = parallel $ do
         _ -> error "Got Sections but expected SubChapters"
 
 
-    it "gets a simple sub-chapter's sections" $ do
-      html <- chapter_432b_html
-      let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
-      case children generalProvisions of
-        SubChapterSections xs -> length xs `shouldBe` 31
-        SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
-
-
     it "gets the sub-chapter's section names right - 1" $ do
       generalProvisions <- head . subChapters <$> chapter_432b
       case children generalProvisions of
@@ -128,12 +120,44 @@ spec = parallel $ do
             `shouldBe` "“Abuse or neglect of a child” defined."
         SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
-    it "gets the sub-chapter's section numbers right" $ do
+    it "gets all the sub-chapter's section numbers right" $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
       case children generalProvisions of
         SubChapterSections xs ->
-          show (Section.number (xs !! 1)) `shouldBe` "432B.020"
+          map (show . Section.number) xs
+            `shouldBe` [ "432B.010"
+                       , "432B.020"
+                       , "432B.030"
+                       , "432B.035"
+                       , "432B.040"
+                       , "432B.042"
+                       , "432B.044"
+                       , "432B.050"
+                       , "432B.060"
+                       , "432B.065"
+                       , "432B.067"
+                       , "432B.068"
+                       , "432B.069"
+                       , "432B.070"
+                       , "432B.080"
+                       , "432B.090"
+                       , "432B.100"
+                       , "432B.110"
+                       , "432B.121"
+                       , "432B.130"
+                       , "432B.135"
+                       , "432B.140"
+                       , "432B.150"
+                       , "432B.153"
+                       , "432B.157"
+                       , "432B.159"
+                       , "432B.160"
+                       , "432B.165"
+                       , "432B.170"
+                       , "432B.175"
+                       , "432B.178"
+                       ]
         SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
 
@@ -174,6 +198,26 @@ spec = parallel $ do
         SubSubChapters xs ->
           show (Section.name ((!! 0) $ SubSubChapter.sections (head xs)))
             `shouldBe` "Duties of Division of Child and Family Services."
+        SubChapterSections _ ->
+          error "Got sections but expected sub-sub-chapters"
+
+
+    it "gets a complex sub-chapter's sub-sub-chapter section numbers" $ do
+      html <- chapter_432b_html
+      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
+      case children administration of
+        SubSubChapters xs ->
+          map (show . Section.number) (SubSubChapter.sections (head xs))
+            `shouldBe` [ "432B.180"
+                       , "432B.190"
+                       , "432B.195"
+                       , "432B.197"
+                       , "432B.198"
+                       , "432B.199"
+                       , "432B.200"
+                       , "432B.210"
+                       , "432B.215"
+                       ]
         SubChapterSections _ ->
           error "Got sections but expected sub-sub-chapters"
 
