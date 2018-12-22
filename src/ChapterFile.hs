@@ -101,6 +101,19 @@ parseChapter chapterHtml = do
     }
 
 
+makeChapterData :: Html -> ChapterData
+makeChapterData chapterHtml =
+  let fullPage    = parseTags $ toText chapterHtml
+      topHalf'    = topHalf fullPage
+      bottomHalf' = bottomHalf fullPage
+  in  ChapterData
+        { headings      = topHalf'
+        , content       = bottomHalf'
+        , sectionGroups = findSectionGroups bottomHalf'
+        }
+
+
+
 findSectionGroups :: TagList -> [TagList]
 findSectionGroups contentHalf =
   partitions (~== ("<span class=Section" :: String)) contentHalf
