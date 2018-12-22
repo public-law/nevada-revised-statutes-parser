@@ -31,16 +31,20 @@ import qualified SimpleChapterFile              ( parseSectionsFromJustHtml
 import           Models.Chapter                as Chapter
 import           Models.SubChapter             as SubChapter
 import           Models.SubSubChapter          as SubSubChapter
+import           Parsing                        ( ChapterData(..)
+                                                , TagList
+                                                )
 import           TextUtil                       ( normalizeWhiteSpace
                                                 , titleize
                                                 )
 
 
 type ChapterMap = HashMap RelativePath Html
-type TagList    = [Tag Text]
 
-newtype SubChapterTOC = MakeSubChapterGroup TagList
-newtype SubSubChapterTOC = MakeSubSubChapterGroup TagList
+-- TODO: Use these to refactor.
+-- newtype SubChapterTOC = MakeSubChapterGroup TagList
+-- newtype SubSubChapterTOC = MakeSubSubChapterGroup TagList
+
 
 
 leadlineP :: String
@@ -48,6 +52,10 @@ leadlineP = "<p class=COLeadline>"
 
 heading4P :: String
 heading4P = "<p class=COHead4>"
+
+horizontalRule :: String
+horizontalRule = "<p class=\"J-Dash\""
+
 
 
 -- TODO: Refactor. Change this method by creating an EmptyChapter type.
@@ -74,9 +82,17 @@ chapterNumberToFilename chapterNumber =
 parseChapter :: Html -> Either String Chapter
 parseChapter chapterHtml = do
   let fullPage             = parseTags $ toText chapterHtml
-  let rawTitle             = titleText fullPage
+  let topHalf'             = topHalf fullPage
+  let bottomHalf'          = bottomHalf fullPage
+  let rawTitle             = titleText topHalf'
   let (rawNumber, rawName) = parseChapterFileTitle rawTitle
-  sectionsOrSubChapters <- chapterContent fullPage
+  let chapterData = ChapterData
+        { headings      = topHalf'
+        , content       = bottomHalf'
+        , sectionGroups = findSectionGroups bottomHalf'
+        }
+  sectionsOrSubChapters <- chapterContent chapterData
+
   return Chapter
     { Chapter.name    = rawName
     , Chapter.number  = rawNumber
@@ -85,21 +101,34 @@ parseChapter chapterHtml = do
     }
 
 
+findSectionGroups :: TagList -> [TagList]
+findSectionGroups contentHalf =
+  partitions (~== ("<span class=Section" :: String)) contentHalf
+
+
+topHalf :: TagList -> TagList
+topHalf fullPage = takeWhile (~/= horizontalRule) fullPage
+
+bottomHalf :: TagList -> TagList
+bottomHalf fullPage = dropWhile (~/= horizontalRule) fullPage
+
+
 -- TODO: What is a "heading group"?
-chapterContent :: TagList -> Either String ChapterContent
-chapterContent fullPage = do
-  let groups = headingGroups fullPage
-  foundSubChapters <- mapM (newSubChapter fullPage) groups
-  foundSections    <- SimpleChapterFile.parseSectionsFromJustHtml fullPage
+chapterContent :: ChapterData -> Either String ChapterContent
+chapterContent chapterData = do
+  let groups = headingGroups chapterData
+  foundSubChapters <- mapM (newSubChapter chapterData) groups
+  foundSections    <- SimpleChapterFile.parseSectionsFromJustHtml chapterData
   return $ case foundSubChapters of
     [] -> SimpleChapterContent foundSections
     xs -> ComplexChapterContent xs
 
 
-newSubChapter :: TagList -> TagList -> Either String SubChapter
-newSubChapter fullPage headingGroup = do
-  scs <- SimpleChapterFile.parseSectionsFromHeadingGroup fullPage headingGroup
-  ssc <- parseSubSubChapters fullPage headingGroup
+newSubChapter :: ChapterData -> TagList -> Either String SubChapter
+newSubChapter chapterData headingGroup = do
+  scs <- SimpleChapterFile.parseSectionsFromHeadingGroup chapterData
+                                                         headingGroup
+  ssc <- parseSubSubChapters chapterData headingGroup
   let name' = subChapterNameFromGroup headingGroup
   let children' = if SimpleChapterFile.isSimpleSubChapter headingGroup
         then SubChapterSections scs
@@ -107,18 +136,18 @@ newSubChapter fullPage headingGroup = do
   return SubChapter { SubChapter.name = name', SubChapter.children = children' }
 
 
-parseSubSubChapters :: TagList -> TagList -> Either String [SubSubChapter]
-parseSubSubChapters fullPage headingGroup =
-  let parser = parseSubSubChapter fullPage
+parseSubSubChapters :: ChapterData -> TagList -> Either String [SubSubChapter]
+parseSubSubChapters chapterData headingGroup =
+  let parser = parseSubSubChapter chapterData
       groups = subSubChapterHeadingGroups headingGroup
   in  mapM parser groups
 
 
-parseSubSubChapter :: TagList -> TagList -> Either String SubSubChapter
-parseSubSubChapter fullPage subSubChapterHeadingGroup = do
+parseSubSubChapter :: ChapterData -> TagList -> Either String SubSubChapter
+parseSubSubChapter chapterData subSubChapterHeadingGroup = do
   let name' = extractSubSubChapterName subSubChapterHeadingGroup
   sections' <- SimpleChapterFile.parseSectionsFromHeadingGroup
-    fullPage
+    chapterData
     subSubChapterHeadingGroup
   return SubSubChapter
     { SubSubChapter.name     = name'
@@ -143,9 +172,9 @@ subChapterNameFromGroup tags =
 
 -- A Heading Group is a Sub Chapter heading with all of its following
 -- content.
-headingGroups :: TagList -> [TagList]
-headingGroups fullPage =
-  partitions (~== ("<p class=COHead2>" :: String)) fullPage
+headingGroups :: ChapterData -> [TagList]
+headingGroups chapterData =
+  partitions (~== ("<p class=COHead2>" :: String)) (headings chapterData)
 
 
 subSubChapterHeadingGroups :: TagList -> [TagList]
