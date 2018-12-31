@@ -16,7 +16,7 @@ import           BasicPrelude                   ( Eq
                                                 , (</>)
                                                 , (.)
                                                 )
-import qualified BasicPrelude                  as BasicPrelude
+import qualified BasicPrelude
 import           Data.ByteString                ( hGetContents )
 import qualified Data.Text                     as T
 import           Data.Text.Encoding             ( decodeLatin1 )

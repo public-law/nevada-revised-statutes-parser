@@ -1,6 +1,6 @@
 module IndexFile where
 
-import           BasicPrelude            hiding ( takeWhile )
+import           BasicPrelude
 import           Data.Attoparsec.Text           ( parseOnly )
 import           Data.Function                  ( (&) )
 import           Data.List.Split                ( chunksOf
