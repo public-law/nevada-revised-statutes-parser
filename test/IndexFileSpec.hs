@@ -23,6 +23,11 @@ spec = parallel $ describe "parseTitles" $ do
     Title.name judicialDept `shouldBe` "State Judicial Department"
 
 
+  it "gets a title's name" $ do
+    t <- title17
+    Title.name t `shouldBe` "State Legislative Department"
+
+
   it "gets a title's number" $ do
     judicialDept <- firstTitle
     Title.number judicialDept `shouldBe` 1
@@ -60,6 +65,10 @@ firstTitle = do
   html <- nrsIndexHtml
   return (head (parseTitles html))
 
+title17 :: IO Title
+title17 = do
+  html <- nrsIndexHtml
+  return $ parseTitles html !! 16
 
 title38 :: IO Title
 title38 = do
@@ -68,4 +77,4 @@ title38 = do
 
 
 nrsIndexHtml :: IO Html
-nrsIndexHtml = NewHtml <$> readFile (fixture "nrs.html")
+nrsIndexHtml = NewHtml <$> readFile (fixture "index.html")
