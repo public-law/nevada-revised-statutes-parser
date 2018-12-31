@@ -89,7 +89,7 @@ parseRawTitle input =
       p =
         (,)
           <$> (textSymbol "TITLE" *> integer)
-          <*> (textSymbol "—" *> (fromString <$> many (notChar '\n')))
+          <*> (textSymbol "—" *> (fromString <$> many anyChar))
   in  case f of
         Left  e -> error e
         Right b -> b
