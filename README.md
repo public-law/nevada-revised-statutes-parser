@@ -3,7 +3,7 @@ Parser for the Nevada Revised Statutes
 
 [![Build Status](https://travis-ci.org/public-law/nevada-revised-statutes-parser.svg?branch=master)](https://travis-ci.org/public-law/nevada-revised-statutes-parser)
 
-**Input:** The [Nevada Revised Statutes website](https://www.leg.state.nv.us/NRS/), downloaded with `wget` into `/tmp`.
+**Input:** The [Nevada Revised Statutes website](https://www.leg.state.nv.us/NRS/), downloaded with the included script into `/tmp`.
 
 **Output:** Semantic JSON:
 
