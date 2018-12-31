@@ -61,13 +61,16 @@ main = hspec spec
 
 
 firstTitle :: IO Title
-firstTitle = head . parseTitles <$> nrsIndexHtml
+firstTitle = head <$> parsedTitles
 
 title17 :: IO Title
-title17 = (!! 16) . parseTitles <$> nrsIndexHtml
+title17 = (!! 16) <$> parsedTitles
 
 title38 :: IO Title
-title38 = (!! 37) . parseTitles <$> nrsIndexHtml
+title38 = (!! 37) <$> parsedTitles
+
+parsedTitles :: IO [Title]
+parsedTitles = parseTitles <$> nrsIndexHtml
 
 nrsIndexHtml :: IO Html
 nrsIndexHtml = NewHtml <$> readFile (fixture "index.html")
