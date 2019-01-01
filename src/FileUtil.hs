@@ -47,6 +47,9 @@ readFileLatin1 pathname =
 
 
 
+
+
+
 -- Compute a full fixture path
 fixture :: FilePath -> FilePath
 fixture filename = "test/fixtures/" ++ filename
