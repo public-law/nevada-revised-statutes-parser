@@ -77,7 +77,7 @@ spec = parallel $ do
       html ← chapter_432b_html
       let innards = Chapter.content (unwrap $ parseChapter html)
       case innards of
-        ComplexChapterContent subchapters -> length subchapters `shouldBe` 13
+        ComplexChapterContent subchapters -> length subchapters `shouldBe` 12
         _ -> error "Got Sections but expected SubChapters"
 
 
@@ -89,7 +89,7 @@ spec = parallel $ do
           map SubChapter.name subchapters
             `shouldBe` [ "General Provisions"
                        , "Administration"
-                       , "Reports of Abuse or Neglect; Reports of Prenatal Illegal Substance Abuse"
+                       , "Reports of Abuse or Neglect; Reports of Prenatal Substance Abuse"
                        , "Protective Services and Custody"
                        , "Child Death Review Teams"
                        , "Civil Proceedings"
@@ -99,12 +99,11 @@ spec = parallel $ do
                        , "Sexual Abuse or Sexual Exploitation of Children Under Age of 18 Years"
                        , "Kinship Guardianship Assistance Program"
                        , "Miscellaneous Provisions"
-                       , "Task Force on the Prevention of Sexual Abuse of Children"
                        ]
         _ -> error "Got Sections but expected SubChapters"
 
 
-    it "gets the sub-chapter's section names right - 1" $ do
+    it "gets the sub-chapter's section names - 1" $ do
       generalProvisions <- head . subChapters <$> chapter_432b
       case children generalProvisions of
         SubChapterSections xs ->
@@ -112,7 +111,7 @@ spec = parallel $ do
         SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
 
-    it "gets the sub-chapter's section names right - 2" $ do
+    it "gets the sub-chapter's section names - 2" $ do
       generalProvisions <- head . subChapters <$> chapter_432b
       case children generalProvisions of
         SubChapterSections xs ->
@@ -120,7 +119,8 @@ spec = parallel $ do
             `shouldBe` "“Abuse or neglect of a child” defined."
         SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
-    it "gets all the sub-chapter's section numbers right" $ do
+
+    it "gets all the sub-chapter's section numbers" $ do
       html <- chapter_432b_html
       let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
       case children generalProvisions of
@@ -136,6 +136,8 @@ spec = parallel $ do
                        , "432B.050"
                        , "432B.060"
                        , "432B.065"
+                       , "432B.0655"
+                       , "432B.066"
                        , "432B.067"
                        , "432B.068"
                        , "432B.069"
@@ -153,8 +155,11 @@ spec = parallel $ do
                        , "432B.157"
                        , "432B.159"
                        , "432B.160"
+                       , "432B.163"
                        , "432B.165"
                        , "432B.170"
+                       , "432B.172"
+                       , "432B.174"
                        , "432B.175"
                        , "432B.178"
                        ]
@@ -234,23 +239,12 @@ spec = parallel $ do
 
 
 
-    describe "section" $ do
-
-
-      it "returns the complete HTML - 1" $ do
-        let
-          expectedHtml
-            = "<p class=SectBody>The Division of Child and Family Services shall establish and maintain a center with a toll-free telephone number to receive reports of abuse or neglect of a child in this State 24 hours a day, 7 days a week. Any reports made to this center must be promptly transmitted to the agency which provides child welfare services in the community where the child is located.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/63rd/Stats198506.html#Stats198506page1371\">1985, 1371</a>; A <a href=\"../Statutes/67th/Stats199313.html#Stats199313page2706\">1993, 2706</a>; <a href=\"../Statutes/17thSS/Stats2001SS1701.html#Stats2001SS1701page36\">2001 Special Session, 36</a>)</p>"
-        actualHtml <- (parseSectionBody "432B.200") <$> chapterData
-        actualHtml `shouldBe` expectedHtml
-
-
-      it "returns the complete HTML - 2" $ do
-        let
-          expectedHtml
-            = "<p class=SectBody>1. An agency which provides child welfare services may request the Division of Parole and Probation of the Department of Public Safety to provide information concerning a probationer or parolee that may assist the agency in carrying out the provisions of this chapter. The Division of Parole and Probation shall provide such information upon request.</p> <p class=\"SectBody\"> 2. The agency which provides child welfare services may use the information obtained pursuant to subsection 1 only for the limited purpose of carrying out the provisions of this chapter.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/69th/Stats199706.html#Stats199706page835\">1997, 835</a>; A <a href=\"../Statutes/71st/Stats200117.html#Stats200117page2612\">2001, 2612</a>; <a href=\"../Statutes/17thSS/Stats2001SS1701.html#Stats2001SS1701page36\">2001 Special Session, 36</a>; <a href=\"../Statutes/72nd/Stats200301.html#Stats200301page236\">2003, 236</a>)</p> <p class=\"DocHeading2\">Corrective Action, Improvement Plans and Incentive Payments</p>"
-        actualHtml <- (parseSectionBody "432B.215") <$> chapterData
-        actualHtml `shouldBe` expectedHtml
+    describe "section" $ it "returns the complete HTML - 2" $ do
+      let
+        expectedHtml
+          = "<p class=SectBody>1. An agency which provides child welfare services may request the Division of Parole and Probation of the Department of Public Safety to provide information concerning a probationer or parolee that may assist the agency in carrying out the provisions of this chapter. The Division of Parole and Probation shall provide such information upon request.</p> <p class=\"SectBody\"> 2. The agency which provides child welfare services may use the information obtained pursuant to subsection 1 only for the limited purpose of carrying out the provisions of this chapter.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/69th/Stats199706.html#Stats199706page835\">1997, 835</a>; A <a href=\"../Statutes/71st/Stats200117.html#Stats200117page2612\">2001, 2612</a>; <a href=\"../Statutes/17thSS/Stats2001SS1701.html#Stats2001SS1701page36\">2001 Special Session, 36</a>; <a href=\"../Statutes/72nd/Stats200301.html#Stats200301page236\">2003, 236</a>)</p> <p class=\"DocHeading2\">Corrective Action, Improvement Plans and Incentive Payments</p>"
+      actualHtml <- parseSectionBody "432B.215" <$> chapterData
+      actualHtml `shouldBe` expectedHtml
 
 
 
