@@ -4,6 +4,7 @@ import           BasicPrelude
 import           Test.Hspec
 
 import           TextUtil                       ( isUsuallyUncapitalized
+                                                , normalizeWhiteSpace
                                                 , titleize
                                                 , titleizeWord
                                                 )
@@ -12,11 +13,19 @@ import           TextUtil                       ( isUsuallyUncapitalized
 spec :: SpecWith ()
 spec = parallel $ do
 
+  describe "normalizeWhiteSpace" $ do
+    it "handles easy cases"
+      $          normalizeWhiteSpace "one   two   three  "
+      `shouldBe` "one two three"
+
+    it "handles weird stuff"
+      $ normalizeWhiteSpace "Protection of Children From Abuse and\r\n  Neglect"
+      `shouldBe` "Protection of Children From Abuse and Neglect"
+
+
   describe "isUsuallyUncapitalized" $ do
     it "handles a typical article" $ isUsuallyUncapitalized "a" `shouldBe` True
-
     it "handles a normal word" $ isUsuallyUncapitalized "dog" `shouldBe` False
-
     it "handles uppercase input" $ isUsuallyUncapitalized "THE" `shouldBe` True
 
 

@@ -7,7 +7,6 @@ import           Data.List.Split                ( chunksOf
                                                 , split
                                                 , whenElt
                                                 )
-import qualified Data.Text                     as T
 import           Text.HTML.TagSoup              ( Tag
                                                 , fromAttrib
                                                 , innerText
@@ -23,7 +22,9 @@ import           ChapterFile                    ( ChapterMap
 import           HtmlUtil
 import           Models.Chapter                as Chapter
 import           Models.Title                  as Title
-import           TextUtil                       ( titleize )
+import           TextUtil                       ( normalizeWhiteSpace
+                                                , titleize
+                                                )
 import           FileUtil                       ( toAbsoluteURL )
 
 
@@ -74,8 +75,12 @@ newTitle tuple =
 
 newChapter :: Node → Chapter
 newChapter row = Chapter
-  { Chapter.name    = last columns & innerText & T.strip
-  , Chapter.number  = head columns & innerText & T.strip & words & last
+  { Chapter.name    = last columns & innerText & normalizeWhiteSpace
+  , Chapter.number  = head columns
+    & innerText
+    & normalizeWhiteSpace
+    & words
+    & last
   , Chapter.url = findFirst "<a>" row & head & fromAttrib "href" & toAbsoluteURL
     "https://www.leg.state.nv.us/NRS/"
   , Chapter.content = ComplexChapterContent []

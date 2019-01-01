@@ -6,6 +6,7 @@ import           Test.Hspec
 import           FileUtil                       ( fixture )
 import           HtmlUtil
 import           IndexFile                      ( parseTitles )
+
 import           Models.Chapter                as Chapter
 import           Models.Title                  as Title
 
