@@ -5,6 +5,7 @@ import           BasicPrelude                   ( Eq
                                                 , Hashable
                                                 , IO
                                                 , IsString
+                                                , Maybe(..)
                                                 , Show
                                                 , Text
                                                 , filterM
@@ -46,8 +47,17 @@ readFileLatin1 pathname =
   decodeLatin1 <$> withFile pathname ReadMode hGetContents
 
 
-
-
+-- Optionally create an absolute NRS URL given a URL base to apply 
+-- to relative paths. E.g.:
+-- https://www.leg.state.nv.us/NRS/ + ../NRS/NRS-001.html =
+-- https://www.leg.state.nv.us/NRS/NRS-001.html
+-- Otherwise, assume the path is absolute.
+-- TODO: Make an either.
+toAbsoluteURL :: Text -> Text -> Text
+toAbsoluteURL urlRoot relativePath =
+  case T.stripPrefix "../NRS/" relativePath of
+    Just suffix -> urlRoot ++ suffix
+    Nothing     -> relativePath
 
 
 -- Compute a full fixture path

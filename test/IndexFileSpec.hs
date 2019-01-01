@@ -41,7 +41,7 @@ spec = parallel $ describe "parseTitles" $ do
     Chapter.name chapter1 `shouldBe` "Judicial Department Generally"
     Chapter.number chapter1 `shouldBe` "1"
     Chapter.url chapter1
-      `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
+      `shouldBe` "https://www.leg.state.nv.us/NRS/NRS-001.html"
 
 
   it "gets one that is further in" $ do

@@ -24,6 +24,7 @@ import           HtmlUtil
 import           Models.Chapter                as Chapter
 import           Models.Title                  as Title
 import           TextUtil                       ( titleize )
+import           FileUtil                       ( toAbsoluteURL )
 
 
 type Node = [Tag Text]
@@ -73,10 +74,11 @@ newTitle tuple =
 
 newChapter :: Node → Chapter
 newChapter row = Chapter
-  { Chapter.name   = last columns & innerText & T.strip
-  , Chapter.number = head columns & innerText & T.strip & words & last
-  , url            = findFirst "<a>" row & head & fromAttrib "href"
-  , content        = ComplexChapterContent []
+  { Chapter.name    = last columns & innerText & T.strip
+  , Chapter.number  = head columns & innerText & T.strip & words & last
+  , Chapter.url = findFirst "<a>" row & head & fromAttrib "href" & toAbsoluteURL
+    "https://www.leg.state.nv.us/NRS/"
+  , Chapter.content = ComplexChapterContent []
   }
   where columns = findAll "<td>" row
 

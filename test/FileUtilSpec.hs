@@ -7,10 +7,10 @@ import           FileUtil                       ( toAbsoluteURL )
 
 
 spec :: SpecWith ()
-spec = parallel $ do
-
-  describe "toAbsoluteURL" $ do
-    it "handles parent-relative URLs"
-      $ toAbsoluteURL "../NRS/NRS-001.html" "https://www.leg.state.nv.us/nrs"
-      `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
+spec =
+  parallel
+    $          describe "toAbsoluteURL"
+    $          it "handles parent-relative URLs"
+    $ toAbsoluteURL "https://www.leg.state.nv.us/NRS/" "../NRS/NRS-001.html"
+    `shouldBe` "https://www.leg.state.nv.us/NRS/NRS-001.html"
 
