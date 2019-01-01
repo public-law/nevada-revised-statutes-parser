@@ -6,6 +6,7 @@ import           Test.Hspec
 import           FileUtil                       ( fixture )
 import           HtmlUtil
 import           IndexFile                      ( parseTitles )
+
 import           Models.Chapter                as Chapter
 import           Models.Title                  as Title
 
@@ -23,6 +24,11 @@ spec = parallel $ describe "parseTitles" $ do
     Title.name judicialDept `shouldBe` "State Judicial Department"
 
 
+  it "gets a title's name" $ do
+    t <- title17
+    Title.name t `shouldBe` "State Legislative Department"
+
+
   it "gets a title's number" $ do
     judicialDept <- firstTitle
     Title.number judicialDept `shouldBe` 1
@@ -36,7 +42,7 @@ spec = parallel $ describe "parseTitles" $ do
     Chapter.name chapter1 `shouldBe` "Judicial Department Generally"
     Chapter.number chapter1 `shouldBe` "1"
     Chapter.url chapter1
-      `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-001.html"
+      `shouldBe` "https://www.leg.state.nv.us/NRS/NRS-001.html"
 
 
   it "gets one that is further in" $ do
@@ -56,16 +62,16 @@ main = hspec spec
 
 
 firstTitle :: IO Title
-firstTitle = do
-  html <- nrsIndexHtml
-  return (head (parseTitles html))
+firstTitle = head <$> parsedTitles
 
+title17 :: IO Title
+title17 = (!! 16) <$> parsedTitles
 
 title38 :: IO Title
-title38 = do
-  html <- nrsIndexHtml
-  return $ parseTitles html !! 37
+title38 = (!! 37) <$> parsedTitles
 
+parsedTitles :: IO [Title]
+parsedTitles = parseTitles <$> nrsIndexHtml
 
 nrsIndexHtml :: IO Html
-nrsIndexHtml = NewHtml <$> readFile (fixture "nrs.html")
+nrsIndexHtml = NewHtml <$> readFile (fixture "index.html")
