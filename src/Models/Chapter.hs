@@ -1,5 +1,3 @@
-{-# LANGUAGE ViewPatterns #-}
-
 module Models.Chapter where
 
 import           BasicPrelude
@@ -14,13 +12,12 @@ data Chapter = SimpleChapter {
                 name    :: Text,
                 number  :: Text,
                 url     :: Text,
-                sections :: [Section]
-              }
-              | ComplexChapter {
+                sections :: [Section] }
+             | ComplexChapter {
                 name    :: Text,
                 number  :: Text,
                 url     :: Text,
-                subChapters :: [SubChapter]
-              } deriving (Generic, Show)
+                subChapters :: [SubChapter] }
+             deriving (Generic, Show)
 
 instance ToJSON Chapter

@@ -8,18 +8,13 @@ import           Models.Section
 import           Models.SubSubChapter
 
 
-data SubChapter =
-  SubChapter {
-    name     :: Text,
-    children :: SubChapterChildList
-} deriving (Generic, Show)
-
-
--- This datatype is purely an implementation detail.
-data SubChapterChildList = SubChapterSections [Section]
-                         | SubSubChapters     [SubSubChapter]
-    deriving (Generic, Show)
+data SubChapter = SimpleSubChapter {
+                    name :: Text,
+                    sections :: [Section] }
+                | ComplexSubChapter {
+                    name :: Text,
+                    subSubChapters :: [SubSubChapter] }
+                deriving (Generic, Show)
 
 
 instance ToJSON SubChapter
-instance ToJSON SubChapterChildList
