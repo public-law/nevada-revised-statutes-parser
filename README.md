@@ -6,7 +6,7 @@ Parser for the Nevada Revised Statutes
 **Input:** The [Nevada Revised Statutes website](https://www.leg.state.nv.us/NRS/),
 mirrored with the included script into `/tmp`.
 
-**Output:** Semantic JSON:
+**Output:** Well-formed JSON which implements the laws' structure as the legislature created it:
 
 ```json
 {
