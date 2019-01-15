@@ -26,6 +26,13 @@ mirrored with the included script into `/tmp`.
 
 etc.
 
+Try it yourself with Docker
+---------------------------
+
+```bash
+$ docker run publiclaw/nevada-nrs > nrs.json
+```
+
 Opinionated Resources for Haskell Best Practices
 ------------------------------------------------
 
