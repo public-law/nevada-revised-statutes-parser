@@ -26,12 +26,10 @@ mirrored with the included script into `/tmp`.
 
 etc.
 
-Try it yourself with Docker
----------------------------
+Explore the Data on Kaggle
+--------------------------
 
-```bash
-$ docker run publiclaw/nevada-nrs > nrs.json
-```
+* https://www.kaggle.com/public-law/nevadanrs
 
 Opinionated Resources for Haskell Best Practices
 ------------------------------------------------
