@@ -5,5 +5,5 @@ cd /tmp
 wget --recursive --no-parent --no-verbose https://www.leg.state.nv.us/NRS/
 
 # Parse and produce JSON
-cd - > /dev/null  # cd - echoes the new dir to stdout.
+cd - > /dev/null  # "cd -" echoes the new dir to stdout.
 ./nrs-parser-exe
