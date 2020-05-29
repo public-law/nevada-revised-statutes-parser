@@ -84,7 +84,8 @@ parseSectionFromHeadingParagraph chapterData paragraph = do
         paragraph
   let rawNumberText = normalizedInnerText $ takeWhile (~/= closingA) paragraph
   let secNumber     = parseNumberFromRawNumberText rawNumberText secName
-  let secBody       = parseSectionBody secNumber chapterData
+  secBody <- parseSectionBody secNumber chapterData
+
   (name', number', body') <- toThreeSectionFields secName secNumber secBody
   return Section
     { Section.name   = name'
@@ -113,26 +114,22 @@ parseNumberFromRawNumberText numberText secName = case words numberText of
   _ -> error [qq|Expected sec. $numberText $secName to have >= 2 words|]
 
 
-parseSectionBody :: Text -> ChapterData -> Html
+parseSectionBody :: Text -> ChapterData -> Either String Html
 parseSectionBody secNumber chapterData = sectionHtml
  where
-  rawSectionGroup =
-    rawSectionGroupFromSectionGroups secNumber (sectionGroups chapterData)
-  sectionHtml = NewHtml $ "<p class=SectBody>" ++ normalizeWhiteSpace
-    (renderTags $ drop 6 $ dropWhile (~/= ("<span class=Leadline>" :: String))
-                                     rawSectionGroup
-    )
+  rawSectionGroup = rawSectionGroupFromSectionGroups secNumber (sectionGroups chapterData)
+  sectionHtml = case rawSectionGroup of
+    Right secGroup -> Right $ NewHtml $ "<p class=SectBody>" ++ normalizeWhiteSpace (renderTags $ drop 6 $ dropWhile (~/= ("<span class=Leadline>" :: String)) secGroup)
+    Left x  -> Left x
 
 
-rawSectionGroupFromSectionGroups :: Text -> [TagList] -> TagList
+rawSectionGroupFromSectionGroups :: Text -> [TagList] -> Either String TagList
 rawSectionGroupFromSectionGroups secNumber secGroups =
   let bodyNumbers = filter (isSectionBodyNumber secNumber) secGroups
   in
     case bodyNumbers of
-      (x : _) -> shaveBackTagsToLastClosingP x
-      _ ->
-        error
-          [qq|Couldn't find sec. body for num. "$secNumber" in sec. groups: ...|]
+      (x : _) -> Right $ shaveBackTagsToLastClosingP x
+      _       -> Left $ [qq|Couldn't find sec. body for num. "$secNumber" in sec. groups.|]
 
 
 isSectionBodyNumber :: Text -> TagList -> Bool
