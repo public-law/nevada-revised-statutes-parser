@@ -25,6 +25,7 @@ parseTitlesAndChapters indexHtml chapterMap =
         Right ts -> map (fillInEmptyTitle chapterMap) ts
         Left s   -> error s
 
+
 fillInEmptyTitle :: ChapterMap -> Title -> Title
 fillInEmptyTitle chapterMap emptyTitle =
   Title
@@ -33,17 +34,20 @@ fillInEmptyTitle chapterMap emptyTitle =
     , chapters = map (fillInEmptyChapter chapterMap) (chapters emptyTitle)
     }
 
+
 parseTitles :: Html -> Either String [Title]
-parseTitles indexHtml = do
-  rows <- contentRows indexHtml
-  let tuples = rowTuples rows
-  return $ rights $ fmap newTitle tuples
+parseTitles indexHtml =
+  case contentRows indexHtml of
+    Right content_rows -> mapM newTitle (rowTuples content_rows)
+    Left error_message -> Left error_message
+    
 
 contentRows :: Html -> Either String [Node]
 contentRows indexHtml = do
   let tags = parseTags $ toText indexHtml
   table <- findFirst "<table class=MsoNormalTable" tags
   return $ findAll "<tr>" table
+
 
 newTitle :: [[Node]] -> Either String Title
 newTitle tuple = do
@@ -59,6 +63,7 @@ newTitle tuple = do
       , Title.number = rawNumber
       , chapters = rights parsedChapters
       }
+
 
 newChapter :: Node -> Either String Chapter
 newChapter row = do
@@ -77,6 +82,7 @@ newChapter row = do
       , Chapter.content = ComplexChapterContent []
       }
 
+
 -- Input:  "TITLE\n  1 — STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: (1, "STATE JUDICIAL DEPARTMENT")
 parseRawTitle :: Text -> (Integer, Text)
@@ -89,8 +95,10 @@ parseRawTitle input =
         Left e  -> error e
         Right b -> b
 
+
 rowTuples :: [Node] -> [[[Node]]]
 rowTuples rows = split (whenElt isTitleRow) rows & tail & chunksOf 2
+
 
 isTitleRow :: Node -> Bool
 isTitleRow html = length (findAll "<td>" html) == 1
