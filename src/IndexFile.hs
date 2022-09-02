@@ -16,6 +16,8 @@ import           Models.Chapter          as Chapter
 import           Models.Title            as Title
 import           TextUtil                (normalizeWhiteSpace, titleize)
 
+
+
 parseTitlesAndChapters :: Html -> ChapterMap -> [Title]
 parseTitlesAndChapters indexHtml chapterMap =
   let emptyTitles = parseTitles indexHtml
