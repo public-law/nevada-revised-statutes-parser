@@ -1,6 +1,7 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Redundant bracket" #-}
+{-# HLINT ignore "Use head" #-}
 
 
 module ChapterFileSpec where
@@ -48,8 +49,8 @@ spec = do
 
 
     it "gets the sub-chapter names - 1" $ do
-      html ← chapter_432b_html
-      let innards = Chapter.content (unwrap $ parseChapter html)
+      chapter <- chapter_432b
+      let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters ->
           SubChapter.name (subchapters !! 0) `shouldBe` "General Provisions"
@@ -57,8 +58,8 @@ spec = do
 
 
     it "gets the sub-chapter names - 2" $ do
-      html ← chapter_432b_html
-      let innards = Chapter.content (unwrap $ parseChapter html)
+      chapter <- chapter_432b
+      let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters ->
           SubChapter.name (subchapters !! 1) `shouldBe` "Administration"
@@ -66,8 +67,8 @@ spec = do
 
 
     it "gets the sub-chapter names - 3" $ do
-      html ← chapter_432b_html
-      let innards = Chapter.content (unwrap $ parseChapter html)
+      chapter <- chapter_432b
+      let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters ->
           SubChapter.name (subchapters !! 3)
@@ -76,16 +77,18 @@ spec = do
 
 
     it "finds the right number of sub-chapters" $ do
-      html ← chapter_432b_html
-      let innards = Chapter.content (unwrap $ parseChapter html)
+      chapter <- chapter_432b
+
+      let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters -> length subchapters `shouldBe` 12
         _ -> error "Got Sections but expected SubChapters"
 
 
     it "finds the right sub-chapters" $ do
-      html ← chapter_432b_html
-      let innards = Chapter.content (unwrap $ parseChapter html)
+      chapter <- chapter_432b
+
+      let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters ->
           map SubChapter.name subchapters
@@ -107,6 +110,7 @@ spec = do
 
     it "gets the sub-chapter's section names - 1" $ do
       generalProvisions <- head . subChapters <$> chapter_432b
+
       case children generalProvisions of
         SubChapterSections xs ->
           show (Section.name (head xs)) `shouldBe` "Definitions."
@@ -115,6 +119,7 @@ spec = do
 
     it "gets the sub-chapter's section names - 2" $ do
       generalProvisions <- head . subChapters <$> chapter_432b
+
       case children generalProvisions of
         SubChapterSections xs ->
           show (Section.name (xs !! 1))
@@ -123,8 +128,8 @@ spec = do
 
 
     it "gets all the sub-chapter's section numbers" $ do
-      html <- chapter_432b_html
-      let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
+      chapter <- chapter_432b
+      let generalProvisions = head $ subChapters chapter
       case children generalProvisions of
         SubChapterSections xs ->
           map (show . Section.number) xs
