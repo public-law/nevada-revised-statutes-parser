@@ -17,16 +17,22 @@ spec =
   describe "parseTitles" $ do
     it "finds the correct number of titles" $ do
       html <- nrsIndexHtml
-      length (parseTitles html) `shouldBe` 59
+      case parseTitles html of
+        Right titles -> length titles `shouldBe` 59
+        Left message -> error message
+
     it "gets a title's name" $ do
       judicialDept <- firstTitle
       Title.name judicialDept `shouldBe` "State Judicial Department"
+
     it "gets a title's name" $ do
       t <- title17
       Title.name t `shouldBe` "State Legislative Department"
+
     it "gets a title's number" $ do
       judicialDept <- firstTitle
       Title.number judicialDept `shouldBe` 1
+
     it "reads a chapter correctly" $ do
       judicialDept <- firstTitle
       length (chapters judicialDept) `shouldNotBe` 0
@@ -35,6 +41,7 @@ spec =
       Chapter.number chapter1 `shouldBe` "1"
       Chapter.url chapter1 `shouldBe`
         "https://www.leg.state.nv.us/NRS/NRS-001.html"
+
     it "gets one that is further in" $ do
       publicWelfare <- title38
       Title.name publicWelfare `shouldBe` "Public Welfare"

@@ -1,4 +1,7 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Redundant bracket" #-}
+{-# HLINT ignore "Use head" #-}
 
 
 module ChapterFileSpec where
@@ -18,7 +21,7 @@ import           HtmlUtil
 
 
 spec :: SpecWith ()
-spec = parallel $ do
+spec = do
 
   let chapterData  = chapter_432b_data
   let chapter_432b = unwrap . parseChapter <$> chapter_432b_html
@@ -35,19 +38,19 @@ spec = parallel $ do
     --     Chapter.name (unwrap $ parseChapter html) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
 
     it "gets the chapter number" $ do
-      html ← chapter_432b_html
-      Chapter.number (unwrap $ parseChapter html) `shouldBe` "432B"
+      chapter <- chapter_432b
+
+      Chapter.number chapter `shouldBe` "432B"
 
 
     it "gets the chapter URL" $ do
-      html ← chapter_432b_html
-      url (unwrap $ parseChapter html)
-        `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
+      chapter <- chapter_432b
+      url chapter `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
 
 
     it "gets the sub-chapter names - 1" $ do
-      html ← chapter_432b_html
-      let innards = Chapter.content (unwrap $ parseChapter html)
+      chapter <- chapter_432b
+      let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters ->
           SubChapter.name (subchapters !! 0) `shouldBe` "General Provisions"
@@ -55,8 +58,8 @@ spec = parallel $ do
 
 
     it "gets the sub-chapter names - 2" $ do
-      html ← chapter_432b_html
-      let innards = Chapter.content (unwrap $ parseChapter html)
+      chapter <- chapter_432b
+      let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters ->
           SubChapter.name (subchapters !! 1) `shouldBe` "Administration"
@@ -64,8 +67,8 @@ spec = parallel $ do
 
 
     it "gets the sub-chapter names - 3" $ do
-      html ← chapter_432b_html
-      let innards = Chapter.content (unwrap $ parseChapter html)
+      chapter <- chapter_432b
+      let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters ->
           SubChapter.name (subchapters !! 3)
@@ -74,16 +77,18 @@ spec = parallel $ do
 
 
     it "finds the right number of sub-chapters" $ do
-      html ← chapter_432b_html
-      let innards = Chapter.content (unwrap $ parseChapter html)
+      chapter <- chapter_432b
+
+      let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters -> length subchapters `shouldBe` 12
         _ -> error "Got Sections but expected SubChapters"
 
 
     it "finds the right sub-chapters" $ do
-      html ← chapter_432b_html
-      let innards = Chapter.content (unwrap $ parseChapter html)
+      chapter <- chapter_432b
+
+      let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters ->
           map SubChapter.name subchapters
@@ -105,6 +110,7 @@ spec = parallel $ do
 
     it "gets the sub-chapter's section names - 1" $ do
       generalProvisions <- head . subChapters <$> chapter_432b
+
       case children generalProvisions of
         SubChapterSections xs ->
           show (Section.name (head xs)) `shouldBe` "Definitions."
@@ -113,6 +119,7 @@ spec = parallel $ do
 
     it "gets the sub-chapter's section names - 2" $ do
       generalProvisions <- head . subChapters <$> chapter_432b
+
       case children generalProvisions of
         SubChapterSections xs ->
           show (Section.name (xs !! 1))
@@ -121,8 +128,8 @@ spec = parallel $ do
 
 
     it "gets all the sub-chapter's section numbers" $ do
-      html <- chapter_432b_html
-      let generalProvisions = head $ subChapters (unwrap $ parseChapter html)
+      chapter <- chapter_432b
+      let generalProvisions = head $ subChapters chapter
       case children generalProvisions of
         SubChapterSections xs ->
           map (show . Section.number) xs
@@ -275,7 +282,7 @@ subChapters chapter = case Chapter.content chapter of
   SimpleChapterContent _ -> error "got Sections but expected Subchapters"
 
 
-unwrap :: Either String a -> a
+unwrap :: (Either String a) -> a
 unwrap thing = case thing of
   Right contents -> contents
   Left  message  -> error message
