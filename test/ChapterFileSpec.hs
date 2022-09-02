@@ -1,4 +1,6 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Redundant bracket" #-}
 
 
 module ChapterFileSpec where
@@ -18,7 +20,7 @@ import           HtmlUtil
 
 
 spec :: SpecWith ()
-spec = parallel $ do
+spec = do
 
   let chapterData  = chapter_432b_data
   let chapter_432b = unwrap . parseChapter <$> chapter_432b_html
@@ -35,14 +37,14 @@ spec = parallel $ do
     --     Chapter.name (unwrap $ parseChapter html) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
 
     it "gets the chapter number" $ do
-      html ← chapter_432b_html
-      Chapter.number (unwrap $ parseChapter html) `shouldBe` "432B"
+      chapter <- chapter_432b
+
+      Chapter.number chapter `shouldBe` "432B"
 
 
     it "gets the chapter URL" $ do
-      html ← chapter_432b_html
-      url (unwrap $ parseChapter html)
-        `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
+      chapter <- chapter_432b
+      url chapter `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
 
 
     it "gets the sub-chapter names - 1" $ do
@@ -275,7 +277,7 @@ subChapters chapter = case Chapter.content chapter of
   SimpleChapterContent _ -> error "got Sections but expected Subchapters"
 
 
-unwrap :: Either String a -> a
+unwrap :: (Either String a) -> a
 unwrap thing = case thing of
   Right contents -> contents
   Left  message  -> error message
