@@ -36,16 +36,16 @@ fillInEmptyTitle chapterMap emptyTitle =
 
 
 parseTitles :: Html -> Either String [Title]
-parseTitles indexHtml =
-  case contentRows indexHtml of
-    Right content_rows -> mapM newTitle (rowTuples content_rows)
-    Left error_message -> Left error_message
+parseTitles indexHtml = do
+  content_rows <- contentRows indexHtml
+  mapM newTitle (rowTuples content_rows)
     
 
 contentRows :: Html -> Either String [Node]
 contentRows indexHtml = do
   let tags = parseTags $ toText indexHtml
   table <- findFirst "<table class=MsoNormalTable" tags
+
   return $ findAll "<tr>" table
 
 
