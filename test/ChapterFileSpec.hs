@@ -46,20 +46,15 @@ unwrap thing = case thing of
   Right contents -> contents
   Left  message  -> error message
 
-memoize :: (Int -> IO Chapter) -> (Int -> IO Chapter)
-memoize f = (map f [0 ..] !!)
-
-chapterData :: IO ChapterData
-chapterData  = chapter_432b_data
 
 chapter_432b :: IO Chapter
 chapter_432b = unwrap . parseChapter <$> chapter_432b_html
+
 
 spec :: SpecWith ()
 spec = do
   describe "parseChapter" $ do
     chapter <- runIO $ chapter_432b
-    html    <- runIO $ chapter_432b_html
 
     it "gets the chapter name" $ do
       Chapter.name chapter
@@ -68,33 +63,6 @@ spec = do
     -- it "gets the chapter name when it has embedded newline" $ do
     --     html ← chapter_575_html    --     Chapter.name (chapter) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
 
-
-    it "gets the chapter number" $ do
-      Chapter.number chapter `shouldBe` "432B"
-
-    it "gets the chapter number" $ do
-      Chapter.number chapter `shouldBe` "432B"
-
-    it "gets the chapter number" $ do
-      Chapter.number chapter `shouldBe` "432B"
-
-    it "gets the chapter number" $ do
-      Chapter.number chapter `shouldBe` "432B"
-
-    it "gets the chapter number" $ do
-      Chapter.number chapter `shouldBe` "432B"
-
-    it "gets the chapter number" $ do
-      Chapter.number chapter `shouldBe` "432B"
-
-    it "gets the chapter number" $ do
-      Chapter.number chapter `shouldBe` "432B"
-
-    it "gets the chapter number" $ do
-      Chapter.number chapter `shouldBe` "432B"
-
-    it "gets the chapter number" $ do
-      Chapter.number chapter `shouldBe` "432B"
 
     it "gets the chapter number" $ do
       Chapter.number chapter `shouldBe` "432B"
@@ -277,22 +245,24 @@ spec = do
           error "Got sections but expected sub-sub-chapters"
 
 
-    describe "isSimpleSubChapter" $ do
-      it "correctly identifies a simple sub-chapter" $ do
-        generalProvisions <- ((!! 0) . subChapterHeadingGroups) <$> chapterData
-        isSimpleSubChapter generalProvisions `shouldBe` True
+    describe "chapter data things" $ do
+      chapterData <- runIO $ chapter_432b_data      
 
-      it "correctly identifies a complex sub-chapter" $ do
-        administration <- ((!! 1) . subChapterHeadingGroups) <$> chapterData
-        isSimpleSubChapter administration `shouldBe` False
+      describe "isSimpleSubChapter" $ do
+        it "correctly identifies a simple sub-chapter" $ do
+          let generalProvisions = ((!! 0) . subChapterHeadingGroups) $ chapterData
+          isSimpleSubChapter generalProvisions `shouldBe` True
+
+        it "correctly identifies a complex sub-chapter" $ do
+          let administration = ((!! 1) . subChapterHeadingGroups) $ chapterData
+          isSimpleSubChapter administration `shouldBe` False
 
 
+      describe "section" $ it "returns the complete HTML - 2" $ do
+        let expectedHtml = Right "<p class=SectBody>1. An agency which provides child welfare services may request the Division of Parole and Probation of the Department of Public Safety to provide information concerning a probationer or parolee that may assist the agency in carrying out the provisions of this chapter. The Division of Parole and Probation shall provide such information upon request.</p> <p class=\"SectBody\"> 2. The agency which provides child welfare services may use the information obtained pursuant to subsection 1 only for the limited purpose of carrying out the provisions of this chapter.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/69th/Stats199706.html#Stats199706page835\">1997, 835</a>; A <a href=\"../Statutes/71st/Stats200117.html#Stats200117page2612\">2001, 2612</a>; <a href=\"../Statutes/17thSS/Stats2001SS1701.html#Stats2001SS1701page36\">2001 Special Session, 36</a>; <a href=\"../Statutes/72nd/Stats200301.html#Stats200301page236\">2003, 236</a>)</p> <p class=\"DocHeading2\">Corrective Action, Improvement Plans and Incentive Payments</p>"
+        let actualHtml   = parseSectionBody "432B.215" chapterData
 
-    describe "section" $ it "returns the complete HTML - 2" $ do
-      let expectedHtml = Right "<p class=SectBody>1. An agency which provides child welfare services may request the Division of Parole and Probation of the Department of Public Safety to provide information concerning a probationer or parolee that may assist the agency in carrying out the provisions of this chapter. The Division of Parole and Probation shall provide such information upon request.</p> <p class=\"SectBody\"> 2. The agency which provides child welfare services may use the information obtained pursuant to subsection 1 only for the limited purpose of carrying out the provisions of this chapter.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/69th/Stats199706.html#Stats199706page835\">1997, 835</a>; A <a href=\"../Statutes/71st/Stats200117.html#Stats200117page2612\">2001, 2612</a>; <a href=\"../Statutes/17thSS/Stats2001SS1701.html#Stats2001SS1701page36\">2001 Special Session, 36</a>; <a href=\"../Statutes/72nd/Stats200301.html#Stats200301page236\">2003, 236</a>)</p> <p class=\"DocHeading2\">Corrective Action, Improvement Plans and Incentive Payments</p>"
-      actualHtml <- parseSectionBody "432B.215" <$> chapterData
-
-      actualHtml `shouldBe` expectedHtml
+        actualHtml `shouldBe` expectedHtml
 
 
 
