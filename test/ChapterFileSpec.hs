@@ -52,23 +52,21 @@ memoize f = (map f [0 ..] !!)
 chapterData :: IO ChapterData
 chapterData  = chapter_432b_data
 
-chapter_432b :: Int -> IO Chapter
-chapter_432b _ = unwrap . parseChapter <$> chapter_432b_html
-
-chapter_432b_memoized :: Int -> IO Chapter
-chapter_432b_memoized = memoize chapter_432b
+chapter_432b :: IO Chapter
+chapter_432b = unwrap . parseChapter <$> chapter_432b_html
 
 spec :: SpecWith ()
 spec = do
   describe "parseChapter" $ do
-    chapter <- runIO $ chapter_432b_memoized 0
+    chapter <- runIO $ chapter_432b
+    html    <- runIO $ chapter_432b_html
 
     it "gets the chapter name" $ do
       Chapter.name chapter
         `shouldBe` "Protection of Children from Abuse and Neglect"
 
     -- it "gets the chapter name when it has embedded newline" $ do
-    --     html ← chapter_575_html    --     Chapter.name (unwrap $ parseChapter html) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
+    --     html ← chapter_575_html    --     Chapter.name (chapter) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
 
 
     it "gets the chapter number" $ do
@@ -224,8 +222,7 @@ spec = do
 
 
     it "gets a complex sub-chapter's sub-sub-chapters" $ do
-      html <- chapter_432b_html
-      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
+      let administration = (!! 1) $ subChapters $ chapter
       case children administration of
         SubSubChapters xs -> length xs `shouldBe` 3
         SubChapterSections _ ->
@@ -233,8 +230,7 @@ spec = do
 
 
     it "gets a complex sub-chapter's sub-sub-chapter names - 1" $ do
-      html <- chapter_432b_html
-      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
+      let administration = (!! 1) $ subChapters $ chapter
       case children administration of
         SubSubChapters xs ->
           SubSubChapter.name (head xs) `shouldBe` "General Provisions"
@@ -243,8 +239,7 @@ spec = do
 
 
     it "gets a complex sub-chapter's sub-sub-chapter names - 2" $ do
-      html <- chapter_432b_html
-      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
+      let administration = (!! 1) $ subChapters $ chapter
       case children administration of
         SubSubChapters xs ->
           SubSubChapter.name (xs !! 2)
@@ -254,8 +249,7 @@ spec = do
 
 
     it "gets a complex sub-chapter's sub-sub-chapter sections" $ do
-      html <- chapter_432b_html
-      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
+      let administration = (!! 1) $ subChapters $ chapter
       case children administration of
         SubSubChapters xs ->
           show (Section.name ((!! 0) $ SubSubChapter.sections (head xs)))
@@ -265,8 +259,7 @@ spec = do
 
 
     it "gets a complex sub-chapter's sub-sub-chapter section numbers" $ do
-      html <- chapter_432b_html
-      let administration = (!! 1) $ subChapters $ unwrap $ parseChapter html
+      let administration = (!! 1) $ subChapters $ chapter
       case children administration of
         SubSubChapters xs ->
           map (show . Section.number) (SubSubChapter.sections (head xs))
@@ -285,7 +278,6 @@ spec = do
 
 
     describe "isSimpleSubChapter" $ do
-
       it "correctly identifies a simple sub-chapter" $ do
         generalProvisions <- ((!! 0) . subChapterHeadingGroups) <$> chapterData
         isSimpleSubChapter generalProvisions `shouldBe` True
