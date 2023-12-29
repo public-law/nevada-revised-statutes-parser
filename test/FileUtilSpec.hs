@@ -13,4 +13,3 @@ spec =
     $          it "handles parent-relative URLs"
     $ toAbsoluteURL "https://www.leg.state.nv.us/NRS/" "../NRS/NRS-001.html"
     `shouldBe` "https://www.leg.state.nv.us/NRS/NRS-001.html"
-

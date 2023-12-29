@@ -85,4 +85,3 @@ executable nrs-parser-exe
 source-repository head
   type:     git
   location: https://github.com/public-law/nevada-revised-statutes-parser
-

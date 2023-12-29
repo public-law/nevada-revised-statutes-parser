@@ -87,7 +87,7 @@ parseChapter chapterHtml = do
   let chapterData          = makeChapterData chapterHtml
   rawTitle                <- titleText (headings chapterData)
   let (rawNumber, rawName) = parseChapterFileTitle rawTitle
-  sectionsOrSubChapters <- chapterContent chapterData
+  sectionsOrSubChapters   <- chapterContent chapterData
 
   return Chapter
     { Chapter.name    = rawName
@@ -123,7 +123,7 @@ bottomHalf fullPage = dropWhile (~/= horizontalRule) fullPage
 
 chapterContent :: ChapterData -> Either String ChapterContent
 chapterContent chapterData = do
-  let groups = subChapterHeadingGroups chapterData
+  let groups        = subChapterHeadingGroups chapterData
   foundSubChapters <- mapM (newSubChapter chapterData) groups
   foundSections    <- SimpleChapterFile.parseSectionsFromJustHtml chapterData
   return $ case foundSubChapters of
@@ -133,8 +133,7 @@ chapterContent chapterData = do
 
 newSubChapter :: ChapterData -> TagList -> Either String SubChapter
 newSubChapter chapterData headingGroup = do
-  scs <- SimpleChapterFile.parseSectionsFromHeadingGroup chapterData
-                                                         headingGroup
+  scs <- SimpleChapterFile.parseSectionsFromHeadingGroup chapterData headingGroup
   ssc <- parseSubSubChapters chapterData headingGroup
   let name' = subChapterNameFromGroup headingGroup
   let children' = if SimpleChapterFile.isSimpleSubChapter headingGroup
