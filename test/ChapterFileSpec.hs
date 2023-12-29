@@ -20,36 +20,93 @@ import           SimpleChapterFile
 import           HtmlUtil
 
 
+
+chapter_432b_data :: IO ChapterData
+chapter_432b_data = makeChapterData <$> chapter_432b_html
+
+
+chapter_432b_html :: IO Html
+chapter_432b_html = htmlFixture "NRS-432B.html"
+
+
+chapter_575_html :: IO Html
+chapter_575_html = htmlFixture "NRS-575.html"
+
+
+-- Return a Chapter's sub-chapters, or raise an error
+-- if it's a simple Chapter with just sections.
+subChapters :: Chapter -> [SubChapter]
+subChapters chapter = case Chapter.content chapter of
+  ComplexChapterContent subchapters -> subchapters
+  SimpleChapterContent _ -> error "got Sections but expected Subchapters"
+
+
+unwrap :: (Either String a) -> a
+unwrap thing = case thing of
+  Right contents -> contents
+  Left  message  -> error message
+
+memoize :: (Int -> IO Chapter) -> (Int -> IO Chapter)
+memoize f = (map f [0 ..] !!)
+
+chapterData :: IO ChapterData
+chapterData  = chapter_432b_data
+
+chapter_432b :: Int -> IO Chapter
+chapter_432b _ = unwrap . parseChapter <$> chapter_432b_html
+
+chapter_432b_memoized :: Int -> IO Chapter
+chapter_432b_memoized = memoize chapter_432b
+
 spec :: SpecWith ()
 spec = do
-
-  let chapterData  = chapter_432b_data
-  let chapter_432b = unwrap . parseChapter <$> chapter_432b_html
-
   describe "parseChapter" $ do
+    chapter <- runIO $ chapter_432b_memoized 0
 
     it "gets the chapter name" $ do
-      chapter <- chapter_432b
       Chapter.name chapter
         `shouldBe` "Protection of Children from Abuse and Neglect"
 
     -- it "gets the chapter name when it has embedded newline" $ do
-    --     html ← chapter_575_html
-    --     Chapter.name (unwrap $ parseChapter html) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
+    --     html ← chapter_575_html    --     Chapter.name (unwrap $ parseChapter html) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
+
 
     it "gets the chapter number" $ do
-      chapter <- chapter_432b
+      Chapter.number chapter `shouldBe` "432B"
 
+    it "gets the chapter number" $ do
+      Chapter.number chapter `shouldBe` "432B"
+
+    it "gets the chapter number" $ do
+      Chapter.number chapter `shouldBe` "432B"
+
+    it "gets the chapter number" $ do
+      Chapter.number chapter `shouldBe` "432B"
+
+    it "gets the chapter number" $ do
+      Chapter.number chapter `shouldBe` "432B"
+
+    it "gets the chapter number" $ do
+      Chapter.number chapter `shouldBe` "432B"
+
+    it "gets the chapter number" $ do
+      Chapter.number chapter `shouldBe` "432B"
+
+    it "gets the chapter number" $ do
+      Chapter.number chapter `shouldBe` "432B"
+
+    it "gets the chapter number" $ do
+      Chapter.number chapter `shouldBe` "432B"
+
+    it "gets the chapter number" $ do
       Chapter.number chapter `shouldBe` "432B"
 
 
     it "gets the chapter URL" $ do
-      chapter <- chapter_432b
       url chapter `shouldBe` "https://www.leg.state.nv.us/nrs/NRS-432B.html"
 
 
     it "gets the sub-chapter names - 1" $ do
-      chapter <- chapter_432b
       let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters ->
@@ -58,7 +115,6 @@ spec = do
 
 
     it "gets the sub-chapter names - 2" $ do
-      chapter <- chapter_432b
       let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters ->
@@ -67,7 +123,6 @@ spec = do
 
 
     it "gets the sub-chapter names - 3" $ do
-      chapter <- chapter_432b
       let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters ->
@@ -77,8 +132,6 @@ spec = do
 
 
     it "finds the right number of sub-chapters" $ do
-      chapter <- chapter_432b
-
       let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters -> length subchapters `shouldBe` 12
@@ -86,8 +139,6 @@ spec = do
 
 
     it "finds the right sub-chapters" $ do
-      chapter <- chapter_432b
-
       let innards = Chapter.content chapter
       case innards of
         ComplexChapterContent subchapters ->
@@ -109,7 +160,7 @@ spec = do
 
 
     it "gets the sub-chapter's section names - 1" $ do
-      generalProvisions <- head . subChapters <$> chapter_432b
+      let generalProvisions = head . subChapters $ chapter
 
       case children generalProvisions of
         SubChapterSections xs ->
@@ -118,7 +169,7 @@ spec = do
 
 
     it "gets the sub-chapter's section names - 2" $ do
-      generalProvisions <- head . subChapters <$> chapter_432b
+      let generalProvisions = head . subChapters $ chapter
 
       case children generalProvisions of
         SubChapterSections xs ->
@@ -128,7 +179,6 @@ spec = do
 
 
     it "gets all the sub-chapter's section numbers" $ do
-      chapter <- chapter_432b
       let generalProvisions = head $ subChapters chapter
       case children generalProvisions of
         SubChapterSections xs ->
@@ -260,29 +310,3 @@ spec = do
 --
 main :: IO ()
 main = hspec spec
-
-
-chapter_432b_data :: IO ChapterData
-chapter_432b_data = makeChapterData <$> chapter_432b_html
-
-
-chapter_432b_html :: IO Html
-chapter_432b_html = htmlFixture "NRS-432B.html"
-
-
-chapter_575_html :: IO Html
-chapter_575_html = htmlFixture "NRS-575.html"
-
-
--- Return a Chapter's sub-chapters, or raise an error
--- if it's a simple Chapter with just sections.
-subChapters :: Chapter -> [SubChapter]
-subChapters chapter = case Chapter.content chapter of
-  ComplexChapterContent subchapters -> subchapters
-  SimpleChapterContent _ -> error "got Sections but expected Subchapters"
-
-
-unwrap :: (Either String a) -> a
-unwrap thing = case thing of
-  Right contents -> contents
-  Left  message  -> error message
