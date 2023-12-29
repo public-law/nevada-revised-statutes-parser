@@ -51,6 +51,11 @@ chapter_432b :: IO Chapter
 chapter_432b = unwrap . parseChapter <$> chapter_432b_html
 
 
+head' :: [a] -> a
+head' (x:_) = x
+head' []    = error "empty list"
+
+
 spec :: SpecWith ()
 spec = do
   describe "parseChapter" $ do
@@ -126,16 +131,16 @@ spec = do
 
 
     it "gets the sub-chapter's section names - 1" $ do
-      let generalProvisions = head . subChapters $ chapter
+      let generalProvisions = head' . subChapters $ chapter
 
       case children generalProvisions of
         SubChapterSections xs ->
-          show (Section.name (head xs)) `shouldBe` "Definitions."
+          show (Section.name (head' xs)) `shouldBe` "Definitions."
         SubSubChapters _ -> error "Got sub-sub chapters but expected Sections"
 
 
     it "gets the sub-chapter's section names - 2" $ do
-      let generalProvisions = head . subChapters $ chapter
+      let generalProvisions = head' . subChapters $ chapter
 
       case children generalProvisions of
         SubChapterSections xs ->
@@ -145,7 +150,7 @@ spec = do
 
 
     it "gets all the sub-chapter's section numbers" $ do
-      let generalProvisions = head $ subChapters chapter
+      let generalProvisions = head' $ subChapters chapter
       case children generalProvisions of
         SubChapterSections xs ->
           map (show . Section.number) xs
@@ -201,7 +206,7 @@ spec = do
       let administration = (!! 1) $ subChapters $ chapter
       case children administration of
         SubSubChapters xs ->
-          SubSubChapter.name (head xs) `shouldBe` "General Provisions"
+          SubSubChapter.name (head' xs) `shouldBe` "General Provisions"
         SubChapterSections _ ->
           error "Got sections but expected sub-sub-chapters"
 
@@ -220,7 +225,7 @@ spec = do
       let administration = (!! 1) $ subChapters $ chapter
       case children administration of
         SubSubChapters xs ->
-          show (Section.name ((!! 0) $ SubSubChapter.sections (head xs)))
+          show (Section.name ((!! 0) $ SubSubChapter.sections (head' xs)))
             `shouldBe` "Duties of Division of Child and Family Services."
         SubChapterSections _ ->
           error "Got sections but expected sub-sub-chapters"
@@ -230,7 +235,7 @@ spec = do
       let administration = (!! 1) $ subChapters $ chapter
       case children administration of
         SubSubChapters xs ->
-          map (show . Section.number) (SubSubChapter.sections (head xs))
+          map (show . Section.number) (SubSubChapter.sections (head' xs))
             `shouldBe` [ "432B.180"
                        , "432B.190"
                        , "432B.195"
