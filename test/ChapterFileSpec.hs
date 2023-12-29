@@ -4,7 +4,7 @@
 {-# HLINT ignore "Use head" #-}
 
 
-module ZChapterFileSpec where
+module ChapterFileSpec where
 
 import           BasicPrelude
 import           Test.Hspec
