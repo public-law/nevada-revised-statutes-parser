@@ -67,7 +67,7 @@ test-suite nrs-parser-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      src, test
   main-is:             Spec.hs
-  other-modules:       ChapterFileSpec
+  other-modules:       ZChapterFileSpec
                      , IndexFileSpec
                      , FileUtilSpec
                      , Models.SectionSpec
