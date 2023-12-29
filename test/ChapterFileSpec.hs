@@ -64,10 +64,7 @@ spec = do
     it "gets the chapter name" $ do
       Chapter.name chapter
         `shouldBe` "Protection of Children from Abuse and Neglect"
-
-    -- it "gets the chapter name when it has embedded newline" $ do
-    --     html ← chapter_575_html    --     Chapter.name (chapter) `shouldBe` "Miscellaneous Provisions; Collection of Taxes"
-
+        
 
     it "gets the chapter number" $ do
       Chapter.number chapter `shouldBe` "432B"
