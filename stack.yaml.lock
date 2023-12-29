@@ -7,13 +7,13 @@ packages:
 - completed:
     hackage: interpolatedstring-perl6-1.0.2@sha256:7ce49c8a69a2a1b89c001ed79db2aab656ffd0faf2a7a701a553b6deb5c8ba7f,1073
     pantry-tree:
-      size: 300
       sha256: f7f0b06c58db814d1f12ed6f4f4cb67ff8c72e51da61c04db12c2aedb896542e
+      size: 300
   original:
     hackage: interpolatedstring-perl6-1.0.2@sha256:7ce49c8a69a2a1b89c001ed79db2aab656ffd0faf2a7a701a553b6deb5c8ba7f,1073
 snapshots:
 - completed:
-    size: 590100
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/28.yaml
-    sha256: 428ec8d5ce932190d3cbe266b9eb3c175cd81e984babf876b64019e2cbe4ea68
-  original: lts-18.28
+    sha256: 32fd92ba224ce05d14c465a117f7668250053f6649d73869460b9ea4d23a99ce
+    size: 513657
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/12/28.yaml
+  original: nightly-2023-12-28
