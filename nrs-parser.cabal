@@ -53,6 +53,7 @@ common deps
     Models.Title,
     Models.Tree,
     NRSParser,
+    ParseReport,
     Parsing,
     SectionParser,
     SimpleChapterFile,
@@ -74,6 +75,7 @@ test-suite nrs-parser-test
                      , Models.ParseFailureSpec
                      , Models.SectionSpec
                      , NRSParserSpec
+                     , ParseReportSpec
                      , SectionParserSpec
                      , SimpleChapterSpec
                      , TextUtilSpec
