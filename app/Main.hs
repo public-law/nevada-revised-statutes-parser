@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 import           BasicPrelude
 import qualified Data.Aeson.Encode.Pretty      as Aeson
                                                 ( encodePretty )
