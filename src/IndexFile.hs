@@ -1,44 +1,67 @@
 module IndexFile where
 
 import           BasicPrelude
-import           Data.Attoparsec.Text    (parseOnly)
-import           Data.Function           ((&))
-import           Data.List.Split         (chunksOf, split, whenElt)
-import           Text.HTML.TagSoup       (fromAttrib, innerText, parseTags)
+import           Data.Attoparsec.Text           ( parseOnly )
+import           Data.Function                  ( (&) )
+import           Data.List.Split                ( chunksOf
+                                                , split
+                                                , whenElt
+                                                )
+import qualified Data.Text                     as T
+import           Text.HTML.TagSoup              ( fromAttrib
+                                                , innerText
+                                                , parseTags
+                                                )
 import           Text.Parser.Char
 import           Text.Parser.Combinators
 import           Text.Parser.Token
 
-import           ChapterFile             (ChapterMap, fillInEmptyChapter)
-import           FileUtil                (toAbsoluteURL)
+import           ChapterFile                    ( ChapterMap
+                                                , fillInEmptyChapter
+                                                )
+import           FileUtil                       ( toAbsoluteURL )
 import           HtmlUtil
-import           Models.Chapter          as Chapter
-import           Models.Title            as Title
-import           TextUtil                (normalizeWhiteSpace, titleize)
+import           Models.Chapter                as Chapter
+import           Models.ParseFailure            ( ParseFailure
+                                                , accumulate
+                                                , atTitle
+                                                , parseFailure
+                                                )
+import           Models.Title                  as Title
+import           TextUtil                       ( normalizeWhiteSpace
+                                                , titleize
+                                                )
 
 
-
-parseTitlesAndChapters :: Html -> ChapterMap -> [Title]
+parseTitlesAndChapters :: Html -> ChapterMap -> ([Title], [ParseFailure])
 parseTitlesAndChapters indexHtml chapterMap =
-  let emptyTitles = parseTitles indexHtml
-   in case emptyTitles of
-        Right ts -> map (fillInEmptyTitle chapterMap) ts
-        Left s   -> error s
+  case parseTitles indexHtml of
+    Left message ->
+      ( []
+      , [parseFailure "index.html" (T.pack message)]
+      )
+    Right (emptyTitles, indexFails) ->
+      let filled = fmap (fillInEmptyTitle chapterMap) emptyTitles
+          (titles, nestedFails) = unzip filled
+      in  (titles, indexFails ++ concat nestedFails)
 
 
-fillInEmptyTitle :: ChapterMap -> Title -> Title
+fillInEmptyTitle :: ChapterMap -> Title -> (Title, [ParseFailure])
 fillInEmptyTitle chapterMap emptyTitle =
-  Title
-    { name = Title.name emptyTitle
-    , number = Title.number emptyTitle
-    , chapters = map (fillInEmptyChapter chapterMap) (chapters emptyTitle)
-    }
+  let results = fmap (fillInEmptyChapter chapterMap) (chapters emptyTitle)
+      (filledChapters, nestedFails) = unzip results
+      titleFails = fmap (atTitle (Title.number emptyTitle)) (concat nestedFails)
+  in  ( emptyTitle { Title.chapters = filledChapters }
+      , titleFails
+      )
 
 
-parseTitles :: Html -> Either String [Title]
+parseTitles :: Html -> Either String ([Title], [ParseFailure])
 parseTitles indexHtml = do
   content_rows <- contentRows indexHtml
-  mapM newTitle (rowTuples content_rows)
+  results      <- mapM newTitle (rowTuples content_rows)
+  let (titles, nestedFails) = unzip results
+  return (titles, concat nestedFails)
 
 
 contentRows :: Html -> Either String [Node]
@@ -48,20 +71,28 @@ contentRows indexHtml = do
   return $ findAll "<tr>" table
 
 
-newTitle :: [[Node]] -> Either String Title
+newTitle :: [[Node]] -> Either String (Title, [ParseFailure])
 newTitle [titleRows, chapterRows] = do
   titleRow <- requireHead "Empty title row group" titleRows
-  first_b <- findFirst "<b>" titleRow
-  let parsedChapters = fmap newChapter chapterRows
+  first_b  <- findFirst "<b>" titleRow
   let title = innerText first_b
-  let (rawNumber, rawName) = parseRawTitle title
+  (rawNumber, rawName) <- parseRawTitle title
+  let (parsedChapters, rowFails) =
+        accumulate newChapter indexRowFailure chapterRows
+      locatedFails = fmap (atTitle rawNumber) rowFails
   return
-    Title
-      { Title.name = titleize rawName
-      , Title.number = rawNumber
-      , chapters = rights parsedChapters
+    ( Title
+      { Title.name     = titleize rawName
+      , Title.number   = rawNumber
+      , Title.chapters = parsedChapters
       }
+    , locatedFails
+    )
 newTitle _ = Left "Expected a title row group and a chapter row group"
+
+
+indexRowFailure :: Node -> String -> ParseFailure
+indexRowFailure _ err = parseFailure "index.html" (T.pack err)
 
 
 newChapter :: Node -> Either String Chapter
@@ -76,36 +107,34 @@ newChapter row = do
   hrefTag <- requireHead "Empty chapter anchor" first_anchor
   let name' = normalizeWhiteSpace $ innerText nameCol
   let chapter_url =
-        fromAttrib "href" hrefTag &
-        toAbsoluteURL "https://www.leg.state.nv.us/NRS/"
-  return
-    Chapter
-      { Chapter.name = name'
-      , Chapter.number = number'
-      , Chapter.url = chapter_url
-      , Chapter.content = ComplexChapterContent []
-      }
+        fromAttrib "href" hrefTag
+          & toAbsoluteURL "https://www.leg.state.nv.us/NRS/"
+  return Chapter
+    { Chapter.name    = name'
+    , Chapter.number  = number'
+    , Chapter.url     = chapter_url
+    , Chapter.content = ComplexChapterContent []
+    }
 
 
 -- Input:  "TITLE\n  1 - STATE JUDICIAL DEPARTMENT\n  \n \n "
 -- Output: (1, "STATE JUDICIAL DEPARTMENT")
--- The separator in the HTML is a Unicode em dash (U+2014).
-parseRawTitle :: Text -> (Integer, Text)
+-- The separator in the HTML is Unicode U+2014.
+parseRawTitle :: Text -> Either String (Integer, Text)
 parseRawTitle input =
-  let f = parseOnly p input
-      p =
-        (,) <$> (textSymbol "TITLE" *> integer) <*>
-        (textSymbol "\x2014" *> (fromString <$> many anyChar))
-   in case f of
-        Left e  -> error e
-        Right b -> b
+  let p =
+        (,)
+          <$> (textSymbol "TITLE" *> integer)
+          <*> (textSymbol "\x2014" *> (fromString <$> many anyChar))
+  in  case parseOnly p input of
+        Left  e -> Left e
+        Right b -> Right b
 
 
 rowTuples :: [Node] -> [[[Node]]]
-rowTuples rows =
-  case split (whenElt isTitleRow) rows of
-    []       -> []
-    (_:rest) -> chunksOf 2 rest
+rowTuples rows = case split (whenElt isTitleRow) rows of
+  []       -> []
+  (_:rest) -> chunksOf 2 rest
 
 
 isTitleRow :: Node -> Bool
@@ -118,10 +147,9 @@ requireHead msg []  = Left msg
 
 
 requireLast :: String -> [a] -> Either String a
-requireLast msg xs =
-  case reverse xs of
-    (x:_) -> Right x
-    []    -> Left msg
+requireLast msg xs = case reverse xs of
+  (x:_) -> Right x
+  []    -> Left msg
 
 
 requireNonEmpty :: String -> [a] -> Either String [a]

@@ -73,6 +73,7 @@ test-suite nrs-parser-test
                      , FileUtilSpec
                      , Models.ParseFailureSpec
                      , Models.SectionSpec
+                     , NRSParserSpec
                      , SectionParserSpec
                      , SimpleChapterSpec
                      , TextUtilSpec

@@ -31,6 +31,7 @@ import qualified SimpleChapterFile              ( parseSectionsFromJustHtml
 import           Models.Chapter                as Chapter
 import           Models.ParseFailure            ( ParseFailure
                                                 , atChapter
+                                                , parseFailure
                                                 )
 import           Models.SubChapter             as SubChapter
 import           Models.SubSubChapter          as SubSubChapter
@@ -40,6 +41,7 @@ import           Parsing                        ( ChapterData(..)
 import           TextUtil                       ( normalizeWhiteSpace
                                                 , titleize
                                                 )
+import           Util                           ( (|>) )
 
 type ChapterMap = HashMap RelativePath Html
 
@@ -57,25 +59,40 @@ horizontalRule :: String
 horizontalRule = "<p class=J-Dash"
 
 
--- TODO: Refactor. Change this method by creating an EmptyChapter type.
-fillInEmptyChapter :: ChapterMap -> Chapter -> Chapter
+fillInEmptyChapter :: ChapterMap -> Chapter -> (Chapter, [ParseFailure])
 fillInEmptyChapter chapterMap emptyChapter =
-  let key       = chapterNumberToFilename (Chapter.number emptyChapter)
+  let number'   = Chapter.number emptyChapter
+      fileText  = chapterNumberToFilenameText number'
+      key       = toRelativePath (T.unpack fileText)
       maybeHtml = HM.lookup key chapterMap
-  in  if Chapter.number emptyChapter `notElem` chaptersToSkip
-        then case maybeHtml of
+      located msg =
+        parseFailure fileText msg |> atChapter number'
+  in  if number' `elem` chaptersToSkip
+        then (emptyChapter, [located "skipped by Config.chaptersToSkip"])
+        else case maybeHtml of
           Just html -> case parseChapter html of
-            Right (aChapter, _) -> aChapter
-            Left  message       -> error [qq| $message in $key |]
-          Nothing -> error [qq| Chapter $key not found |]
-        else emptyChapter
+            Right (aChapter, fails) -> (aChapter, fails)
+            Left message ->
+              (emptyChapter, [located (T.pack message)])
+          Nothing ->
+            (emptyChapter, [located ("Chapter file not found: " ++ fileText)])
+
+
+chapterNumberToFilenameText :: Text -> Text
+chapterNumberToFilenameText chapterNumber =
+  T.pack (chapterNumberToFilenameString chapterNumber)
+
+
+chapterNumberToFilenameString :: Text -> String
+chapterNumberToFilenameString chapterNumber =
+  let format | isAlpha (T.last chapterNumber) = "%04s"
+             | otherwise                      = "%03s"
+  in  "NRS-" ++ printf format chapterNumber ++ ".html"
 
 
 chapterNumberToFilename :: Text -> RelativePath
-chapterNumberToFilename chapterNumber =
-  let format | isAlpha (T.last chapterNumber) = "%04s"
-             | otherwise                      = "%03s"
-  in  toRelativePath $ "NRS-" ++ printf format chapterNumber ++ ".html"
+chapterNumberToFilename =
+  toRelativePath . chapterNumberToFilenameString
 
 
 parseChapter :: Html -> Either String (Chapter, [ParseFailure])

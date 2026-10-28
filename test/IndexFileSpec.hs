@@ -19,8 +19,8 @@ spec =
     it "finds the correct number of titles" $ do
       html <- nrsIndexHtml
       case parseTitles html of
-        Right titles -> length titles `shouldBe` 59
-        Left message -> error message
+        Right (titles, _) -> length titles `shouldBe` 59
+        Left message      -> error message
 
     it "gets a title's name" $ do
       judicialDept <- firstTitle
@@ -66,7 +66,8 @@ title38 :: IO Title
 title38 = (!! 37) <$> parsedTitles
 
 parsedTitles :: IO [Title]
-parsedTitles = (fromRight []) . parseTitles <$> nrsIndexHtml
+parsedTitles =
+  (fst . fromRight ([], [])) . parseTitles <$> nrsIndexHtml
 
 nrsIndexHtml :: IO Html
 nrsIndexHtml = NewHtml <$> readFile (fixture "index.html")
