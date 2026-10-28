@@ -4,9 +4,13 @@
 module SimpleChapterSpec where
 
 import           BasicPrelude
+import qualified Data.Text                     as T
 import           Test.Hspec
 
 import           Models.Chapter                as Chapter
+import           Models.ParseFailure            ( sectionNumber
+                                                , message
+                                                )
 import           Models.Section                as Section
 
 import           ChapterFile
@@ -19,7 +23,7 @@ spec = parallel $ describe "unwrap $ parseChapter" $ do
 
   it "recognizes a chapter with simple content" $ do
     html ← chapter_0_html
-    case content (unwrap $ parseChapter html) of
+    case content (fst $ unwrap $ parseChapter html) of
       SimpleChapterContent _ -> pure ()
       ComplexChapterContent xs ->
         expectationFailure $ "Expected Sections but got SubChapters" ++ show xs
@@ -71,6 +75,23 @@ spec = parallel $ describe "unwrap $ parseChapter" $ do
       `shouldBe` "<p class=SectBody>Unless the context otherwise requires, \147substantial bodily harm\148 means:</p> <p class=\"SectBody\"> 1. Bodily injury which creates a substantial risk of death or which causes serious, permanent disfigurement or protracted loss or impairment of the function of any bodily member or organ; or</p> <p class=\"SectBody\"> 2. Prolonged physical pain.</p> <p class=\"SourceNote\"> (Added to NRS by <a href=\"../Statutes/63rd/Stats198501.html#Stats198501page221\">1985, 221</a>)</p>"
 
 
+  describe "missing section body" $ do
+    it "keeps sibling sections and records one failure" $ do
+      html <- missing_body_html
+      case parseChapter html of
+        Left err -> expectationFailure err
+        Right (chapter, fails) -> do
+          case Chapter.content chapter of
+            SimpleChapterContent sections -> do
+              length sections `shouldBe` 1
+              show (Section.number (head sections)) `shouldBe` "999.010"
+              length fails `shouldBe` 1
+              sectionNumber (head fails) `shouldBe` Just "999.020"
+              T.isInfixOf "999.020" (message (head fails)) `shouldBe` True
+            ComplexChapterContent xs ->
+              expectationFailure
+                $ "Expected Sections but got SubChapters" ++ show xs
+
   describe "Chapter 36 parsing" $ do
     it "finds the correct section name" $ do
       html <- chapter_36_html
@@ -99,11 +120,15 @@ main = hspec spec
 -- A partial function to grab the simple chapter content,
 -- or fail.
 simpleChapterContent :: Html -> [Section]
-simpleChapterContent html = case content (unwrap $ parseChapter html) of
-  SimpleChapterContent sections -> sections
-  ComplexChapterContent xs ->
-    error $ "Expected Sections but got SubChapters" ++ show xs
+simpleChapterContent html =
+  case content (fst $ unwrap $ parseChapter html) of
+    SimpleChapterContent sections -> sections
+    ComplexChapterContent xs ->
+      error $ "Expected Sections but got SubChapters" ++ show xs
 
+
+missing_body_html :: IO Html
+missing_body_html = htmlFixture "NRS-999-missing-body.html"
 
 chapter_0_html :: IO Html
 chapter_0_html = htmlFixture "NRS-000.html"

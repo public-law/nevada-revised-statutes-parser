@@ -37,7 +37,7 @@ parseChapterZero chapterMap =
   in  case HM.lookup path chapterMap of
         Just html -> case parseChapter html of
           Left message -> error [qq| Can't parse chap. zero: $message |]
-          Right aChapter -> aChapter
+          Right (aChapter, _) -> aChapter
         Nothing -> error
           [qq| Chap. Zero $path not found in {show $ take 1 $ HM.keys chapterMap} |]
 

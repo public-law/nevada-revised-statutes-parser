@@ -49,7 +49,7 @@ unwrap thing = case thing of
 
 
 chapter_432b :: IO Chapter
-chapter_432b = unwrap . parseChapter <$> chapter_432b_html
+chapter_432b = (fst . unwrap . parseChapter) <$> chapter_432b_html
 
 
 head' :: [a] -> a
