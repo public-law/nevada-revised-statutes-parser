@@ -8,11 +8,12 @@ cd /tmp
 wget --recursive --no-parent --no-verbose https://www.leg.state.nv.us/NRS/
 
 # Parse and produce JSON. Prefer an installed binary (Docker), else Stack.
+# stdout: pretty NRS JSON. stderr: JSON Lines of ParseFailure, then a summary line.
 cd - > /dev/null
 if command -v nrs-parser-exe >/dev/null 2>&1; then
-  nrs-parser-exe > nevada-nrs.json
+  nrs-parser-exe 2> errata.jsonl > nevada-nrs.json
 else
-  stack exec nrs-parser-exe > nevada-nrs.json
+  stack exec nrs-parser-exe 2> errata.jsonl > nevada-nrs.json
 fi
 
 # Upload result to S3 when s3cmd is available

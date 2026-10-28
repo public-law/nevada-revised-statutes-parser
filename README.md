@@ -39,8 +39,17 @@ To parse a local mirror of the NRS site:
 
 ```bash
 ./scripts/download.sh
-stack exec nrs-parser-exe > nevada-nrs.json
+stack exec nrs-parser-exe 2> errata.jsonl > nevada-nrs.json
 ```
+
+- **stdout:** pretty-printed NRS JSON (same shape as before; safe for existing redirects).
+- **stderr:** one JSON Line per `ParseFailure`, then a final summary object
+  (`"kind":"summary"`) with chapter and section attempted / succeeded / failed
+  counts and failure rates. Use `tail -1 errata.jsonl` for the summary alone.
+
+The process exits 0 when an NRS document was produced, even if some chapters or
+sections failed. `Year.toYear` and `FileUtil` path newtypes remain hard errors
+for programmer invariants.
 
 Explore the Data on Kaggle
 --------------------------
