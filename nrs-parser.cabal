@@ -12,8 +12,8 @@ build-type:          Simple
 extra-source-files:  README.md
 
 common options
-  default-extensions:  NoImplicitPrelude, UnicodeSyntax, DeriveGeneric, DuplicateRecordFields, FlexibleContexts, GeneralizedNewtypeDeriving, MultiWayIf, OverloadedStrings, QuasiQuotes
-  default-language:    Haskell2010
+  default-extensions:  NoImplicitPrelude, UnicodeSyntax, DuplicateRecordFields, MultiWayIf, OverloadedStrings, QuasiQuotes
+  default-language:    GHC2024
   ghc-options:         -rtsopts -Werror -Wall -Wimplicit-prelude -Wincomplete-uni-patterns -Wincomplete-record-updates -Wcompat -Wredundant-constraints -Wno-type-defaults
 
 common deps

@@ -1,5 +1,6 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# OPTIONS_GHC -Wno-x-partial #-}
 {-# HLINT ignore "Redundant bracket" #-}
 {-# HLINT ignore "Use head" #-}
 

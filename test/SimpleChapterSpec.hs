@@ -1,4 +1,5 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
+{-# OPTIONS_GHC -Wno-x-partial #-}
 
 module SimpleChapterSpec where
 

@@ -6,7 +6,8 @@ where
 import           BasicPrelude                   ( Maybe(Just, Nothing)
                                                 , Either(..)
                                                 , error
-                                                , head
+                                                , show
+                                                , take
                                                 , ($)
                                                 )
 import qualified Data.HashMap.Lazy             as HM
@@ -38,7 +39,7 @@ parseChapterZero chapterMap =
           Left message -> error [qq| Can't parse chap. zero: $message |]
           Right aChapter -> aChapter
         Nothing -> error
-          [qq| Chap. Zero $path not found in {head $ HM.keys chapterMap} |]
+          [qq| Chap. Zero $path not found in {show $ take 1 $ HM.keys chapterMap} |]
 
 
 allButChapterZero :: ChapterMap -> ChapterMap
