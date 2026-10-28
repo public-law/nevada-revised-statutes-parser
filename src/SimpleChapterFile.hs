@@ -4,15 +4,22 @@ module SimpleChapterFile
   , parseSectionFromHeadingParagraph
   , parseSectionBody
   , parseSectionsFromHeadingGroup
+  , parseNumberFromRawNumberText
   )
 where
 
 import           BasicPrelude
+import qualified Data.Text                     as T
 import           Text.HTML.TagSoup
 import           Text.InterpolatedString.Perl6  ( qq )
 
 import           HtmlUtil                       ( Html(NewHtml)
                                                 , shaveBackTagsToLastClosingP
+                                                )
+import           Models.ParseFailure            ( ParseFailure
+                                                , accumulate
+                                                , atSection
+                                                , parseFailure
                                                 )
 import           Models.Section                as Section
 import           Parsing                        ( ChapterData(..)
@@ -22,7 +29,7 @@ import qualified SectionParser
 import           TextUtil                       ( normalizeWhiteSpace
                                                 , normalizedInnerText
                                                 )
-
+import           Util                           ( (|>) )
 
 
 closingA :: String
@@ -42,22 +49,39 @@ isSimpleSubChapter headingGroup =
   null (partitions (~== heading4P) headingGroup)
 
 
-parseSectionsFromJustHtml :: ChapterData -> Either String [Section]
+parseSectionsFromJustHtml :: ChapterData -> ([Section], [ParseFailure])
 parseSectionsFromJustHtml chapterData =
-  let parser     = parseSectionFromHeadingParagraph chapterData
-      paragraphs = headingParagraphsWithContent chapterData
-  in  mapM parser paragraphs
+  accumulateSections chapterData (headingParagraphsWithContent chapterData)
 
 
-parseSectionsFromHeadingGroup :: ChapterData -> TagList -> Either String [Section]
+parseSectionsFromHeadingGroup
+  :: ChapterData -> TagList -> ([Section], [ParseFailure])
 parseSectionsFromHeadingGroup chapterData headingGroup =
-  let paragraphs = headingParagraphsWithContent' headingGroup
-      parser = parseSectionFromHeadingParagraph chapterData
-  in
-    mapM parser paragraphs
+  accumulateSections chapterData (headingParagraphsWithContent' headingGroup)
 
 
--- Some COLeadline P's have no content; they're just used for vertical spacing.
+accumulateSections :: ChapterData -> [TagList] -> ([Section], [ParseFailure])
+accumulateSections chapterData =
+  accumulate (parseSectionFromHeadingParagraph chapterData) sectionFailure
+
+
+sectionFailure :: TagList -> String -> ParseFailure
+sectionFailure paragraph err =
+  let base = parseFailure "" (T.pack err)
+  in  case sectionNumberHint paragraph of
+        Just n  -> base |> atSection n
+        Nothing -> base
+
+
+sectionNumberHint :: TagList -> Maybe Text
+sectionNumberHint paragraph =
+  let secName       = sectionNameFromParagraph paragraph
+      rawNumberText = rawNumberTextFromParagraph paragraph
+  in  case parseNumberFromRawNumberText rawNumberText secName of
+        Right n -> Just n
+        Left _  -> Nothing
+
+
 headingParagraphsWithContent :: ChapterData -> [TagList]
 headingParagraphsWithContent chapterData = filter SectionParser.isTOCEntry
                                                   putativeTOCEntries
@@ -69,29 +93,36 @@ headingParagraphsWithContent chapterData = filter SectionParser.isTOCEntry
 
 headingParagraphsWithContent' :: TagList -> [TagList]
 headingParagraphsWithContent' headingGroup = filter SectionParser.isTOCEntry
-                                                  putativeTOCEntries
-  where
+                                                    putativeTOCEntries
+ where
   putativeTOCEntries =
-    (takeWhile (~/= closingP))
-      <$> (partitions (~== leadlineP) headingGroup)
+    (takeWhile (~/= closingP)) <$> (partitions (~== leadlineP) headingGroup)
 
-      
+
 parseSectionFromHeadingParagraph
   :: ChapterData -> TagList -> Either String Section
 parseSectionFromHeadingParagraph chapterData paragraph = do
-  let secName = normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile
-        (~/= closingA)
-        paragraph
-  let rawNumberText = normalizedInnerText $ takeWhile (~/= closingA) paragraph
-  let secNumber     = parseNumberFromRawNumberText rawNumberText secName
-  secBody <- parseSectionBody secNumber chapterData
-
+  let secName       = sectionNameFromParagraph paragraph
+  let rawNumberText = rawNumberTextFromParagraph paragraph
+  secNumber <- parseNumberFromRawNumberText rawNumberText secName
+  secBody   <- parseSectionBody secNumber chapterData
   (name', number', body') <- toThreeSectionFields secName secNumber secBody
   return Section
     { Section.name   = name'
     , Section.number = number'
     , Section.body   = body'
     }
+
+
+sectionNameFromParagraph :: TagList -> Text
+sectionNameFromParagraph paragraph =
+  normalizedInnerText $ takeWhile (~/= closingP) $ dropWhile (~/= closingA)
+                                                             paragraph
+
+
+rawNumberTextFromParagraph :: TagList -> Text
+rawNumberTextFromParagraph paragraph =
+  normalizedInnerText $ takeWhile (~/= closingA) paragraph
 
 
 toThreeSectionFields
@@ -106,30 +137,37 @@ toThreeSectionFields name' number' body' = do
   return (name'', number'', body'')
 
 
-parseNumberFromRawNumberText :: Text -> Text -> Text
+parseNumberFromRawNumberText :: Text -> Text -> Either String Text
 parseNumberFromRawNumberText numberText secName = case words numberText of
   (_ : x : _) -> case toSectionNumber x [qq|name: $secName|] of
-    Left  message -> error [qq|while parsing $numberText - $message|]
-    Right _       -> x
-  _ -> error [qq|Expected sec. $numberText $secName to have >= 2 words|]
+    Left  message -> Left [qq|while parsing $numberText - $message|]
+    Right _       -> Right x
+  _ -> Left [qq|Expected sec. $numberText $secName to have >= 2 words|]
 
 
 parseSectionBody :: Text -> ChapterData -> Either String Html
 parseSectionBody secNumber chapterData = sectionHtml
  where
-  rawSectionGroup = rawSectionGroupFromSectionGroups secNumber (sectionGroups chapterData)
+  rawSectionGroup =
+    rawSectionGroupFromSectionGroups secNumber (sectionGroups chapterData)
   sectionHtml = case rawSectionGroup of
-    Right secGroup -> Right $ NewHtml $ "<p class=SectBody>" ++ normalizeWhiteSpace (renderTags $ drop 6 $ dropWhile (~/= ("<span class=Leadline>" :: String)) secGroup)
-    Left x  -> Left x
+    Right secGroup ->
+      Right $ NewHtml $ "<p class=SectBody>" ++ normalizeWhiteSpace
+        (renderTags $ drop 6 $ dropWhile
+          (~/= ("<span class=Leadline>" :: String))
+          secGroup
+        )
+    Left x -> Left x
 
 
 rawSectionGroupFromSectionGroups :: Text -> [TagList] -> Either String TagList
 rawSectionGroupFromSectionGroups secNumber secGroups =
   let bodyNumbers = filter (isSectionBodyNumber secNumber) secGroups
-  in
-    case bodyNumbers of
-      (x : _) -> Right $ shaveBackTagsToLastClosingP x
-      _       -> Left $ [qq|Couldn't find sec. body for num. "$secNumber" in sec. groups.|]
+  in  case bodyNumbers of
+        (x : _) -> Right $ shaveBackTagsToLastClosingP x
+        _ ->
+          Left
+            [qq|Couldn't find sec. body for num. "$secNumber" in sec. groups.|]
 
 
 isSectionBodyNumber :: Text -> TagList -> Bool
@@ -140,4 +178,3 @@ isSectionBodyNumber secNumber sectionGroup =
 parseSectionBodyNumber :: TagList -> Text
 parseSectionBodyNumber sectionGroup =
   innerText $ takeWhile (~/= ("</span>" :: String)) sectionGroup
-
