@@ -29,6 +29,7 @@ common deps
     filepath,
     hspec,
     interpolatedstring-perl6,
+    mtl,
     parsers,
     process,
     split,

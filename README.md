@@ -51,6 +51,13 @@ The process exits 0 when an NRS document was produced, even if some chapters or
 sections failed. `Year.toYear` and `FileUtil` path newtypes remain hard errors
 for programmer invariants.
 
+Internally, recoverable parse failures accumulate in `ParseResult` (`Writer
+[ParseFailure]`); structural parsers use `ParseResultT (Either String)` so a
+structural failure still discards that parser's partial result. `tell` records
+failures, `censor` adds enclosing title/chapter locations, and `mapM` preserves
+encounter order. `parseNRS` runs the writer and retains the `(NRS, [ParseFailure])`
+interface used by the executable.
+
 Explore the Data on Kaggle
 --------------------------
 

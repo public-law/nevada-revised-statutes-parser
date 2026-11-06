@@ -2,6 +2,7 @@
 module IndexFileSpec where
 
 import           BasicPrelude
+import           Control.Monad.Writer.Strict    ( runWriterT )
 import           Data.Either    (fromRight)
 import           Test.Hspec
 
@@ -18,7 +19,7 @@ spec =
   describe "parseTitles" $ do
     it "finds the correct number of titles" $ do
       html <- nrsIndexHtml
-      case parseTitles html of
+      case runWriterT (parseTitles html) of
         Right (titles, _) -> length titles `shouldBe` 59
         Left message      -> error message
 
@@ -67,7 +68,7 @@ title38 = (!! 37) <$> parsedTitles
 
 parsedTitles :: IO [Title]
 parsedTitles =
-  (fst . fromRight ([], [])) . parseTitles <$> nrsIndexHtml
+  (fst . fromRight ([], [])) . runWriterT . parseTitles <$> nrsIndexHtml
 
 nrsIndexHtml :: IO Html
 nrsIndexHtml = NewHtml <$> readFile (fixture "index.html")

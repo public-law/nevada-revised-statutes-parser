@@ -1,6 +1,11 @@
 module ChapterFile where
 
 import           BasicPrelude
+import           Control.Monad.Writer.Strict    ( censor
+                                                , runWriterT
+                                                , tell
+                                                , writer
+                                                )
 import qualified Data.Attoparsec.Text           ( Parser
                                                 , parseOnly
                                                 , takeText
@@ -29,7 +34,8 @@ import qualified SimpleChapterFile              ( parseSectionsFromJustHtml
                                                 , isSimpleSubChapter
                                                 )
 import           Models.Chapter                as Chapter
-import           Models.ParseFailure            ( ParseFailure
+import           Models.ParseFailure            ( ParseResult
+                                                , ParseResultT
                                                 , atChapter
                                                 , parseFailure
                                                 )
@@ -59,23 +65,20 @@ horizontalRule :: String
 horizontalRule = "<p class=J-Dash"
 
 
-fillInEmptyChapter :: ChapterMap -> Chapter -> (Chapter, [ParseFailure])
+fillInEmptyChapter :: ChapterMap -> Chapter -> ParseResult Chapter
 fillInEmptyChapter chapterMap emptyChapter =
   let number'   = Chapter.number emptyChapter
       fileText  = chapterNumberToFilenameText number'
       key       = toRelativePath (T.unpack fileText)
-      maybeHtml = HM.lookup key chapterMap
-      located msg =
-        parseFailure fileText msg |> atChapter number'
+      located msg = parseFailure fileText msg |> atChapter number'
+      fallback msg = tell [located msg] >> pure emptyChapter
   in  if number' `elem` chaptersToSkip
-        then (emptyChapter, [located "skipped by Config.chaptersToSkip"])
-        else case maybeHtml of
-          Just html -> case parseChapter html of
-            Right (aChapter, fails) -> (aChapter, fails)
-            Left message ->
-              (emptyChapter, [located (T.pack message)])
-          Nothing ->
-            (emptyChapter, [located ("Chapter file not found: " ++ fileText)])
+        then fallback "skipped by Config.chaptersToSkip"
+        else case HM.lookup key chapterMap of
+          Just html -> case runWriterT (parseChapter html) of
+            Right result -> writer result
+            Left message -> fallback (T.pack message)
+          Nothing -> fallback ("Chapter file not found: " ++ fileText)
 
 
 chapterNumberToFilenameText :: Text -> Text
@@ -95,22 +98,19 @@ chapterNumberToFilename =
   toRelativePath . chapterNumberToFilenameString
 
 
-parseChapter :: Html -> Either String (Chapter, [ParseFailure])
+parseChapter :: Html -> ParseResultT (Either String) Chapter
 parseChapter chapterHtml = do
   let chapterData = makeChapterData chapterHtml
-  rawTitle <- titleText (headings chapterData)
-  (rawNumber, rawName) <- parseChapterFileTitle rawTitle
-  (sectionsOrSubChapters, fails) <- chapterContent chapterData
-  let locatedFails = fmap (atChapter rawNumber) fails
-  return
-    ( Chapter
-      { Chapter.name    = rawName
-      , Chapter.number  = rawNumber
-      , Chapter.url     = chapterUrlPrefix ++ rawNumber ++ ".html"
-      , Chapter.content = sectionsOrSubChapters
-      }
-    , locatedFails
-    )
+  rawTitle <- lift $ titleText (headings chapterData)
+  (rawNumber, rawName) <- lift $ parseChapterFileTitle rawTitle
+  sectionsOrSubChapters <- censor (fmap (atChapter rawNumber)) $
+    chapterContent chapterData
+  pure Chapter
+    { Chapter.name    = rawName
+    , Chapter.number  = rawNumber
+    , Chapter.url     = chapterUrlPrefix ++ rawNumber ++ ".html"
+    , Chapter.content = sectionsOrSubChapters
+    }
 
 
 makeChapterData :: Html -> ChapterData
@@ -137,67 +137,39 @@ bottomHalf :: TagList -> TagList
 bottomHalf fullPage = dropWhile (~/= horizontalRule) fullPage
 
 
-chapterContent :: ChapterData -> Either String (ChapterContent, [ParseFailure])
-chapterContent chapterData = do
-  let groups = subChapterHeadingGroups chapterData
-  subResults <- mapM (newSubChapter chapterData) groups
-  let (foundSubChapters, nestedFails) = unzip subResults
-      subFails = concat nestedFails
-      (foundSections, sectionFails) =
-        SimpleChapterFile.parseSectionsFromJustHtml chapterData
-  return $ case foundSubChapters of
-    [] -> (SimpleChapterContent foundSections, sectionFails)
-    xs -> (ComplexChapterContent xs, subFails)
+chapterContent :: ChapterData -> ParseResultT (Either String) ChapterContent
+chapterContent chapterData =
+  case subChapterHeadingGroups chapterData of
+    [] -> SimpleChapterContent <$>
+      SimpleChapterFile.parseSectionsFromJustHtml chapterData
+    groups -> ComplexChapterContent <$> mapM (newSubChapter chapterData) groups
 
 
 newSubChapter
-  :: ChapterData -> TagList -> Either String (SubChapter, [ParseFailure])
+  :: ChapterData -> TagList -> ParseResultT (Either String) SubChapter
 newSubChapter chapterData headingGroup = do
-  name' <- subChapterNameFromGroup headingGroup
-  if SimpleChapterFile.isSimpleSubChapter headingGroup
-    then do
-      let (scs, fails) =
-            SimpleChapterFile.parseSectionsFromHeadingGroup chapterData
-                                                            headingGroup
-      return
-        ( SubChapter { SubChapter.name     = name'
-                     , SubChapter.children = SubChapterSections scs
-                     }
-        , fails
-        )
-    else do
-      (ssc, fails) <- parseSubSubChapters chapterData headingGroup
-      return
-        ( SubChapter { SubChapter.name     = name'
-                     , SubChapter.children = SubSubChapters ssc
-                     }
-        , fails
-        )
+  name' <- lift $ subChapterNameFromGroup headingGroup
+  children' <- if SimpleChapterFile.isSimpleSubChapter headingGroup
+    then SubChapterSections <$>
+      SimpleChapterFile.parseSectionsFromHeadingGroup chapterData headingGroup
+    else SubSubChapters <$> parseSubSubChapters chapterData headingGroup
+  pure SubChapter { SubChapter.name = name', SubChapter.children = children' }
 
 
 parseSubSubChapters
-  :: ChapterData -> TagList -> Either String ([SubSubChapter], [ParseFailure])
-parseSubSubChapters chapterData headingGroup = do
-  let groups = subSubChapterHeadingGroups headingGroup
-  results <- mapM (parseSubSubChapter chapterData) groups
-  let (subs, nestedFails) = unzip results
-  return (subs, concat nestedFails)
+  :: ChapterData -> TagList -> ParseResultT (Either String) [SubSubChapter]
+parseSubSubChapters chapterData headingGroup =
+  mapM (parseSubSubChapter chapterData) (subSubChapterHeadingGroups headingGroup)
 
 
 parseSubSubChapter
-  :: ChapterData -> TagList -> Either String (SubSubChapter, [ParseFailure])
-parseSubSubChapter chapterData subSubChapterHeadingGroup = do
-  name' <- extractSubSubChapterName subSubChapterHeadingGroup
-  let (sections', fails) =
-        SimpleChapterFile.parseSectionsFromHeadingGroup
-          chapterData
-          subSubChapterHeadingGroup
-  return
-    ( SubSubChapter { SubSubChapter.name     = name'
-                    , SubSubChapter.sections = sections'
-                    }
-    , fails
-    )
+  :: ChapterData -> TagList -> ParseResultT (Either String) SubSubChapter
+parseSubSubChapter chapterData headingGroup = do
+  name' <- lift $ extractSubSubChapterName headingGroup
+  sections' <-
+    SimpleChapterFile.parseSectionsFromHeadingGroup chapterData headingGroup
+  pure SubSubChapter
+    { SubSubChapter.name = name', SubSubChapter.sections = sections' }
 
 
 extractSubSubChapterName :: TagList -> Either String Text

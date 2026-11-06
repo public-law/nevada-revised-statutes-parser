@@ -8,9 +8,12 @@
 module ChapterFileSpec where
 
 import           BasicPrelude
+import           Control.Monad.Writer.Strict    ( runWriterT )
+import qualified Data.Text                     as T
 import           Test.Hspec
 
 import           Models.Chapter                as Chapter
+import qualified Models.ParseFailure           as Failure
 import           Models.Section                as Section
 import           Models.SubChapter             as SubChapter
 import           Models.SubSubChapter          as SubSubChapter
@@ -49,7 +52,7 @@ unwrap thing = case thing of
 
 
 chapter_432b :: IO Chapter
-chapter_432b = (fst . unwrap . parseChapter) <$> chapter_432b_html
+chapter_432b = (fst . unwrap . runWriterT . parseChapter) <$> chapter_432b_html
 
 
 head' :: [a] -> a
@@ -246,6 +249,20 @@ spec = do
                        ]
         SubChapterSections _ ->
           error "Got sections but expected sub-sub-chapters"
+
+
+    it "accumulates failures from simple and nested subchapters in order" $ do
+      html <- chapter_432b_html
+      let broken = NewHtml $ T.replace "class=Section>432B.180</span>"
+                             "class=Section>missing-180</span>"
+                   $ T.replace "class=Section>432B.010</span>"
+                               "class=Section>missing-010</span>" (toText html)
+      case runWriterT (parseChapter broken) of
+        Left err -> expectationFailure err
+        Right (parsed, fails) -> do
+          length (subChapters parsed) `shouldBe` 12
+          map Failure.sectionNumber fails `shouldBe` [Just "432B.010", Just "432B.180"]
+          map Failure.chapterNumber fails `shouldBe` [Just "432B", Just "432B"]
 
 
     describe "chapter data things" $ do
