@@ -4,6 +4,10 @@ module TreeParser
 where
 
 import           BasicPrelude
+import           Control.Monad.Writer.Strict    ( runWriterT
+                                                , tell
+                                                , writer
+                                                )
 import qualified Data.HashMap.Lazy             as HM
 import qualified Data.Text                     as T
 import           Text.InterpolatedString.Perl6  ( qq )
@@ -15,7 +19,7 @@ import           Config
 import           HtmlUtil                       ( Html )
 import           IndexFile                      ( parseTitlesAndChapters )
 import           Models.Chapter
-import           Models.ParseFailure            ( ParseFailure
+import           Models.ParseFailure            ( ParseResult
                                                 , atChapter
                                                 , parseFailure
                                                 )
@@ -23,37 +27,24 @@ import           Models.Tree
 import           Util                           ( (|>) )
 
 
-parseTree :: Html -> ChapterMap -> (Tree, [ParseFailure])
-parseTree indexFile chapterMap =
-  let (chapter0', zeroFails) = parseChapterZero chapterMap
-      (titles', titleFails) =
-        parseTitlesAndChapters indexFile (allButChapterZero chapterMap)
-  in  ( Tree { chapter0 = chapter0', titles = titles' }
-      , zeroFails ++ titleFails
-      )
+parseTree :: Html -> ChapterMap -> ParseResult Tree
+parseTree indexFile chapterMap = do
+  chapter0' <- parseChapterZero chapterMap
+  titles' <- parseTitlesAndChapters indexFile (allButChapterZero chapterMap)
+  pure Tree { chapter0 = chapter0', titles = titles' }
 
 
-parseChapterZero :: ChapterMap -> (Chapter, [ParseFailure])
+parseChapterZero :: ChapterMap -> ParseResult Chapter
 parseChapterZero chapterMap =
-  let path        = chapterZeroPathname
-      placeholder = emptyChapterZero
-  in  case HM.lookup path chapterMap of
-        Just html -> case parseChapter html of
-          Left message ->
-            ( placeholder
-            , [ parseFailure "NRS-000.html" (T.pack message)
-                  |> atChapter "0"
-              ]
-            )
-          Right (aChapter, fails) -> (aChapter, fails)
-        Nothing ->
-          ( placeholder
-          , [ parseFailure
-                "NRS-000.html"
-                [qq|Chap. Zero not found in {show $ take 1 $ HM.keys chapterMap}|]
-                |> atChapter "0"
-            ]
-          )
+  let fallback msg = do
+        tell [parseFailure "NRS-000.html" msg |> atChapter "0"]
+        pure emptyChapterZero
+  in  case HM.lookup chapterZeroPathname chapterMap of
+        Just html -> case runWriterT (parseChapter html) of
+          Left message -> fallback (T.pack message)
+          Right result -> writer result
+        Nothing -> fallback
+          [qq|Chap. Zero not found in {show $ take 1 $ HM.keys chapterMap}|]
 
 
 emptyChapterZero :: Chapter

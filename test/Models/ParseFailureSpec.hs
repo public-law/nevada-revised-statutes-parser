@@ -1,6 +1,7 @@
 module Models.ParseFailureSpec where
 
 import           BasicPrelude
+import           Control.Monad.Writer.Strict    ( runWriter )
 import           Data.Aeson                     ( Value(Number, String)
                                                 , decode
                                                 , encode
@@ -60,7 +61,7 @@ spec = parallel $ do
             if T.isPrefixOf "bad" s then Left "boom" else Right (s <> "!")
           toFailure s err =
             parseFailure "file.html" (T.pack err) |> atSection s
-          (oks, fails) = accumulate parse toFailure inputs
+          (oks, fails) = runWriter $ accumulate parse toFailure inputs
       oks `shouldBe` ["ok-a!", "ok-b!"]
       length fails `shouldBe` 2
       message (fails !! 0) `shouldBe` "boom"
@@ -70,12 +71,12 @@ spec = parallel $ do
       sourceFile (fails !! 0) `shouldBe` "file.html"
 
     it "returns empty lists when given an empty input" $ do
-      accumulate (Right :: Int -> Either String Int) (\_ _ -> parseFailure "x" "y") []
+      runWriter (accumulate (Right :: Int -> Either String Int) (\_ _ -> parseFailure "x" "y") [])
         `shouldBe` ([], [])
 
     it "returns only failures when every item fails" $ do
       let (oks, fails) =
-            accumulate
+            runWriter $ accumulate
               (const (Left "nope") :: Text -> Either String Text)
               (\a e -> parseFailure a (T.pack e))
               ["a", "b"]

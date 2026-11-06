@@ -4,6 +4,7 @@
 module SimpleChapterSpec where
 
 import           BasicPrelude
+import           Control.Monad.Writer.Strict    ( runWriterT )
 import qualified Data.Text                     as T
 import           Test.Hspec
 
@@ -23,7 +24,7 @@ spec = parallel $ describe "unwrap $ parseChapter" $ do
 
   it "recognizes a chapter with simple content" $ do
     html ← chapter_0_html
-    case content (fst $ unwrap $ parseChapter html) of
+    case content (fst $ unwrap $ runWriterT (parseChapter html)) of
       SimpleChapterContent _ -> pure ()
       ComplexChapterContent xs ->
         expectationFailure $ "Expected Sections but got SubChapters" ++ show xs
@@ -78,7 +79,7 @@ spec = parallel $ describe "unwrap $ parseChapter" $ do
   describe "missing section body" $ do
     it "keeps sibling sections and records one failure" $ do
       html <- missing_body_html
-      case parseChapter html of
+      case runWriterT (parseChapter html) of
         Left err -> expectationFailure err
         Right (chapter, fails) -> do
           case Chapter.content chapter of
@@ -121,7 +122,7 @@ main = hspec spec
 -- or fail.
 simpleChapterContent :: Html -> [Section]
 simpleChapterContent html =
-  case content (fst $ unwrap $ parseChapter html) of
+  case content (fst $ unwrap $ runWriterT (parseChapter html)) of
     SimpleChapterContent sections -> sections
     ComplexChapterContent xs ->
       error $ "Expected Sections but got SubChapters" ++ show xs

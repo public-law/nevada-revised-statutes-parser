@@ -17,6 +17,7 @@ import           HtmlUtil                       ( Html(NewHtml)
                                                 , shaveBackTagsToLastClosingP
                                                 )
 import           Models.ParseFailure            ( ParseFailure
+                                                , ParseResultT
                                                 , accumulate
                                                 , atSection
                                                 , parseFailure
@@ -49,18 +50,18 @@ isSimpleSubChapter headingGroup =
   null (partitions (~== heading4P) headingGroup)
 
 
-parseSectionsFromJustHtml :: ChapterData -> ([Section], [ParseFailure])
+parseSectionsFromJustHtml :: Monad m => ChapterData -> ParseResultT m [Section]
 parseSectionsFromJustHtml chapterData =
   accumulateSections chapterData (headingParagraphsWithContent chapterData)
 
 
 parseSectionsFromHeadingGroup
-  :: ChapterData -> TagList -> ([Section], [ParseFailure])
+  :: Monad m => ChapterData -> TagList -> ParseResultT m [Section]
 parseSectionsFromHeadingGroup chapterData headingGroup =
   accumulateSections chapterData (headingParagraphsWithContent' headingGroup)
 
 
-accumulateSections :: ChapterData -> [TagList] -> ([Section], [ParseFailure])
+accumulateSections :: Monad m => ChapterData -> [TagList] -> ParseResultT m [Section]
 accumulateSections chapterData =
   accumulate (parseSectionFromHeadingParagraph chapterData) sectionFailure
 

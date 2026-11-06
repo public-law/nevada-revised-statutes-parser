@@ -2,6 +2,7 @@
 module NRSParserSpec where
 
 import           BasicPrelude
+import           Control.Monad.Writer.Strict    ( runWriter )
 import qualified Data.HashMap.Lazy             as HM
 import           Data.Time                      ( fromGregorian )
 import           Test.Hspec
@@ -14,7 +15,9 @@ import           HtmlUtil
 import           Models.Chapter                as Chapter
 import           Models.NRS
 import           Models.Title                  as Title
-import           Models.ParseFailure            ( chapterNumber
+import           Models.ParseFailure            ( titleNumber
+                                                , sectionNumber
+                                                , chapterNumber
                                                 , message
                                                 , sourceFile
                                                 )
@@ -27,7 +30,7 @@ spec = parallel $ do
   describe "fillInEmptyChapter" $ do
     it "keeps the empty shell and records a failure when the file is missing" $ do
       let stub = emptyChapterShell "998" "Missing Chapter"
-          (ch, fails) = fillInEmptyChapter HM.empty stub
+          (ch, fails) = runWriter $ fillInEmptyChapter HM.empty stub
       Chapter.number ch `shouldBe` "998"
       Chapter.name ch `shouldBe` "Missing Chapter"
       case Chapter.content ch of
@@ -40,7 +43,7 @@ spec = parallel $ do
 
     it "keeps the empty shell for chaptersToSkip and records a skip failure" $ do
       let stub = emptyChapterShell "111" "Skipped"
-          (ch, fails) = fillInEmptyChapter HM.empty stub
+          (ch, fails) = runWriter $ fillInEmptyChapter HM.empty stub
       Chapter.number ch `shouldBe` "111"
       length fails `shouldBe` 1
       message (head fails) `shouldBe` "skipped by Config.chaptersToSkip"
@@ -49,7 +52,7 @@ spec = parallel $ do
       html <- htmlFixture "NRS-999-missing-body.html"
       let stub = emptyChapterShell "999" "Broken"
           cmap  = HM.singleton (chapterNumberToFilename "999") html
-          (ch, fails) = fillInEmptyChapter cmap stub
+          (ch, fails) = runWriter $ fillInEmptyChapter cmap stub
       case Chapter.content ch of
         SimpleChapterContent sections -> length sections `shouldBe` 1
         ComplexChapterContent xs ->
@@ -80,6 +83,34 @@ spec = parallel $ do
         SimpleChapterContent sections -> length sections `shouldNotBe` 0
         ComplexChapterContent subchapters ->
           length subchapters `shouldNotBe` 0
+
+    it "keeps failure order and scopes locations across titles" $ do
+      broken <- htmlFixture "NRS-999-missing-body.html"
+      let index = makeHtml $ "<table class=MsoNormalTable>"
+            <> "<tr><td><b>TITLE 1 — FIRST</b></td></tr>"
+            <> "<tr><td>invalid</td><td>row</td></tr>"
+            <> "<tr><td><a href=NRS-999.html>Chapter 999</a></td><td>Broken</td></tr>"
+            <> "<tr><td><b>TITLE 2 — SECOND</b></td></tr>"
+            <> "<tr><td>invalid</td><td>row</td></tr>"
+            <> "<tr><td><a href=NRS-998.html>Chapter 998</a></td><td>Missing</td></tr>"
+            <> "</table>"
+          cmap = HM.singleton (chapterNumberToFilename "999") broken
+          (_, fails) = parseNRS index cmap (fromGregorian 2020 1 1)
+      map chapterNumber fails `shouldBe` [Just "0", Nothing, Nothing, Just "999", Just "998"]
+      map titleNumber fails `shouldBe` [Nothing, Just 1, Just 2, Just 1, Just 2]
+      map sectionNumber fails `shouldBe` [Nothing, Nothing, Nothing, Just "999.020", Nothing]
+      map sourceFile fails `shouldBe` ["NRS-000.html", "index.html", "index.html", "", "NRS-998.html"]
+
+    it "reports a structural index failure without leaking earlier row failures" $ do
+      let index = makeHtml $ "<table class=MsoNormalTable>"
+            <> "<tr><td><b>TITLE 1 — FIRST</b></td></tr>"
+            <> "<tr><td>invalid</td><td>row</td></tr>"
+            <> "<tr><td><b>INVALID TITLE</b></td></tr>"
+            <> "<tr><td>invalid</td><td>row</td></tr></table>"
+          (nrs, fails) = parseNRS index HM.empty (fromGregorian 2020 1 1)
+      length (titles (statuteTree nrs)) `shouldBe` 0
+      map sourceFile fails `shouldBe` ["NRS-000.html", "index.html"]
+      map titleNumber fails `shouldBe` [Nothing, Nothing]
 
 
 emptyChapterShell :: Text -> Text -> Chapter

@@ -4,11 +4,17 @@ module Models.ParseFailure
   , atTitle
   , atChapter
   , atSection
+  , ParseResult
+  , ParseResultT
   , accumulate
   )
 where
 
 import           BasicPrelude
+import           Control.Monad.Writer.Strict    ( Writer
+                                                , WriterT
+                                                , tell
+                                                )
 import           Data.Aeson                     ( ToJSON )
 import           GHC.Generics                   ( Generic )
 
@@ -25,18 +31,23 @@ data ParseFailure = ParseFailure
 instance ToJSON ParseFailure
 
 
+-- Recoverable failures are collected in encounter order. The transformer also
+-- lets structural parsers retain their existing Either String failure behavior.
+type ParseResult = Writer [ParseFailure]
+type ParseResultT m = WriterT [ParseFailure] m
+
+
 accumulate
-  :: (a -> Either String b)
+  :: Monad m
+  => (a -> Either String b)
   -> (a -> String -> ParseFailure)
   -> [a]
-  -> ([b], [ParseFailure])
-accumulate parse toFailure items =
-  let (fails, oks) = partitionEithers (classify <$> items)
-  in  (oks, fails)
+  -> ParseResultT m [b]
+accumulate parse toFailure items = catMaybes <$> mapM classify items
   where
     classify a = case parse a of
-      Right b -> Right b
-      Left e  -> Left (toFailure a e)
+      Right b -> pure (Just b)
+      Left e  -> tell [toFailure a e] >> pure Nothing
 
 
 parseFailure :: Text -> Text -> ParseFailure

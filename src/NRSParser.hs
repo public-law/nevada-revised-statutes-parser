@@ -1,6 +1,7 @@
 module NRSParser where
 
 import           BasicPrelude
+import           Control.Monad.Writer.Strict    ( runWriter )
 import qualified Data.HashMap.Lazy             as HM
 import           Data.Time
 import           System.FilePath
@@ -37,11 +38,10 @@ parseFiles dir = do
 
 parseNRS :: Html -> ChapterMap -> Day -> (NRS, [ParseFailure])
 parseNRS indexFile chapterMap currentDate =
-  let (tree, fails) = parseTree indexFile chapterMap
-  in  ( NRS
-        { statuteTree  = tree
-        , nominalDate  = toYear 2018
-        , dateAccessed = currentDate
-        }
-      , fails
-      )
+  runWriter $ do
+    tree <- parseTree indexFile chapterMap
+    pure NRS
+      { statuteTree  = tree
+      , nominalDate  = toYear 2018
+      , dateAccessed = currentDate
+      }

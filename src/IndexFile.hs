@@ -1,6 +1,11 @@
 module IndexFile where
 
 import           BasicPrelude
+import           Control.Monad.Writer.Strict    ( censor
+                                                , runWriterT
+                                                , tell
+                                                , writer
+                                                )
 import           Data.Attoparsec.Text           ( parseOnly )
 import           Data.Function                  ( (&) )
 import           Data.List.Split                ( chunksOf
@@ -23,6 +28,8 @@ import           FileUtil                       ( toAbsoluteURL )
 import           HtmlUtil
 import           Models.Chapter                as Chapter
 import           Models.ParseFailure            ( ParseFailure
+                                                , ParseResult
+                                                , ParseResultT
                                                 , accumulate
                                                 , atTitle
                                                 , parseFailure
@@ -33,35 +40,26 @@ import           TextUtil                       ( normalizeWhiteSpace
                                                 )
 
 
-parseTitlesAndChapters :: Html -> ChapterMap -> ([Title], [ParseFailure])
+parseTitlesAndChapters :: Html -> ChapterMap -> ParseResult [Title]
 parseTitlesAndChapters indexHtml chapterMap =
-  case parseTitles indexHtml of
-    Left message ->
-      ( []
-      , [parseFailure "index.html" (T.pack message)]
-      )
-    Right (emptyTitles, indexFails) ->
-      let filled = fmap (fillInEmptyTitle chapterMap) emptyTitles
-          (titles, nestedFails) = unzip filled
-      in  (titles, indexFails ++ concat nestedFails)
+  case runWriterT (parseTitles indexHtml) of
+    Left message -> tell [parseFailure "index.html" (T.pack message)] >> pure []
+    Right result -> do
+      emptyTitles <- writer result
+      mapM (fillInEmptyTitle chapterMap) emptyTitles
 
 
-fillInEmptyTitle :: ChapterMap -> Title -> (Title, [ParseFailure])
+fillInEmptyTitle :: ChapterMap -> Title -> ParseResult Title
 fillInEmptyTitle chapterMap emptyTitle =
-  let results = fmap (fillInEmptyChapter chapterMap) (chapters emptyTitle)
-      (filledChapters, nestedFails) = unzip results
-      titleFails = fmap (atTitle (Title.number emptyTitle)) (concat nestedFails)
-  in  ( emptyTitle { Title.chapters = filledChapters }
-      , titleFails
-      )
+  censor (fmap (atTitle (Title.number emptyTitle))) $ do
+    filledChapters <- mapM (fillInEmptyChapter chapterMap) (chapters emptyTitle)
+    pure emptyTitle { Title.chapters = filledChapters }
 
 
-parseTitles :: Html -> Either String ([Title], [ParseFailure])
+parseTitles :: Html -> ParseResultT (Either String) [Title]
 parseTitles indexHtml = do
-  content_rows <- contentRows indexHtml
-  results      <- mapM newTitle (rowTuples content_rows)
-  let (titles, nestedFails) = unzip results
-  return (titles, concat nestedFails)
+  content_rows <- lift $ contentRows indexHtml
+  mapM newTitle (rowTuples content_rows)
 
 
 contentRows :: Html -> Either String [Node]
@@ -71,24 +69,20 @@ contentRows indexHtml = do
   return $ findAll "<tr>" table
 
 
-newTitle :: [[Node]] -> Either String (Title, [ParseFailure])
+newTitle :: [[Node]] -> ParseResultT (Either String) Title
 newTitle [titleRows, chapterRows] = do
-  titleRow <- requireHead "Empty title row group" titleRows
-  first_b  <- findFirst "<b>" titleRow
+  titleRow <- lift $ requireHead "Empty title row group" titleRows
+  first_b  <- lift $ findFirst "<b>" titleRow
   let title = innerText first_b
-  (rawNumber, rawName) <- parseRawTitle title
-  let (parsedChapters, rowFails) =
-        accumulate newChapter indexRowFailure chapterRows
-      locatedFails = fmap (atTitle rawNumber) rowFails
-  return
-    ( Title
-      { Title.name     = titleize rawName
-      , Title.number   = rawNumber
-      , Title.chapters = parsedChapters
-      }
-    , locatedFails
-    )
-newTitle _ = Left "Expected a title row group and a chapter row group"
+  (rawNumber, rawName) <- lift $ parseRawTitle title
+  parsedChapters <- censor (fmap (atTitle rawNumber)) $
+    accumulate newChapter indexRowFailure chapterRows
+  pure Title
+    { Title.name     = titleize rawName
+    , Title.number   = rawNumber
+    , Title.chapters = parsedChapters
+    }
+newTitle _ = lift $ Left "Expected a title row group and a chapter row group"
 
 
 indexRowFailure :: Node -> String -> ParseFailure
